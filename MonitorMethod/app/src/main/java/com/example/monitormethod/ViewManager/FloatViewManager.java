@@ -62,8 +62,8 @@ public class FloatViewManager {
             public void onClick(View v) {
                 Log.i("LZH","click createBt");
                 Intent intent = new Intent();
-//                intent.setAction(LocalActivityReceiver.WRITE_LOG);
-                intent.setAction(LocalActivityReceiver.ON_CLICK);
+                intent.setAction(LocalActivityReceiver.WRITE_LOG);
+//                intent.setAction(LocalActivityReceiver.ON_CLICK);
 //                intent.setAction(LocalActivityReceiver.CREATE_DESK);
 //                intent.setAction(LocalActivityReceiver.FIND_SPECIFY);
 //                intent.setAction(LocalActivityReceiver.CLICK_DELETE);

@@ -117,15 +117,15 @@ public class ActivityOnCreateHook extends XC_MethodHook {
 
 //        Log.i("LZH","register activity: "+componentName.getClassName());
 //        showClassName(activity.getPackageName(),activity);
-        String fileName = Environment.getExternalStorageDirectory().getAbsolutePath()+"/anki.txt";
-//        if(fileName.contains("com.ichi2.anki")){
-//            writeAnkiClassName(activity.getPackageName(),activity,fileName);
-//        }
+        String fileName = Environment.getExternalStorageDirectory().getAbsolutePath()+"/douban.txt";
+        if(activity.getPackageName().contains("com.douban.movie")){
+            writeAnkiClassName(activity.getPackageName(),activity,fileName);
+            Log.i("LZH","write className finish ");
+        }
 //        fileName = Environment.getExternalStorageDirectory().getAbsolutePath()+"/tianxiameishi.txt";
 //        if(activity.getPackageName().contains("com.jingdian.tianxiameishi.android")){
 //            writeAnkiClassName(activity.getPackageName(),activity,fileName);
 //        }
-
     }
     private void showClassName(String pkName, Context context){
         List<String> names = getClassName(pkName,context);

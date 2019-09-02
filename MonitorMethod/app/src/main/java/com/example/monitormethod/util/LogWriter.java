@@ -48,7 +48,7 @@ public class LogWriter {
         return logWriter;
     }
 
-    public void writeLog(String log){
+    public synchronized void writeLog(String log){
         if(!token){
             return;
         }
