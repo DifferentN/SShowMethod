@@ -8,6 +8,7 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayList;
 
 public class LogWriter {
     private static File file;
@@ -16,7 +17,9 @@ public class LogWriter {
     private static String fName;
     private static boolean token = false;
     private static long preTime;
-    private static String targetPKName = "com.douban.movie";//com.ichi2.anki
+    private static String targetPKName = "com.ltz.dict";
+    //com.kingsoft
+    //com.ichi2.anki  com.yongche.android  com.douban.movie  com.jnzc.shipudaquan
     public LogWriter(String fileName){
         fName = fileName;
         file = new File(fName);
@@ -55,7 +58,7 @@ public class LogWriter {
         try {
             writer.write(log+"\n");
             writer.flush();
-            Log.i("LZH","write "+log);
+//            Log.i("LZH","write "+log);
         } catch (IOException e) {
             e.printStackTrace();
         }

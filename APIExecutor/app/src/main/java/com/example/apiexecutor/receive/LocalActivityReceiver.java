@@ -22,11 +22,13 @@ import com.alibaba.fastjson.JSONObject;
 import com.example.apiexecutor.core.CoordinatorReceiver;
 import com.example.apiexecutor.core.MethodExecutor;
 import com.example.apiexecutor.test.MyRunnable;
+import com.example.apiexecutor.trackData.MethodTrackPool;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -119,31 +121,41 @@ public class LocalActivityReceiver extends BroadcastReceiver implements CallBack
                 if(isSetText){
                     IsEndMethod();
                 }
-
                 break;
             case LocalActivityReceiver.INPUT_TEXT:
-                //2131298054
+                //2131298054 com.douban.frodo.search.activity.NewSearchActivity
+//                amodule.activity.HomeSearch  2131296313
                 if(selfActivityName.contains("NewSearchActivity")){
 //                    doClick(0);
-                    TextView textView = selfActivity.findViewById(2131298054);
-                    textView.setText("哪吒");
+                    MethodTrackPool.getInstance().clearRunTimeRecord();
+                    final TextView textView = selfActivity.findViewById(2131298054);
+                    textView.setText("哪吒之魔童降世");
+//                    textView.postDelayed(new Runnable() {
+//                        @Override
+//                        public void run() {
+//                            textView.setText("哪吒之魔童降世");
+//                        }
+//                    },1000);
+//                    textView.setText("上海堡垒");
+//                    textView.setText("追龙");
+//                    textView.setText("锅盔");
                     isSetText = true;
+//                    doClick(clickTime);
                 }
-
                 break;
         }
     }
 
     private void IsEndMethod() {
-        curTime = System.currentTimeMillis();
-        selfActivity.getWindow().getDecorView().postDelayed(new MyRunnable(this,curTime,clickTime),1000);
+//        curTime = System.currentTimeMillis();
+//        selfActivity.getWindow().getDecorView().postDelayed(new MyRunnable(this,curTime,clickTime),1000);
+        doClick(clickTime);
     }
 
     public void doClick(int eTime) {
         if(eTime!=clickTime){
             return;
         }
-
         long downTime = SystemClock.uptimeMillis();
         long eventTime = SystemClock.uptimeMillis();
         int action = MotionEvent.ACTION_DOWN;
@@ -153,8 +165,10 @@ public class LocalActivityReceiver extends BroadcastReceiver implements CallBack
         clickTime++;
         if(eTime==0){
             Log.i("LZH","doclick");
-            x = 535;
-            y = 149;
+            x = 193;
+            y = 283;
+//            x = 663;
+//            y = 75;
             MotionEvent motionEvent = MotionEvent.obtain(downTime, eventTime, action, x, y, metaState);
             selfActivity.dispatchTouchEvent(motionEvent);
             action = MotionEvent.ACTION_UP;
@@ -162,8 +176,10 @@ public class LocalActivityReceiver extends BroadcastReceiver implements CallBack
             selfActivity.dispatchTouchEvent(motionEvent);
 
         }else if(eTime==1){
-            x = 149;
-            y = 143;
+            x = 140;
+            y = 134;
+//            x = 322;
+//            y = 186;
             MotionEvent motionEvent = MotionEvent.obtain(downTime, eventTime, action, x, y, metaState);
             selfActivity.dispatchTouchEvent(motionEvent);
             action = MotionEvent.ACTION_UP;
@@ -171,8 +187,8 @@ public class LocalActivityReceiver extends BroadcastReceiver implements CallBack
             selfActivity.dispatchTouchEvent(motionEvent);
 
         }else if(eTime==2){
-            x = 464;
-            y = 221;
+            x = 484;
+            y = 245;
             MotionEvent motionEvent = MotionEvent.obtain(downTime, eventTime, action, x, y, metaState);
             selfActivity.dispatchTouchEvent(motionEvent);
             action = MotionEvent.ACTION_UP;

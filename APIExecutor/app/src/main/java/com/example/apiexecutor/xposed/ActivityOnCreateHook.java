@@ -11,6 +11,7 @@ import android.util.Log;
 import com.example.apiexecutor.core.CoordinatorReceiver;
 import com.example.apiexecutor.receive.LocalActivityReceiver;
 import com.example.apiexecutor.trackData.ActivityUtil;
+import com.example.apiexecutor.trackData.MethodTrackPool;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -102,7 +103,7 @@ public class ActivityOnCreateHook extends XC_MethodHook {
         ActivityUtil.setActivity(activity);
         XposedHelpers.setAdditionalInstanceField(activity, "iasReceiver", receiver);
         activity.registerReceiver(receiver,filter);
-
+        MethodTrackPool.getInstance().setContext(activity);
 //        Log.i("LZH","register activity: "+componentName.getClassName());
 //        showClassName(activity.getPackageName(),activity);
         String fileName = Environment.getExternalStorageDirectory().getAbsolutePath()+"/anki.txt";

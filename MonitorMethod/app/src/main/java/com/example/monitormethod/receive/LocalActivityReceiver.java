@@ -160,8 +160,9 @@ public class LocalActivityReceiver extends BroadcastReceiver implements CallBack
                 break;
             case LocalActivityReceiver.WRITE_LOG:
 //                Log.i("LZH",selfPackageName);
-//                DeckPicker com.douban.movie com.ichi2.anki
-                if(selfPackageName.contains("com.douban.movie")){
+//                DeckPicker com.douban.movie com.ichi2.anki com.jnzc.shipudaquan
+                //cn.etouch.ecalendar
+                if(selfPackageName.contains("com.ltz.dict")){
                     LogWriter.turnWriteAble();
                 }
                 break;

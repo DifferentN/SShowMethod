@@ -31,6 +31,7 @@ public class DispatchTouchEventHook extends XC_MethodHook {
         JSONObject jsonObject = null;
         if(motionEvent!=null){
             jsonObject = writeInfo((View) param.thisObject,motionEvent);
+            writeThreadId(jsonObject);
             Log.i("LZH-Method","before: "+jsonObject.toJSONString());
             logWriter.writeLog("before: "+jsonObject.toJSONString());
         }
@@ -47,6 +48,7 @@ public class DispatchTouchEventHook extends XC_MethodHook {
             json = writeInfo((View) param.thisObject,motionEvent);
             resultJSON = writeResult(param);
             json.put("methodResult",resultJSON);
+            writeThreadId(json);
             Log.i("LZH-Method","after: "+json.toJSONString());
             logWriter.writeLog("after: "+json.toJSONString());
         }
@@ -101,5 +103,9 @@ public class DispatchTouchEventHook extends XC_MethodHook {
         resultJSON.put("resultHashCode",hash);
         resultJSON.put("resultValue",res);
         return resultJSON;
+    }
+    private void writeThreadId(JSONObject jsonObject){
+        long id = Thread.currentThread().getId();
+        jsonObject.put("threadId",id);
     }
 }

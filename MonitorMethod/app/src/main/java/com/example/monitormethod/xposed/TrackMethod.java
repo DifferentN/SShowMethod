@@ -37,7 +37,7 @@ public class TrackMethod extends XC_MethodHook {
     @Override
     protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
 //        super.beforeHookedMethod(param);
-        dataCollectioner.collectMethodHookParam(param);
+//        dataCollectioner.collectMethodHookParam(param);
 
         int menuId = -1;
         JSONObject jsonObject = new JSONObject();
@@ -64,7 +64,7 @@ public class TrackMethod extends XC_MethodHook {
         writeThreadId(jsonObject);
         if(logWriter!=null){
             logWriter.writeLog("after: "+jsonObject.toJSONString());
-            Log.i("LZH-Method","after: "+jsonObject.toJSONString());
+//            Log.i("LZH-Method","after: "+jsonObject.toJSONString());
         }
     }
     private void writeCallerInfo(JSONObject json,MethodHookParam param){

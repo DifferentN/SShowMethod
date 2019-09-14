@@ -63,20 +63,54 @@ public class IASXposedModule implements IXposedHookLoadPackage{
         if(lpparam.packageName.contains("com.douban.movie")){
             XposedHelpers.findAndHookMethod("android.view.View",lpparam.classLoader,"dispatchTouchEvent",MotionEvent.class,new DispatchTouchEventHook("com.douban.movie"));
 //            XposedHelpers.findAndHookMethod("android.widget.EditText",lpparam.classLoader,"getText",new TestGetTextHook());
-            XposedHelpers.findAndHookMethod("android.view.View",lpparam.classLoader,"onTouchEvent",MotionEvent.class,new DispatchTouchEventHook("com.douban.movie"));
-            XposedHelpers.findAndHookMethod("android.view.View",lpparam.classLoader,"performClick",new TrackMethod(new Class[0],"com.douban.movie"));
+//            XposedHelpers.findAndHookMethod("android.view.View",lpparam.classLoader,"onTouchEvent",MotionEvent.class,new DispatchTouchEventHook("com.douban.movie"));
+//            XposedHelpers.findAndHookMethod("android.view.View",lpparam.classLoader,"performClick",new TrackMethod(new Class[0],"com.douban.movie"));
 //            XposedHelpers.findAndHookMethod("android.view.View", lpparam.classLoader, "onDraw",Canvas.class, new HookOnDraw());
             hookAPPMethod(classNames,classLoader,"com.douban.movie");
 
-            XposedHelpers.findAndHookMethod("android.view.View",lpparam.classLoader,"setOnClickListener", View.OnClickListener.class,new SetOnClickListenerHook());
+//            XposedHelpers.findAndHookMethod("android.view.View",lpparam.classLoader,"setOnClickListener", View.OnClickListener.class,new SetOnClickListenerHook());
             XposedHelpers.findAndHookMethod("android.view.View", lpparam.classLoader,"findViewById",int.class,new FindViewByIdHook());
 //            XposedHelpers.findAndHookMethod("android.widget.EditText", lpparam.classLoader,"setText",CharSequence.class,new TrackMethod(new Class[]{CharSequence.class}));
         }
-        if(lpparam.packageName.equals("com.example.monitormethod")){
-            XposedHelpers.findAndHookMethod("android.app.Activity",lpparam.classLoader,"dispatchTouchEvent",MotionEvent.class,new DispatchTouchEventActivityHook());
-            XC_MethodHook.Unhook unhook = XposedHelpers.findAndHookMethod("android.view.View", lpparam.classLoader,"findViewById",int.class,new FindViewByIdHook());
-            XposedHelpers.findAndHookMethod("android.view.View",lpparam.classLoader,"setOnClickListener", View.OnClickListener.class,new SetOnClickListenerHook());
+        classNames = "shipudaquan.txt";
+        if(lpparam.packageName.contains("com.jnzc.shipudaquan")){
+            XposedHelpers.findAndHookMethod("android.view.View",lpparam.classLoader,"dispatchTouchEvent",MotionEvent.class,new DispatchTouchEventHook("com.jnzc.shipudaquan"));
+//            XposedHelpers.findAndHookMethod("android.widget.EditText",lpparam.classLoader,"getText",new TestGetTextHook());
+//            XposedHelpers.findAndHookMethod("android.view.View",lpparam.classLoader,"onTouchEvent",MotionEvent.class,new DispatchTouchEventHook("com.douban.movie"));
+//            XposedHelpers.findAndHookMethod("android.view.View",lpparam.classLoader,"performClick",new TrackMethod(new Class[0],"com.jnzc.shipudaquan"));
+//            XposedHelpers.findAndHookMethod("android.view.View", lpparam.classLoader, "onDraw",Canvas.class, new HookOnDraw());
+            hookAPPMethod(classNames,classLoader,"com.jnzc.shipudaquan");
 
+//            XposedHelpers.findAndHookMethod("android.view.View",lpparam.classLoader,"setOnClickListener", View.OnClickListener.class,new SetOnClickListenerHook());
+            XposedHelpers.findAndHookMethod("android.view.View", lpparam.classLoader,"findViewById",int.class,new FindViewByIdHook());
+//            XposedHelpers.findAndHookMethod("android.widget.EditText", lpparam.classLoader,"setText",CharSequence.class,new TrackMethod(new Class[]{CharSequence.class}));
+        }
+
+//        classNames = "kingsoft.txt";
+//        if(lpparam.packageName.contains("com.kingsoft")){
+//            XposedHelpers.findAndHookMethod("android.view.View",lpparam.classLoader,"dispatchTouchEvent",MotionEvent.class,new DispatchTouchEventHook("com.kingsoft"));
+////            XposedHelpers.findAndHookMethod("android.widget.EditText",lpparam.classLoader,"getText",new TestGetTextHook());
+////            XposedHelpers.findAndHookMethod("android.view.View",lpparam.classLoader,"onTouchEvent",MotionEvent.class,new DispatchTouchEventHook("com.douban.movie"));
+////            XposedHelpers.findAndHookMethod("android.view.View",lpparam.classLoader,"performClick",new TrackMethod(new Class[0],"com.jnzc.shipudaquan"));
+////            XposedHelpers.findAndHookMethod("android.view.View", lpparam.classLoader, "onDraw",Canvas.class, new HookOnDraw());
+//            hookAPPMethod(classNames,classLoader,"com.kingsoft");
+//
+////            XposedHelpers.findAndHookMethod("android.view.View",lpparam.classLoader,"setOnClickListener", View.OnClickListener.class,new SetOnClickListenerHook());
+//            XposedHelpers.findAndHookMethod("android.view.View", lpparam.classLoader,"findViewById",int.class,new FindViewByIdHook());
+////            XposedHelpers.findAndHookMethod("android.widget.EditText", lpparam.classLoader,"setText",CharSequence.class,new TrackMethod(new Class[]{CharSequence.class}));
+//        }
+        classNames = "dict.txt";
+        if(lpparam.packageName.contains("com.ltz.dict")){
+            XposedHelpers.findAndHookMethod("android.view.View",lpparam.classLoader,"dispatchTouchEvent",MotionEvent.class,new DispatchTouchEventHook("com.ltz.dict"));
+//            XposedHelpers.findAndHookMethod("android.widget.EditText",lpparam.classLoader,"getText",new TestGetTextHook());
+//            XposedHelpers.findAndHookMethod("android.view.View",lpparam.classLoader,"onTouchEvent",MotionEvent.class,new DispatchTouchEventHook("com.douban.movie"));
+//            XposedHelpers.findAndHookMethod("android.view.View",lpparam.classLoader,"performClick",new TrackMethod(new Class[0],"com.jnzc.shipudaquan"));
+//            XposedHelpers.findAndHookMethod("android.view.View", lpparam.classLoader, "onDraw",Canvas.class, new HookOnDraw());
+            hookAPPMethod(classNames,classLoader,"com.ltz.dict");
+
+//            XposedHelpers.findAndHookMethod("android.view.View",lpparam.classLoader,"setOnClickListener", View.OnClickListener.class,new SetOnClickListenerHook());
+            XposedHelpers.findAndHookMethod("android.view.View", lpparam.classLoader,"findViewById",int.class,new FindViewByIdHook());
+//            XposedHelpers.findAndHookMethod("android.widget.EditText", lpparam.classLoader,"setText",CharSequence.class,new TrackMethod(new Class[]{CharSequence.class}));
         }
     }
     private void hook_methods(String className,ClassLoader loader,String packageName) {
@@ -101,9 +135,9 @@ public class IASXposedModule implements IXposedHookLoadPackage{
             //Modifier.isPublic(method.getModifiers())
 
                 if (true) {
-                    Log.i("LZH",className+" method: "+method.getName()+"1");
+//                    Log.i("LZH",className+" method: "+method.getName()+"1");
                     XposedBridge.hookMethod(method, new TrackMethod(method.getParameterTypes(),packageName));
-                    Log.i("LZH",className+" method: "+method.getName()+"2");
+//                    Log.i("LZH",className+" method: "+method.getName()+"2");
                 }
             }
         } catch (Exception e) {
@@ -123,18 +157,18 @@ public class IASXposedModule implements IXposedHookLoadPackage{
             if(line.contains("android.widget")){
                 Log.i("LZH","contain: "+line);
             }
-            if(line.startsWith("android.support")||line.startsWith("dalvik")||line.startsWith("java")||line.startsWith("timber")){
+            if(line.startsWith("android.support")||line.startsWith("dalvik")||line.startsWith("java")||line.startsWith("timber")||line.startsWith("androidx")){
                 continue;
             }
-            if(!line.startsWith("com.douban")){
-                continue;
-            }
-            if(line.contains("com.douban.rexxar.view")||line.contains("com.douban.richeditview")||line.contains("com.douban.videouploader")||line.contains("com.douban.zeno")){
-                continue;
-            }
+//            if(!line.startsWith(packageName)){
+//                continue;
+//            }
+//            if(line.contains("com.douban.rexxar.view")||line.contains("com.douban.richeditview")||line.contains("com.douban.videouploader")||line.contains("com.douban.zeno")){
+//                continue;
+//            }
             hook_methods(line,classLoader,packageName);
             num++;
-            if(num>=5000){
+            if(num>=7000){//7000
                 break;
             }
             last = line;

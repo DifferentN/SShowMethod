@@ -22,7 +22,7 @@ public class HookOnDraw extends XC_MethodHook {
     protected void afterHookedMethod(MethodHookParam param) throws Throwable {
 //        super.afterHookedMethod(param);
         View view = (View) param.thisObject;
-        if(view!=null&&view instanceof TextView&&!checkAdd((TextView) view)){
+        if(view!=null&&view instanceof TextView){
             ((TextView) view).addTextChangedListener(new MyTextWatcher(view));
         }
     }

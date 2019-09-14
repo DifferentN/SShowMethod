@@ -118,12 +118,22 @@ public class ActivityOnCreateHook extends XC_MethodHook {
 //        Log.i("LZH","register activity: "+componentName.getClassName());
 //        showClassName(activity.getPackageName(),activity);
         String fileName = Environment.getExternalStorageDirectory().getAbsolutePath()+"/douban.txt";
-        if(activity.getPackageName().contains("com.douban.movie")){
-            writeAnkiClassName(activity.getPackageName(),activity,fileName);
-            Log.i("LZH","write className finish ");
-        }
+//        if(activity.getPackageName().contains("com.douban.movie")){
+//            writeAnkiClassName("com.douban",activity,fileName);
+//            Log.i("LZH","write className finish ");
+//        }
+        //        com.jnzc.shipudaquan
+//        fileName = Environment.getExternalStorageDirectory().getAbsolutePath()+"/shipudaquan.txt";
+//        if(activity.getPackageName().contains("com.jnzc.shipudaquan")){
+//            writeAnkiClassName("com.jnzc.shipudaquan",activity,fileName);
+//            Log.i("LZH","write className finish ");
+//        }
 //        fileName = Environment.getExternalStorageDirectory().getAbsolutePath()+"/tianxiameishi.txt";
 //        if(activity.getPackageName().contains("com.jingdian.tianxiameishi.android")){
+//            writeAnkiClassName(activity.getPackageName(),activity,fileName);
+//        }
+//        fileName = Environment.getExternalStorageDirectory().getAbsolutePath()+"/dict.txt";
+//        if(activity.getPackageName().contains("com.ltz.dict")){
 //            writeAnkiClassName(activity.getPackageName(),activity,fileName);
 //        }
     }

@@ -78,7 +78,7 @@ public class MyTextWatcher implements TextWatcher {
         if(logWriter!=null){
             logWriter.writeLog("before: "+info);
         }
-//        Log.i("LZH","Text: "+info);
+        Log.i("LZH","Text: "+info);
         if(logWriter!=null){
             logWriter.writeLog("after: "+info);
         }
