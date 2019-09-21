@@ -14,6 +14,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.TextView;
 
@@ -21,8 +22,10 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.example.apiexecutor.core.CoordinatorReceiver;
 import com.example.apiexecutor.core.MethodExecutor;
+import com.example.apiexecutor.core.UserAction;
 import com.example.apiexecutor.test.MyRunnable;
 import com.example.apiexecutor.trackData.MethodTrackPool;
+import com.example.apiexecutor.util.ViewUtil;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -64,6 +67,8 @@ public class LocalActivityReceiver extends BroadcastReceiver implements CallBack
 
     public static final String AFTER_METHOD = "AFTER_METHOD";
     public static final String METHOD_NAME = "METHOD_NAME";
+
+    public static final String USER_ACTION = "USER_ACTION";
 
     public static final String obtainActivityText = "obtainActivityText";
 
@@ -115,21 +120,23 @@ public class LocalActivityReceiver extends BroadcastReceiver implements CallBack
                 break;
             case LocalActivityReceiver.AFTER_METHOD:
                 //2131298054
-                if(showActivityName.compareTo(selfActivityName)!=0||!selfActivity.getClass().getName().contains("com.douban.frodo.search.activity.NewSearchActivity")){
+                if(showActivityName.compareTo(selfActivityName)!=0||!selfActivity.getClass().getName().contains("NewSearchActivity")){
                     break;
                 }
-                if(isSetText){
-                    IsEndMethod();
-                }
+                UserAction userAction = intent.getParcelableExtra(USER_ACTION);
+                executeUserAction(userAction);
                 break;
             case LocalActivityReceiver.INPUT_TEXT:
                 //2131298054 com.douban.frodo.search.activity.NewSearchActivity
 //                amodule.activity.HomeSearch  2131296313
                 if(selfActivityName.contains("NewSearchActivity")){
 //                    doClick(0);
-                    MethodTrackPool.getInstance().clearRunTimeRecord();
-                    final TextView textView = selfActivity.findViewById(2131298054);
-                    textView.setText("哪吒之魔童降世");
+                    MethodTrackPool methodTrackPool = MethodTrackPool.getInstance();
+                    methodTrackPool.clearRunTimeRecord();
+                    methodTrackPool.LaunchUserAction();
+
+//                    final TextView textView = selfActivity.findViewById(2131298054);
+//                    textView.setText("哪吒之魔童降世");
 //                    textView.postDelayed(new Runnable() {
 //                        @Override
 //                        public void run() {
@@ -145,7 +152,87 @@ public class LocalActivityReceiver extends BroadcastReceiver implements CallBack
                 break;
         }
     }
-
+    private void executeUserAction(UserAction userAction){
+        if(userAction.getActionName().equals("setText")){
+            TextView textView;
+            if(userAction.getViewId()>0){
+                textView = selfActivity.findViewById(userAction.getViewId());
+            }else{
+                textView = (TextView) getViewByPath(userAction.getViewPath());
+            }
+            if(textView==null){
+                Log.i("LZH","textView is null:setText");
+                return;
+            }
+            textView.setText(userAction.getText());
+//            textView.setText("锅盔");
+        }else if(userAction.getActionName().equals("dispatchTouchEvent")){
+            View view;
+            if(userAction.getViewId()>0){
+                view = selfActivity.findViewById(userAction.getViewId());
+            }else{
+                view = getViewByPath(userAction.getViewPath());
+            }
+            if(view==null){
+                Log.i("LZH","view is null:dispatchTouchEvent");
+                return;
+            }
+            imitateClick(view);
+        }
+        tryLaunchUserAction();
+    }
+    private View getViewByPath(String viewPath){
+        class Node{
+            public String path;
+            public View view;
+            public Node(String path,View view){
+                this.path = path;
+                this.view = view;
+            }
+        }
+        List<Node> queue = new ArrayList<>();
+        View decorView = selfActivity.getWindow().getDecorView();
+        String path = decorView.getClass().getName();
+        queue.add(new Node(path,decorView));
+        Node temp = null;
+        ViewGroup viewGroup;
+        View child = null;
+        while(!queue.isEmpty()){
+            temp = queue.remove(0);
+//            Log.i("LZH",temp.path);
+            if(temp.path.equals(viewPath)){
+                return temp.view;
+            }else if(temp.view instanceof ViewGroup){
+                viewGroup = (ViewGroup) temp.view;
+                for(int i=0;i<viewGroup.getChildCount();i++){
+                    child = viewGroup.getChildAt(i);
+                    queue.add(new Node(temp.path+"/"+child.getClass()+":"+i,child));
+                }
+            }
+        }
+        return null;
+    }
+    private void imitateClick(View view){
+        int clickPos[] = new int[2];
+        view.getLocationInWindow(clickPos);
+        clickPos[0]+=view.getWidth()/2;
+        clickPos[1]+=view.getHeight()/2;
+        long downTime = SystemClock.uptimeMillis();
+        long eventTime = SystemClock.uptimeMillis();
+        int action = MotionEvent.ACTION_DOWN;
+        int x = clickPos[0];
+        int y = clickPos[1];
+        int metaState = 0;
+        MotionEvent motionEvent = MotionEvent.obtain(downTime, eventTime, action, x, y, metaState);
+        selfActivity.dispatchTouchEvent(motionEvent);
+        action = MotionEvent.ACTION_UP;
+        motionEvent = MotionEvent.obtain(downTime, eventTime, action, x, y, metaState);
+        selfActivity.dispatchTouchEvent(motionEvent);
+    }
+    private void tryLaunchUserAction(){
+        MethodTrackPool methodTrackPool = MethodTrackPool.getInstance();
+        methodTrackPool.LaunchUserAction();
+    }
     private void IsEndMethod() {
 //        curTime = System.currentTimeMillis();
 //        selfActivity.getWindow().getDecorView().postDelayed(new MyRunnable(this,curTime,clickTime),1000);
@@ -195,7 +282,6 @@ public class LocalActivityReceiver extends BroadcastReceiver implements CallBack
             motionEvent = MotionEvent.obtain(downTime, eventTime, action, x, y, metaState);
             selfActivity.dispatchTouchEvent(motionEvent);
         }
-
     }
 
     private void executeMethods(String methods,Activity activity){

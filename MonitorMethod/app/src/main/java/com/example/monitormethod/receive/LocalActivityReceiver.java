@@ -5,6 +5,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Parcel;
 import android.os.SystemClock;
 import android.util.Log;
@@ -15,6 +16,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.EditText;
+import android.widget.TextView;
 
 import com.example.monitormethod.trackData.SystemDataCollection;
 import com.example.monitormethod.util.LogWriter;
@@ -161,9 +163,15 @@ public class LocalActivityReceiver extends BroadcastReceiver implements CallBack
             case LocalActivityReceiver.WRITE_LOG:
 //                Log.i("LZH",selfPackageName);
 //                DeckPicker com.douban.movie com.ichi2.anki com.jnzc.shipudaquan
-                //cn.etouch.ecalendar
-                if(selfPackageName.contains("com.ltz.dict")){
+                // com.ltz.dict
+                if(selfPackageName.contains("com.douban.movie")){
                     LogWriter.turnWriteAble();
+                }
+                if(selfActivityName.contains("NewSearchActivity")){
+                    final TextView textView = selfActivity.findViewById(2131298054);
+                    textView.setText("哪吒");
+                    String fileName = Environment.getExternalStorageDirectory().getAbsolutePath()+"/methodLog.txt";
+                    LogWriter.getInstance(fileName,"com.douban.movie").TempIsSetText = true;
                 }
                 break;
             case LocalActivityReceiver.ON_CLICK:

@@ -1,11 +1,18 @@
 package com.example.monitormethod.xposed;
 
+import android.app.Activity;
+import android.content.Context;
+import android.content.ContextWrapper;
+import android.os.Environment;
+import android.os.SystemClock;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.TextView;
 
 import com.example.monitormethod.trackData.MyTextWatcher;
+import com.example.monitormethod.util.LogWriter;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -13,6 +20,12 @@ import java.util.ArrayList;
 import de.robv.android.xposed.XC_MethodHook;
 
 public class HookOnDraw extends XC_MethodHook {
+    private LogWriter logWriter;
+    private String fileName = "methodLog.txt";
+    public HookOnDraw(){
+        fileName = Environment.getExternalStorageDirectory().getAbsolutePath()+"/"+fileName;
+        logWriter = LogWriter.getInstance(fileName,"com.douban.movie");
+    }
     @Override
     protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
         super.beforeHookedMethod(param);
@@ -22,8 +35,27 @@ public class HookOnDraw extends XC_MethodHook {
     protected void afterHookedMethod(MethodHookParam param) throws Throwable {
 //        super.afterHookedMethod(param);
         View view = (View) param.thisObject;
+        Activity activity = getActivity(view);
         if(view!=null&&view instanceof TextView){
             ((TextView) view).addTextChangedListener(new MyTextWatcher(view));
+        }
+        if(!logWriter.TempIsSetText){
+            return;
+        }
+        if(view instanceof TextView){
+            TextView textView = (TextView) view;
+            String text = textView.getText().toString();
+            if(text.equals("哪吒之魔童降世")&&logWriter.num==0){
+                imitateClick(view,activity);
+                logWriter.num++;
+            }else if(text.contains("影视")&&logWriter.num==1){
+                imitateClick(view,activity);
+                logWriter.num++;
+            }else if(text.contains("哪吒之魔童降")&&text.contains("2019")&&logWriter.num==2){
+                imitateClick(view,activity);
+                Log.i("LZH","哪吒之魔童降世(2019)");
+                logWriter.num++;
+            }
         }
     }
     private boolean checkAdd(TextView view){
@@ -50,5 +82,34 @@ public class HookOnDraw extends XC_MethodHook {
         }
 //        Log.i("LZH","无TextWatcher");
         return false;
+    }
+    private void imitateClick(View view, Activity activity){
+        int clickPos[] = new int[2];
+        view.getLocationInWindow(clickPos);
+        clickPos[0]+=view.getWidth()/2;
+        clickPos[1]+=view.getHeight()/2;
+        long downTime = SystemClock.uptimeMillis();
+        long eventTime = SystemClock.uptimeMillis();
+        int action = MotionEvent.ACTION_DOWN;
+        int x = clickPos[0];
+        int y = clickPos[1];
+        int metaState = 0;
+        MotionEvent motionEvent = MotionEvent.obtain(downTime, eventTime, action, x, y, metaState);
+        activity.getWindow().getDecorView().dispatchTouchEvent(motionEvent);
+        action = MotionEvent.ACTION_UP;
+        motionEvent = MotionEvent.obtain(downTime, eventTime, action, x, y, metaState);
+        activity.getWindow().getDecorView().dispatchTouchEvent(motionEvent);
+    }
+    private Activity getActivity(View view){
+        if(view!=null){
+            Context context = view.getContext();
+            while(context instanceof ContextWrapper){
+                if(context instanceof Activity){
+                    return (Activity)context;
+                }
+                context = ((ContextWrapper)context).getBaseContext();
+            }
+        }
+        return null;
     }
 }

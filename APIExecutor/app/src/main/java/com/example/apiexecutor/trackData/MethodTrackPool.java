@@ -5,6 +5,8 @@ import android.content.Intent;
 import android.os.Environment;
 import android.util.Log;
 
+import com.alibaba.fastjson.JSONObject;
+import com.example.apiexecutor.core.UserAction;
 import com.example.apiexecutor.receive.LocalActivityReceiver;
 
 import java.io.BufferedReader;
@@ -92,14 +94,15 @@ public class MethodTrackPool {
 //        }
     }
     private void removeSequenceItem(String last){
-        if(skipSequence(last,2)>0){
+        int deleteNum = skipSequence(last,1);
+        if(deleteNum>0){
             Log.i("LZH",last);
         }else{
             Log.i("LZH","未匹配,要求："+sequence.get(0)+" 现有："+last);
 //            Log.i("LZH","未匹配,"+" 现有："+last);
         }
-        int deleteNum = -1;
-        if( !sequence.isEmpty()&&(deleteNum=skipSequence(last,2))>0 ){
+
+        if( !sequence.isEmpty()&&deleteNum>0 ){
             deleteSameSequence(deleteNum);
             checkNotification();
         }
@@ -108,15 +111,15 @@ public class MethodTrackPool {
 
     /**
      * 不只检查Sequence中的第一个序列，检查前checkNum个
-     * @param last
+     * @param last 当前要比较的调用字符串
      * @param checkNum checkNum=1相当于检查第一个序列
      * @return
      */
     private int skipSequence(String last,int checkNum){
         int num = 0;
         boolean same = false;
-        while(num<sequence.size()&&checkNum>0){
-            if( last.equals(sequence.get(num)) ){
+        while(num<sequence.size()&&checkNum>0){//||check(sequence.get(num),last)
+            if( last.equals(sequence.get(num)) ){//||check(last,sequence.get(num))
                 same = true;
                 num++;
                 break;
@@ -129,6 +132,55 @@ public class MethodTrackPool {
         }
         return num;
     }
+
+    /**
+     *
+     * @param cur
+     * @param record
+     * @return
+     */
+    private boolean check(String cur,String record){
+        int curLen = cur.length(),recLen = record.length();
+        String s1 = null,s2 = null;
+        int i=0,j=0;
+        for(;i<curLen&&j<recLen;){
+            s1 = getFirstFun(cur,i);
+            s2 = getFirstFun(record,j);
+            if(s1==null&&s2!=null){
+                return false;
+            }
+            if(s2==null){
+                return true;
+            }
+            i=cur.indexOf(s1,i)+s1.length();
+            if(s1.equals(s2)){
+                j=record.indexOf(s2,j)+s2.length();
+            }
+
+        }
+        Log.i("LZH","出错："+i+" "+curLen+" "+j+" "+recLen);
+        return false;
+    }
+
+    /**
+     * 获取src中从pos开始的第一个方法名称
+    * @param src
+     * @param pos
+     * @return
+     */
+    private String getFirstFun(String src,int pos){
+        int start = src.indexOf("(",pos);
+        if(start<0){
+            return null;
+        }
+        int end = src.indexOf(")",start);
+        int temp = src.indexOf(":",start);
+        if(temp>0){
+            end = Math.min(end,temp);
+        }
+        String res = src.substring(start+1,end);
+        return res;
+    }
     private void deleteSameSequence(int num){
         while(num>0&&!sequence.isEmpty()){
             sequence.remove(0);
@@ -137,10 +189,20 @@ public class MethodTrackPool {
     }
 
     private void checkNotification() {
-        if(!sequence.isEmpty()&&sequence.get(0).contains("dispatchTouchEvent")){
-            Log.i("LZH","dispatchTouchEvent");
-            sequence.remove(0);
-            sendNotification();
+        if(sequence.isEmpty()){
+            return ;
+        }
+        String first = sequence.get(0);
+        if( first.startsWith("{")&&( first.contains("dispatchTouchEvent")
+                ||first.contains("setText") ) ){
+
+            String jsonStr = sequence.remove(0);
+            if(jsonStr.contains("dispatchTouchEvent")){
+                Log.i("LZH","dispatchTouchEvent");
+                sendNotification(jsonStr,"dispatchTouchEvent");
+            }else if(jsonStr.contains("setText")){
+                sendNotification(jsonStr,"setText");
+            }
         }
     }
     private boolean isAvailable(){
@@ -150,13 +212,19 @@ public class MethodTrackPool {
         return false;
     }
 
-    private void sendNotification(){
+    private void sendNotification(String jsonStr,String actionName){
         if(context==null){
             Log.i("LZH","context is null can't send notification");
             return;
         }
+        JSONObject jsonObject = JSONObject.parseObject(jsonStr);
         Intent intent = new Intent();
         intent.setAction(LocalActivityReceiver.AFTER_METHOD);
+        UserAction userAction = new UserAction(actionName,jsonObject.getString("path"),jsonObject.getIntValue("componentID"));
+        if(actionName.equals("setText")){
+            userAction.setText(jsonObject.getString("parameter"));
+        }
+        intent.putExtra(LocalActivityReceiver.USER_ACTION,userAction);
         context.sendBroadcast(intent);
     }
 
@@ -164,9 +232,24 @@ public class MethodTrackPool {
         this.context = context;
     }
     public void clearRunTimeRecord(){
-//        runTimeRecord.clear();
         subCall.clear();
         isAvailable = true;
+    }
+    public void LaunchUserAction(){
+        if(sequence.isEmpty()){
+            return;
+        }
+        String first = sequence.get(0);
+
+        if(first.startsWith("{")&&( first.contains("dispatchTouchEvent")
+                ||first.contains("setText") )){
+            String jsonStr = sequence.remove(0);
+            if(jsonStr.contains("dispatchTouchEvent")){
+                sendNotification(jsonStr,"dispatchTouchEvent");
+            }else if(jsonStr.contains("setText")){
+                sendNotification(jsonStr,"setText");
+            }
+        }
     }
     public void addSubCall(String message){
         String body = null;
@@ -202,14 +285,11 @@ public class MethodTrackPool {
         public void add(String child){
             childs.add(child);
         }
-        public String getHash(){
-            return name+":"+childs.hashCode();
-        }
         public String getDetail(){
             for(int i=0;i<childs.size();i++){
                 name+=":"+childs.get(i);
             }
-            return name;
+            return "("+name+")";
         }
     }
 }

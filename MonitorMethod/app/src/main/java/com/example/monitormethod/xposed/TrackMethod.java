@@ -45,12 +45,13 @@ public class TrackMethod extends XC_MethodHook {
         writeMethodName(jsonObject,param);
         writeMethodParameter(jsonObject,param);
         writeThreadId(jsonObject);
+        writeViewFlag(jsonObject,param);
         if(logWriter!=null){
             logWriter.writeLog("before: "+jsonObject.toJSONString());
-            Log.i("LZH-Method","before: "+jsonObject.toJSONString());
+//            Log.i("LZH-Method","before: "+jsonObject.toJSONString());
         }
+//        Log.i("LZH-Method","before: "+jsonObject.toJSONString());
     }
-
 
     @Override
     protected void afterHookedMethod(MethodHookParam param) throws Throwable {
@@ -62,6 +63,7 @@ public class TrackMethod extends XC_MethodHook {
         writeMethodParameter(jsonObject,param);
         writeResultInfo(jsonObject,param);
         writeThreadId(jsonObject);
+        writeViewFlag(jsonObject,param);
         if(logWriter!=null){
             logWriter.writeLog("after: "+jsonObject.toJSONString());
 //            Log.i("LZH-Method","after: "+jsonObject.toJSONString());
@@ -132,7 +134,7 @@ public class TrackMethod extends XC_MethodHook {
         try {
             result = param.getResultOrThrowable();
         }catch (Throwable throwable) {
-            Log.i("LZH","error ResultOrThrowable:"+throwable.getMessage());
+            Log.i("LZH","error ResultOrThrowable:"+throwable.getMessage()+"-"+param.method.getName());
             throwable.printStackTrace();
         }
         int hash = -1;
@@ -155,10 +157,18 @@ public class TrackMethod extends XC_MethodHook {
         }
 
         json.put("methodResult",resultJSON);
-
     }
     private void writeThreadId(JSONObject jsonObject){
         long id = Thread.currentThread().getId();
         jsonObject.put("threadId",id);
     }
+    private void writeViewFlag(JSONObject jsonObject, MethodHookParam param) {
+        Object caller = param.thisObject;
+        if(caller==null||!(caller instanceof View)){
+            jsonObject.put("ViewFlag",false);
+        }else{
+            jsonObject.put("ViewFlag",true);
+        }
+    }
+
 }

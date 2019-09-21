@@ -12,6 +12,10 @@ import com.alibaba.fastjson.JSONObject;
 import com.example.monitormethod.util.LogWriter;
 import com.example.monitormethod.util.ViewUtil;
 
+import java.lang.reflect.Field;
+
+import de.robv.android.xposed.XC_MethodHook;
+
 public class MyTextWatcher implements TextWatcher {
     private DataRecorder dataRecorder;
     private String fileName = "methodLog.txt";
@@ -52,12 +56,18 @@ public class MyTextWatcher implements TextWatcher {
 
         JSONObject resultJSON = new JSONObject();
         resultJSON.put("resultClassName",null);
-        resultJSON.put("resultHashCode",-1);
+        resultJSON.put("resultHashCode",null);
         resultJSON.put("resultValue",null);
         json.put("methodResult",resultJSON);
 
         long threadId = Thread.currentThread().getId();
         json.put("threadId",threadId);
+
+        JSONObject viewInfo = getViewInfoJSON(view);
+        json.put("viewInfo",viewInfo);
+
+        writeViewFlag(json,view);
+
         return json;
 
     }
@@ -78,10 +88,23 @@ public class MyTextWatcher implements TextWatcher {
         if(logWriter!=null){
             logWriter.writeLog("before: "+info);
         }
-        Log.i("LZH","Text: "+info);
+//        Log.i("LZH","Text: "+info);
         if(logWriter!=null){
             logWriter.writeLog("after: "+info);
         }
-
     }
+    private JSONObject getViewInfoJSON(View view){
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("viewId",view.getId());
+        jsonObject.put("viewPath",ViewUtil.getViewPath(view));
+        return jsonObject;
+    }
+    private void writeViewFlag(JSONObject jsonObject, View view) {
+        if(view==null){
+            jsonObject.put("ViewFlag",false);
+        }else{
+            jsonObject.put("ViewFlag",true);
+        }
+    }
+
 }

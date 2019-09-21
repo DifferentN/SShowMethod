@@ -5,11 +5,13 @@ import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.example.monitormethod.trackData.DataCollectioner;
 import com.example.monitormethod.trackData.DataRecorder;
 import com.example.monitormethod.util.LogWriter;
+import com.example.monitormethod.util.ViewUtil;
 
 import de.robv.android.xposed.XC_MethodHook;
 
@@ -29,9 +31,12 @@ public class DispatchTouchEventHook extends XC_MethodHook {
 //        Log.i("LZH","view id:"+((View)param.thisObject).getId());
         MotionEvent motionEvent = (MotionEvent) param.args[0];
         JSONObject jsonObject = null;
+        View view = (View) param.thisObject;
         if(motionEvent!=null){
-            jsonObject = writeInfo((View) param.thisObject,motionEvent);
+            jsonObject = writeInfo(view,motionEvent);
             writeThreadId(jsonObject);
+            writeViewInfo(jsonObject,view);
+            writeViewFlag(jsonObject,view);
             Log.i("LZH-Method","before: "+jsonObject.toJSONString());
             logWriter.writeLog("before: "+jsonObject.toJSONString());
         }
@@ -44,11 +49,14 @@ public class DispatchTouchEventHook extends XC_MethodHook {
 //        super.afterHookedMethod(param);
         MotionEvent motionEvent = (MotionEvent) param.args[0];
         JSONObject json = null,resultJSON = null;
+        View view = (View) param.thisObject;
         if(motionEvent!=null){
-            json = writeInfo((View) param.thisObject,motionEvent);
+            json = writeInfo(view,motionEvent);
             resultJSON = writeResult(param);
             json.put("methodResult",resultJSON);
             writeThreadId(json);
+            writeViewInfo(json,view);
+            writeViewFlag(json,view);
             Log.i("LZH-Method","after: "+json.toJSONString());
             logWriter.writeLog("after: "+json.toJSONString());
         }
@@ -107,5 +115,18 @@ public class DispatchTouchEventHook extends XC_MethodHook {
     private void writeThreadId(JSONObject jsonObject){
         long id = Thread.currentThread().getId();
         jsonObject.put("threadId",id);
+    }
+    private void writeViewInfo(JSONObject json,View view){
+        JSONObject viewInfo = new JSONObject();
+        viewInfo.put("viewId",view.getId());
+        viewInfo.put("viewPath", ViewUtil.getViewPath(view));
+        json.put("viewInfo",viewInfo);
+    }
+    private void writeViewFlag(JSONObject jsonObject, View view) {
+        if(view==null){
+            jsonObject.put("ViewFlag",false);
+        }else{
+            jsonObject.put("ViewFlag",true);
+        }
     }
 }
