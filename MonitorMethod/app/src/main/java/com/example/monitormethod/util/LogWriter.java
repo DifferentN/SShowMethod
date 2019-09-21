@@ -10,12 +10,15 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 
+/**
+ * 单实例模式，确保所有方法调用Log顺序的写入文件中
+ */
 public class LogWriter {
     private static File file;
     private static BufferedWriter writer;
     private static volatile LogWriter logWriter;
     private static String fName;
-    private static boolean token = false;
+    private static boolean token = false;//是否可以写入日志的标志
     private static long preTime;
     private static String targetPKName = "com.douban.movie";
     public boolean TempIsSetText = false;
@@ -53,6 +56,10 @@ public class LogWriter {
         return logWriter;
     }
 
+    /**
+     * 向文件中写入方法调用
+     * @param log
+     */
     public synchronized void writeLog(String log){
         if(!token){
             return;
@@ -65,6 +72,7 @@ public class LogWriter {
             e.printStackTrace();
         }
     }
+
     public static void turnWriteAble(){
         long curTime = System.currentTimeMillis();
         if(curTime-preTime<=300){

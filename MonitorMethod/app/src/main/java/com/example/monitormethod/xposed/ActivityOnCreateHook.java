@@ -9,7 +9,7 @@ import android.os.Environment;
 import android.util.Log;
 
 
-import com.example.monitormethod.receive.ExecuteMethodReceiver;
+
 import com.example.monitormethod.receive.LocalActivityReceiver;
 
 import java.io.BufferedWriter;
@@ -49,43 +49,16 @@ public class ActivityOnCreateHook extends XC_MethodHook {
 
         Activity activity = (Activity) param.thisObject;
         ComponentName componentName = activity.getComponentName();
-
-//        KLog.v("liuyi","=======onCreate========: " + activityName);
-
-
-//        Log.i("LZH",activity.getComponentName().getPackageName());
-//        print(activity.getComponentName().getClassName(),intent);
-
-
-//        KLog.v(BuildConfig.GETVIEW, "#*#*#*#*#*#*# enable receiver in: " + activityName);
         injectReceiver(context, activity);
 
-        injectMethodReceiver(activity);
         Log.i("LZH","after create "+componentName.getClassName());
     }
-    private void injectMethodReceiver(Activity activity){
-        ExecuteMethodReceiver receiver = new ExecuteMethodReceiver(activity);
-        IntentFilter filter = new IntentFilter();
-        filter.addAction(ExecuteMethodReceiver.EXECUTE_METHOD);
-        Object o = XposedHelpers.getAdditionalInstanceField(activity,"methodReceiver");
-        if(o!=null){
-            return;
-        }
-        activity.registerReceiver(receiver,filter);
-        XposedHelpers.setAdditionalInstanceField(activity, "methodReceiver", receiver);
-    }
+
 
 
 
     private void injectReceiver(Context context, Activity activity) {
         //注册一个广播接收器，可以用来接收指令，这里是用来回去指定view的xpath路径的
-
-
-
-        ComponentName componentName = activity.getComponentName();
-        Intent intent = activity.getIntent();
-//        Log.i("LZH","packageName: "+componentName.getPackageName()+" intent "+getIntentInfo(intent));
-//        Log.i("LZH","openActivity: "+componentName.getClassName());
 
         LocalActivityReceiver receiver = new LocalActivityReceiver(activity);
         IntentFilter filter = new IntentFilter();
@@ -115,8 +88,6 @@ public class ActivityOnCreateHook extends XC_MethodHook {
         XposedHelpers.setAdditionalInstanceField(activity, "iasReceiver", receiver);
         activity.registerReceiver(receiver,filter);
 
-//        Log.i("LZH","register activity: "+componentName.getClassName());
-//        showClassName(activity.getPackageName(),activity);
         String fileName = Environment.getExternalStorageDirectory().getAbsolutePath()+"/douban.txt";
 //        if(activity.getPackageName().contains("com.douban.movie")){
 //            writeAnkiClassName("com.douban",activity,fileName);
@@ -185,11 +156,6 @@ public class ActivityOnCreateHook extends XC_MethodHook {
             FileWriter fileWriter = new FileWriter(fileName);
             BufferedWriter writer = new BufferedWriter(fileWriter);
             for(String name:names){
-//                char c = name.charAt(name.length()-1);
-//                if(c<='9'&&c>='0'){
-//                    continue;
-//                }
-//                name = name.replace("$",".");
                 writer.write(name+"\n");
             }
             writer.flush();

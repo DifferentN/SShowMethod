@@ -28,7 +28,6 @@ public class DispatchTouchEventHook extends XC_MethodHook {
     }
     @Override
     protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
-//        Log.i("LZH","view id:"+((View)param.thisObject).getId());
         MotionEvent motionEvent = (MotionEvent) param.args[0];
         JSONObject jsonObject = null;
         View view = (View) param.thisObject;
@@ -40,13 +39,10 @@ public class DispatchTouchEventHook extends XC_MethodHook {
             Log.i("LZH-Method","before: "+jsonObject.toJSONString());
             logWriter.writeLog("before: "+jsonObject.toJSONString());
         }
-//        Log.i("LZH","click: x:"+motionEvent.getX()+" y: "+motionEvent.getY());
-//        super.beforeHookedMethod(param);
     }
 
     @Override
     protected void afterHookedMethod(MethodHookParam param) throws Throwable {
-//        super.afterHookedMethod(param);
         MotionEvent motionEvent = (MotionEvent) param.args[0];
         JSONObject json = null,resultJSON = null;
         View view = (View) param.thisObject;
@@ -62,6 +58,13 @@ public class DispatchTouchEventHook extends XC_MethodHook {
         }
 
     }
+
+    /**
+     * 将点击信息转化为一个JSON
+     * @param view
+     * @param motionEvent
+     * @return
+     */
     private JSONObject writeInfo(View view,MotionEvent motionEvent){
         JSONObject json = new JSONObject();
         json.put("callerClassName",view.getClass().getName());
@@ -90,6 +93,12 @@ public class DispatchTouchEventHook extends XC_MethodHook {
 
         return json;
     }
+
+    /**
+     * 将MotionEvent转化为一个JSON
+     * @param motionEvent
+     * @return
+     */
     private JSONObject writeMotionEvent(MotionEvent motionEvent){
         JSONObject json = new JSONObject();
         json.put("action",motionEvent.getAction());
@@ -100,6 +109,12 @@ public class DispatchTouchEventHook extends XC_MethodHook {
         json.put("metaState",motionEvent.getMetaState());
         return json;
     }
+
+    /**
+     * 将方法的返回值写入JSON（true/false）
+     * @param param
+     * @return
+     */
     private JSONObject writeResult(MethodHookParam param){
         boolean res = (boolean) param.getResult();
         JSONObject resultJSON = new JSONObject();
@@ -116,6 +131,12 @@ public class DispatchTouchEventHook extends XC_MethodHook {
         long id = Thread.currentThread().getId();
         jsonObject.put("threadId",id);
     }
+
+    /**
+     * 将响应点击的view的ID和路径写入JSON
+     * * @param json
+     * @param view
+     */
     private void writeViewInfo(JSONObject json,View view){
         JSONObject viewInfo = new JSONObject();
         viewInfo.put("viewId",view.getId());

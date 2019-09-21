@@ -22,24 +22,17 @@ import de.robv.android.xposed.XC_MethodHook;
 
 public class TrackMethod extends XC_MethodHook {
     Class pclazz[];
-    private Activity activity;
     private LogWriter logWriter;
-    private DataCollectioner dataCollectioner;
     private DataRecorder dataRecorder;
     private String fileName = "methodLog.txt";
     public TrackMethod(Class pclazz[],String packageName){
         fileName = Environment.getExternalStorageDirectory().getAbsolutePath()+"/"+fileName;
         logWriter = LogWriter.getInstance(fileName,packageName);
-        dataCollectioner = DataCollectioner.getInstance();
         dataRecorder = DataRecorder.getInstance();
         this.pclazz = pclazz;
     }
     @Override
     protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
-//        super.beforeHookedMethod(param);
-//        dataCollectioner.collectMethodHookParam(param);
-
-        int menuId = -1;
         JSONObject jsonObject = new JSONObject();
         writeCallerInfo(jsonObject,param);
         writeMethodName(jsonObject,param);
@@ -69,29 +62,51 @@ public class TrackMethod extends XC_MethodHook {
 //            Log.i("LZH-Method","after: "+jsonObject.toJSONString());
         }
     }
+
+    /**
+     * 向JSON中写入方法调用者的信息
+     * @param json
+     * @param param
+     */
     private void writeCallerInfo(JSONObject json,MethodHookParam param){
         Object caller = param.thisObject;
         String callerName = param.method.getDeclaringClass().getName();
+        //调用者的类名
         json.put("callerClassName",callerName);
         if(caller!=null){
             int hash = dataRecorder.getRefKey(caller);
             if(hash<=0){
                 hash = dataRecorder.addRef(caller);
             }
+            //调用者的hash值
             json.put("callerHashCode",hash);
         }else {
             json.put("callerHashCode",null);
         }
     }
+
+    /**
+     * 向JSON中写入方法的名称
+     * @param json
+     * @param param
+     */
     private void writeMethodName(JSONObject json,MethodHookParam param){
         json.put("methodName",param.method.getName());
     }
+
+    /**
+     * 向JSON写入方法的参数
+     * @param json
+     * @param param
+     */
     private void writeMethodParameter(JSONObject json,MethodHookParam param){
         Object p = null;
         JSONObject itemJson;
         JSONArray jsonArray = new JSONArray();
+        //参数的个数
         for(int i=0;i<pclazz.length;i++){
             itemJson = new JSONObject();
+            //某个参数的类名
             if(param.args[i]!=null){
                 itemJson.put("parameterClassName",param.args[i].getClass().getName());
             }else{
@@ -104,13 +119,15 @@ public class TrackMethod extends XC_MethodHook {
                 if(hash<=0){
                     hash = dataRecorder.addRef(p);
                 }
+                //参数的hashcode
                 itemJson.put("parameterHashCode",hash);
+                //如果参数是View或MenuItem，获取他们的ID
                 if(p instanceof View){
                     itemJson.put("parameterId",((View)p).getId());
                 }else if(p instanceof MenuItem){
                     itemJson.put("parameterId",((MenuItem)p).getItemId());
                 }
-
+                //如果参数是基本类型，则写入他们的值，是其他类型写入他们的HashCode
                 if(ParserConfig.getGlobalInstance().isPrimitive(p.getClass())){
                     itemJson.put("parameterValue",p.toString());
                 }else{
@@ -121,10 +138,17 @@ public class TrackMethod extends XC_MethodHook {
                 itemJson.put("parameterHashCode",null);
                 itemJson.put("parameterValue",null);
             }
+            //添加一个参数的JSON
             jsonArray.add(itemJson);
         }
         json.put("methodParameter",jsonArray);
     }
+
+    /**
+     * 将方法的返回结果写入JSON
+     * @param json
+     * @param param
+     */
     private void writeResultInfo(JSONObject json,MethodHookParam param){
         JSONObject resultJSON = new JSONObject();
         if(param==null){
@@ -158,10 +182,21 @@ public class TrackMethod extends XC_MethodHook {
 
         json.put("methodResult",resultJSON);
     }
+
+    /**
+     * 将方法调用的线程ID写入JSON
+     * @param jsonObject
+     */
     private void writeThreadId(JSONObject jsonObject){
         long id = Thread.currentThread().getId();
         jsonObject.put("threadId",id);
     }
+
+    /**
+     * 向JSON写入一个ViewFlag，用来表示参数的调用者是不是View类型的
+     * @param jsonObject
+     * @param param
+     */
     private void writeViewFlag(JSONObject jsonObject, MethodHookParam param) {
         Object caller = param.thisObject;
         if(caller==null||!(caller instanceof View)){

@@ -10,6 +10,9 @@ import java.util.Iterator;
 import java.util.Set;
 import java.util.WeakHashMap;
 
+/**
+ * 记录对象的Hashcode(不使用对象的hashcode())
+ */
 public class DataRecorder {
     private static DataRecorder dataRecorder;
     private Hashtable<Integer, WeakReference<Object>> hashtable;
@@ -23,6 +26,12 @@ public class DataRecorder {
         }
         return dataRecorder;
     }
+
+    /**
+     * 添加一个对象引用，并为它分配一个自定义的“hashCode”
+     * @param o
+     * @return
+     */
     public int addRef(Object o){
         synchronized (DataRecorder.class){
             num++;
@@ -30,6 +39,12 @@ public class DataRecorder {
         }
         return num;
     }
+
+    /**
+     * 获取对象的“hashcode”
+     * @param o
+     * @return
+     */
     public int getRefKey(Object o){
         boolean flag = false;
         int key = -1;

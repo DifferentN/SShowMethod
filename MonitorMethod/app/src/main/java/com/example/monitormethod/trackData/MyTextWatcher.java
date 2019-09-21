@@ -27,6 +27,13 @@ public class MyTextWatcher implements TextWatcher {
         this.view = view;
         dataRecorder = DataRecorder.getInstance();
     }
+
+    /**
+     * 将方法调用的调用者，方法名称，参数，线程ID，viewId/path，和ViewFlag写入JSON
+     * @param view
+     * @param text
+     * @return
+     */
     private JSONObject writeInfo(View view,String text){
         JSONObject json = new JSONObject();
         json.put("callerClassName",this.getClass().getName());

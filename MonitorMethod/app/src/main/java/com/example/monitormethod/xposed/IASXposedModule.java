@@ -64,7 +64,7 @@ public class IASXposedModule implements IXposedHookLoadPackage{
             XposedHelpers.findAndHookMethod("android.app.Activity",lpparam.classLoader,"dispatchTouchEvent",MotionEvent.class,new TrackMethod(new Class[]{MotionEvent.class},"com.douban.movie"));
             XposedHelpers.findAndHookMethod("android.view.View",lpparam.classLoader,"dispatchTouchEvent",MotionEvent.class,new DispatchTouchEventHook("com.douban.movie"));
             XposedHelpers.findAndHookMethod("android.view.View", lpparam.classLoader, "onDraw",Canvas.class, new HookOnDraw());
-
+            //设置监听的应用方法
             hookAPPMethod(classNames,classLoader,"com.douban.movie");
 
             XposedHelpers.findAndHookMethod("android.view.View", lpparam.classLoader,"findViewById",int.class,new FindViewByIdHook());
@@ -93,40 +93,9 @@ public class IASXposedModule implements IXposedHookLoadPackage{
 //            XposedHelpers.findAndHookMethod("android.widget.EditText", lpparam.classLoader,"setText",CharSequence.class,new TrackMethod(new Class[]{CharSequence.class}));
         }
     }
-    private void hook_Thread(ClassLoader loader,String packageName) {
-        Class clazz = null;
-        try {
-            clazz = loader.loadClass("java.lang.Thread");
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        }
-        if(clazz==null){
-            Log.i("LZH","can't load thread class");
-        }
-        Method methods[] = clazz.getDeclaredMethods();
-        for (Method method : methods) {
-            int methodId = method.getModifiers();
-
-            if(Modifier.isAbstract(methodId)||Modifier.isInterface(methodId)||Modifier.isNative(methodId)){
-                continue;
-            }
-//                Log.i("LZH", "get " + method.getName());
-
-            //如果 （通过反射找到的方法名和准备hook的方法名相同 && 方法判定如果整数参数包含abstract修饰符，则返回true，否则返回false &&
-            // 方法判断如果给定参数包含public修饰符，则返回true，否则返回false )
-            //Modifier.isPublic(method.getModifiers())
-
-            if (method.getName().equals("interrupted")) {
-//                    Log.i("LZH",className+" method: "+method.getName()+"1");
-                XposedBridge.hookMethod(method, new TrackMethod(method.getParameterTypes(),packageName));
-//                    Log.i("LZH",className+" method: "+method.getName()+"2");
-            }
-        }
-    }
     private void hook_methods(String className,ClassLoader loader,String packageName) {
 
         try {
-//            Class<?> clazz = Class.forName(className); //反射
             Class<?> clazz = loader.loadClass(className);
             if(clazz.isInterface()||clazz.isEnum()||clazz.isAnnotation()||clazz.isArray()||clazz.isAnonymousClass()||clazz.isLocalClass()||clazz.isMemberClass()){
                 return;
@@ -138,16 +107,12 @@ public class IASXposedModule implements IXposedHookLoadPackage{
                 if(Modifier.isAbstract(methodId)||Modifier.isInterface(methodId)||Modifier.isNative(methodId)){
                     continue;
                 }
-//                Log.i("LZH", "get " + method.getName());
-
             //如果 （通过反射找到的方法名和准备hook的方法名相同 && 方法判定如果整数参数包含abstract修饰符，则返回true，否则返回false &&
             // 方法判断如果给定参数包含public修饰符，则返回true，否则返回false )
             //Modifier.isPublic(method.getModifiers())
 
                 if (true) {
-//                    Log.i("LZH",className+" method: "+method.getName()+"1");
                     XposedBridge.hookMethod(method, new TrackMethod(method.getParameterTypes(),packageName));
-//                    Log.i("LZH",className+" method: "+method.getName()+"2");
                 }
             }
         } catch (Exception e) {
@@ -161,23 +126,15 @@ public class IASXposedModule implements IXposedHookLoadPackage{
         int num = 0;
         String last = "";
         for(String line :names){
-//            if(line.contains("$")){
-//                continue;
-//            }
             if(line.contains("android.widget")){
                 Log.i("LZH","contain: "+line);
             }
             if(line.startsWith("android.support")||line.startsWith("dalvik")||line.startsWith("java")||line.startsWith("timber")||line.startsWith("androidx")){
                 continue;
             }
-//            if(!line.startsWith(packageName)){
-//                continue;
-//            }
-//            if(line.contains("com.douban.rexxar.view")||line.contains("com.douban.richeditview")||line.contains("com.douban.videouploader")||line.contains("com.douban.zeno")){
-//                continue;
-//            }
             hook_methods(line,classLoader,packageName);
             num++;
+            //可以监听的方法有限，对于有些应用，它的方法不能全部监听
             if(num>=7000){//7000
                 break;
             }

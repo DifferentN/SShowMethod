@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ViewUtil {
+
     public static int getViewIndex(View target){
         View decorView = target.getRootView();
         ArrayList<View> list = new ArrayList<>();
@@ -30,6 +31,12 @@ public class ViewUtil {
         }
         return -1;
     }
+
+    /**
+     * 获取view的路径
+     * @param view
+     * @return
+     */
     public static String getViewPath(View view){
         if(view==null){
             return "";

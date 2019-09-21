@@ -18,14 +18,11 @@ public class FindViewByIdHook extends XC_MethodHook {
     protected void afterHookedMethod(MethodHookParam param) throws Throwable {
 //        super.afterHookedMethod(param);
         int id = (int) param.args[0];
-//        Log.i("LZH","findViewById: "+id);
         View view = (View) param.getResult();
 
         TrackOnClickListener trackOnClickListener = TrackOnClickListener.getInstance();
         if(view != null){
             trackOnClickListener.add(view ,id);
         }
-
-
     }
 }

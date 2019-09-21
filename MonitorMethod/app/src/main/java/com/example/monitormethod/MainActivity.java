@@ -74,11 +74,6 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-//        Intent intent = new Intent(this,Main2Activity.class);
-//        IntentData intentData = new IntentData();
-//        intent.putExtra("1",intentData);
-//        Log.i("LZH","intentDataHashCode: "+intentData.hashCode());
-//        startActivity(intent);
 
     }
 
@@ -90,32 +85,6 @@ public class MainActivity extends AppCompatActivity {
     private void init(){
         FloatViewManager floatViewManager = FloatViewManager.getInstance(this);
         floatViewManager.showSaveIntentViewBt();
-//        floatViewManager.showGetActivityTextBt();
-//        bt.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                Log.i("LZH","click bt");
-//            }
-//        });
-
-//        try {
-//            Field field = View.class.getDeclaredField("mListenerInfo");
-//            field.setAccessible(true);
-//            Object o = field.get(bt);
-//            if(o==null){
-//                Log.i("LZH","error: can't get mListenerInfo");
-//            }else{
-//                Log.i("LZH"," get mListenerInfo");
-//            }
-//        } catch (NoSuchFieldException e) {
-//            Log.i("LZH","error1: "+e.getLocalizedMessage());
-//            e.printStackTrace();
-//        } catch (IllegalAccessException e) {
-//            Log.i("LZH","error2: "+e.getLocalizedMessage());
-//            e.printStackTrace();
-//        }
-//       AlertDialog.Builder builder = new AlertDialog.Builder(this).setTitle("");
-//       builder.create().show();
 
     }
 
