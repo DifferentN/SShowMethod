@@ -19,6 +19,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
+import java.util.PriorityQueue;
 
 import dalvik.system.DexFile;
 import de.robv.android.xposed.XC_MethodHook;
@@ -103,8 +104,8 @@ public class ActivityOnCreateHook extends XC_MethodHook {
 //        if(activity.getPackageName().contains("com.jingdian.tianxiameishi.android")){
 //            writeAnkiClassName(activity.getPackageName(),activity,fileName);
 //        }
-//        fileName = Environment.getExternalStorageDirectory().getAbsolutePath()+"/dict.txt";
-//        if(activity.getPackageName().contains("com.ltz.dict")){
+//        fileName = Environment.getExternalStorageDirectory().getAbsolutePath()+"/anki.txt";
+//        if(activity.getPackageName().contains("com.ichi2.anki")){
 //            writeAnkiClassName(activity.getPackageName(),activity,fileName);
 //        }
     }

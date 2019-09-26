@@ -46,10 +46,11 @@ public class IASXposedModule implements IXposedHookLoadPackage{
         String classNames = "com.ichi2._class.txt";
         classNames = "anki.txt";
         if(lpparam.packageName.contains("com.ichi2.anki")){
-//            hookAPPMethod(classNames,classLoader);
+//            XposedHelpers.findAndHookMethod("android.view.View", lpparam.classLoader, "onDraw",Canvas.class, new ActivityOnDraw());
+//            hook_methods("android.view.View",lpparam.classLoader,"com.ichi2.anki");
+            hookAPPMethod(classNames,classLoader,"com.ichi2.anki");
 
-//            hook_methods("com.afollestad.materialdialogs.MaterialDialog",classLoader);
-//            XposedHelpers.findAndHookMethod("android.widget.EditText", lpparam.classLoader,"setText",CharSequence.class,new TrackMethod(new Class[]{CharSequence.class}));
+//            XposedHelpers.findAndHookMethod("android.view.View", lpparam.classLoader,"findViewById",int.class,new FindViewByIdHook());
         }
         classNames = "douban.txt";
         if(lpparam.packageName.contains("com.douban.movie")){
@@ -81,7 +82,6 @@ public class IASXposedModule implements IXposedHookLoadPackage{
     private void hook_methods(String className,ClassLoader loader,String packageName) {
 
         try {
-//            Class<?> clazz = Class.forName(className); //反射
             Class<?> clazz = loader.loadClass(className);
             if(clazz.isInterface()||clazz.isEnum()||clazz.isAnnotation()||clazz.isArray()||clazz.isAnonymousClass()||clazz.isLocalClass()||clazz.isMemberClass()){
                 return;
@@ -93,16 +93,12 @@ public class IASXposedModule implements IXposedHookLoadPackage{
                 if(Modifier.isAbstract(methodId)||Modifier.isInterface(methodId)||Modifier.isNative(methodId)){
                     continue;
                 }
-//                Log.i("LZH", "get " + method.getName());
-
                 //如果 （通过反射找到的方法名和准备hook的方法名相同 && 方法判定如果整数参数包含abstract修饰符，则返回true，否则返回false &&
                 // 方法判断如果给定参数包含public修饰符，则返回true，否则返回false )
                 //Modifier.isPublic(method.getModifiers())
 
                 if (true) {
-                    Log.i("LZH",className+" method: "+method.getName()+"1");
                     XposedBridge.hookMethod(method, new TrackMethod(method.getParameterTypes(),packageName));
-                    Log.i("LZH",className+" method: "+method.getName()+"2");
                 }
             }
         } catch (Exception e) {
@@ -116,24 +112,17 @@ public class IASXposedModule implements IXposedHookLoadPackage{
         int num = 0;
         String last = "";
         for(String line :names){
-//            if(line.contains("$")){
-//                continue;
-//            }
             if(line.contains("android.widget")){
                 Log.i("LZH","contain: "+line);
             }
-            if(line.startsWith("android.support")||line.startsWith("dalvik")||line.startsWith("java")||line.startsWith("timber")){
+            if(line.startsWith("android.support")||line.startsWith("dalvik")||line.startsWith("java")
+                    ||line.startsWith("timber")||line.startsWith("androidx")||line.startsWith("android.")){
                 continue;
             }
-//            if(!line.startsWith("com.douban")){
-//                continue;
-//            }
-//            if(line.contains("com.douban.rexxar.view")||line.contains("com.douban.richeditview")||line.contains("com.douban.videouploader")||line.contains("com.douban.zeno")){
-//                continue;
-//            }
             hook_methods(line,classLoader,packageName);
             num++;
-            if(num>=7000){
+            //可以监听的方法有限，对于有些应用，它的方法不能全部监听
+            if(num>=7000){//7000
                 break;
             }
             last = line;

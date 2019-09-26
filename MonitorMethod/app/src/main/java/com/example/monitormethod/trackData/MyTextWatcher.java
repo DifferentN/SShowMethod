@@ -75,6 +75,7 @@ public class MyTextWatcher implements TextWatcher {
 
         writeViewFlag(json,view);
 
+        writeActivityID(json,view);
         return json;
 
     }
@@ -112,6 +113,9 @@ public class MyTextWatcher implements TextWatcher {
         }else{
             jsonObject.put("ViewFlag",true);
         }
+    }
+    private void writeActivityID(JSONObject json, View view){
+        json.put("ActivityID",ViewUtil.getActivityNameByView(view));
     }
 
 }

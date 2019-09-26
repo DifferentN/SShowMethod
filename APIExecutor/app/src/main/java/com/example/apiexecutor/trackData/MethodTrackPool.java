@@ -32,10 +32,10 @@ public class MethodTrackPool {
         subCall = new ArrayList<>();
         runTimeRecord = new ArrayList<>();
 //        runTimeRecord = Collections.synchronizedList(runTimeRecord);
-        readSequence("doubanLogDetail.txt");
+//        readSequence("doubanLogDetail.txt");
 //        readSequence("shipudaquanLogDetail.txt");
+        readSequence("ankiLogDetail.txt");
     }
-
     public static MethodTrackPool getInstance(){
         if(methodTrackPool==null){
             synchronized (MethodTrackPool.class){
@@ -220,7 +220,8 @@ public class MethodTrackPool {
         JSONObject jsonObject = JSONObject.parseObject(jsonStr);
         Intent intent = new Intent();
         intent.setAction(LocalActivityReceiver.AFTER_METHOD);
-        UserAction userAction = new UserAction(actionName,jsonObject.getString("path"),jsonObject.getIntValue("componentID"));
+        UserAction userAction = new UserAction(actionName,jsonObject.getString("path"),
+                jsonObject.getIntValue("componentID"),jsonObject.getString("ActivityID"));
         if(actionName.equals("setText")){
             userAction.setText(jsonObject.getString("parameter"));
         }
@@ -236,6 +237,9 @@ public class MethodTrackPool {
         isAvailable = true;
     }
     public void LaunchUserAction(){
+        if(!isAvailable()){
+            return;
+        }
         if(sequence.isEmpty()){
             return;
         }
@@ -246,6 +250,7 @@ public class MethodTrackPool {
             String jsonStr = sequence.remove(0);
             if(jsonStr.contains("dispatchTouchEvent")){
                 sendNotification(jsonStr,"dispatchTouchEvent");
+
             }else if(jsonStr.contains("setText")){
                 sendNotification(jsonStr,"setText");
             }

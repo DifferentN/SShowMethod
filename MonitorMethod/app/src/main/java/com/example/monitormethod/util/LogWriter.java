@@ -23,7 +23,7 @@ public class LogWriter {
     private static String targetPKName = "com.douban.movie";
     public boolean TempIsSetText = false;
     public int num = 0;
-    //com.kingsoft
+    //com.kingsoft com.ichi2.anki
     //com.ichi2.anki  com.yongche.android  com.douban.movie  com.jnzc.shipudaquan
     public LogWriter(String fileName){
         fName = fileName;

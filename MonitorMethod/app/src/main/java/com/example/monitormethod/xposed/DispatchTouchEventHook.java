@@ -36,6 +36,7 @@ public class DispatchTouchEventHook extends XC_MethodHook {
             writeThreadId(jsonObject);
             writeViewInfo(jsonObject,view);
             writeViewFlag(jsonObject,view);
+            writeActivityID(jsonObject,view);
             Log.i("LZH-Method","before: "+jsonObject.toJSONString());
             logWriter.writeLog("before: "+jsonObject.toJSONString());
         }
@@ -53,6 +54,7 @@ public class DispatchTouchEventHook extends XC_MethodHook {
             writeThreadId(json);
             writeViewInfo(json,view);
             writeViewFlag(json,view);
+            writeActivityID(json,view);
             Log.i("LZH-Method","after: "+json.toJSONString());
             logWriter.writeLog("after: "+json.toJSONString());
         }
@@ -149,5 +151,8 @@ public class DispatchTouchEventHook extends XC_MethodHook {
         }else{
             jsonObject.put("ViewFlag",true);
         }
+    }
+    private void writeActivityID(JSONObject json,View view){
+        json.put("ActivityID",ViewUtil.getActivityNameByView(view));
     }
 }

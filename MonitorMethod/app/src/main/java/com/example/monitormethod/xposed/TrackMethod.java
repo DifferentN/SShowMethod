@@ -16,6 +16,7 @@ import com.example.monitormethod.trackData.DataCollectioner;
 import com.example.monitormethod.trackData.DataRecorder;
 import com.example.monitormethod.trackData.SystemDataCollection;
 import com.example.monitormethod.util.LogWriter;
+import com.example.monitormethod.util.ViewUtil;
 
 import de.robv.android.xposed.XC_MethodHook;
 
@@ -39,11 +40,13 @@ public class TrackMethod extends XC_MethodHook {
         writeMethodParameter(jsonObject,param);
         writeThreadId(jsonObject);
         writeViewFlag(jsonObject,param);
+        writeViewInfo(jsonObject,param);
+        writeActivityID(jsonObject,param);
         if(logWriter!=null){
             logWriter.writeLog("before: "+jsonObject.toJSONString());
 //            Log.i("LZH-Method","before: "+jsonObject.toJSONString());
         }
-//        Log.i("LZH-Method","before: "+jsonObject.toJSONString());
+        Log.i("LZH-Method","before: "+jsonObject.toJSONString());
     }
 
     @Override
@@ -57,6 +60,8 @@ public class TrackMethod extends XC_MethodHook {
         writeResultInfo(jsonObject,param);
         writeThreadId(jsonObject);
         writeViewFlag(jsonObject,param);
+        writeViewInfo(jsonObject,param);
+        writeActivityID(jsonObject,param);
         if(logWriter!=null){
             logWriter.writeLog("after: "+jsonObject.toJSONString());
 //            Log.i("LZH-Method","after: "+jsonObject.toJSONString());
@@ -204,6 +209,34 @@ public class TrackMethod extends XC_MethodHook {
         }else{
             jsonObject.put("ViewFlag",true);
         }
+    }
+    /**
+     * 将响应点击的view的ID和路径写入JSON
+     * * @param json
+     * @param param
+     */
+    private void writeViewInfo(JSONObject json,MethodHookParam param){
+        Object o = param.thisObject;
+        View view = null;
+        if(o instanceof View){
+            view = (View) o;
+        }else{
+            return ;
+        }
+        JSONObject viewInfo = new JSONObject();
+        viewInfo.put("viewId",view.getId());
+        viewInfo.put("viewPath", ViewUtil.getViewPath(view));
+        json.put("viewInfo",viewInfo);
+    }
+    private void writeActivityID(JSONObject json,MethodHookParam param){
+        Object o = param.thisObject;
+        View view = null;
+        if(o instanceof View){
+            view = (View) o;
+        }else{
+            return;
+        }
+        json.put("ActivityID",ViewUtil.getActivityNameByView(view));
     }
 
 }

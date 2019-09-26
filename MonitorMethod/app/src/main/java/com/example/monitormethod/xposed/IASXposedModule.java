@@ -45,25 +45,21 @@ public class IASXposedModule implements IXposedHookLoadPackage{
         String classNames = "com.ichi2._class.txt";
         classNames = "anki.txt";
         if(lpparam.packageName.contains("com.ichi2.anki")){
-            XposedHelpers.findAndHookMethod("android.view.View",lpparam.classLoader,"onTouchEvent",MotionEvent.class,new DispatchTouchEventHook("com.ichi2.anki"));
-            XposedHelpers.findAndHookMethod("android.view.View",lpparam.classLoader,"performClick",new TrackMethod(new Class[0],"com.ichi2.anki"));
-            //下面这个报错
-//            XposedHelpers.findAndHookMethod("android.view.View",lpparam.classLoader,"performClickInternal",new TrackMethod(new Class[0],"com.ichi2.anki"));
+            XposedHelpers.findAndHookMethod("android.app.Activity",lpparam.classLoader,"dispatchTouchEvent",MotionEvent.class,new TrackMethod(new Class[]{MotionEvent.class},"com.ichi2.anki"));
             XposedHelpers.findAndHookMethod("android.view.View",lpparam.classLoader,"dispatchTouchEvent",MotionEvent.class,new DispatchTouchEventHook("com.ichi2.anki"));
-            XposedHelpers.findAndHookMethod("android.view.View", lpparam.classLoader, "onDraw",Canvas.class, new HookOnDraw());
+            XposedHelpers.findAndHookMethod("android.view.View", lpparam.classLoader, "onDraw",Canvas.class, new HookOnDraw("com.ichi2.anki"));
 
 //            hook_methods("android.view.View",lpparam.classLoader,"com.ichi2.anki");
             hookAPPMethod(classNames,classLoader,"com.ichi2.anki");
 
-            XposedHelpers.findAndHookMethod("android.view.View",lpparam.classLoader,"setOnClickListener", View.OnClickListener.class,new SetOnClickListenerHook());
-            XposedHelpers.findAndHookMethod("android.view.View", lpparam.classLoader,"findViewById",int.class,new FindViewByIdHook());
+//            XposedHelpers.findAndHookMethod("android.view.View", lpparam.classLoader,"findViewById",int.class,new FindViewByIdHook());
         }
         //监听豆瓣电影的方法调用
         classNames = "douban.txt";
         if(lpparam.packageName.contains("com.douban.movie")){
             XposedHelpers.findAndHookMethod("android.app.Activity",lpparam.classLoader,"dispatchTouchEvent",MotionEvent.class,new TrackMethod(new Class[]{MotionEvent.class},"com.douban.movie"));
             XposedHelpers.findAndHookMethod("android.view.View",lpparam.classLoader,"dispatchTouchEvent",MotionEvent.class,new DispatchTouchEventHook("com.douban.movie"));
-            XposedHelpers.findAndHookMethod("android.view.View", lpparam.classLoader, "onDraw",Canvas.class, new HookOnDraw());
+            XposedHelpers.findAndHookMethod("android.view.View", lpparam.classLoader, "onDraw",Canvas.class, new HookOnDraw("com.douban.movie"));
             //设置监听的应用方法
             hookAPPMethod(classNames,classLoader,"com.douban.movie");
 
@@ -73,22 +69,9 @@ public class IASXposedModule implements IXposedHookLoadPackage{
         classNames = "shipudaquan.txt";
         if(lpparam.packageName.contains("com.jnzc.shipudaquan")){
             XposedHelpers.findAndHookMethod("android.view.View",lpparam.classLoader,"dispatchTouchEvent",MotionEvent.class,new DispatchTouchEventHook("com.jnzc.shipudaquan"));
-            XposedHelpers.findAndHookMethod("android.view.View", lpparam.classLoader, "onDraw",Canvas.class, new HookOnDraw());
+            XposedHelpers.findAndHookMethod("android.view.View", lpparam.classLoader, "onDraw",Canvas.class, new HookOnDraw("com.jnzc.shipudaquan"));
             hookAPPMethod(classNames,classLoader,"com.jnzc.shipudaquan");
 
-            XposedHelpers.findAndHookMethod("android.view.View", lpparam.classLoader,"findViewById",int.class,new FindViewByIdHook());
-//            XposedHelpers.findAndHookMethod("android.widget.EditText", lpparam.classLoader,"setText",CharSequence.class,new TrackMethod(new Class[]{CharSequence.class}));
-        }
-        classNames = "dict.txt";
-        if(lpparam.packageName.contains("com.ltz.dict")){
-            XposedHelpers.findAndHookMethod("android.view.View",lpparam.classLoader,"dispatchTouchEvent",MotionEvent.class,new DispatchTouchEventHook("com.ltz.dict"));
-//            XposedHelpers.findAndHookMethod("android.widget.EditText",lpparam.classLoader,"getText",new TestGetTextHook());
-//            XposedHelpers.findAndHookMethod("android.view.View",lpparam.classLoader,"onTouchEvent",MotionEvent.class,new DispatchTouchEventHook("com.douban.movie"));
-//            XposedHelpers.findAndHookMethod("android.view.View",lpparam.classLoader,"performClick",new TrackMethod(new Class[0],"com.jnzc.shipudaquan"));
-//            XposedHelpers.findAndHookMethod("android.view.View", lpparam.classLoader, "onDraw",Canvas.class, new HookOnDraw());
-            hookAPPMethod(classNames,classLoader,"com.ltz.dict");
-
-//            XposedHelpers.findAndHookMethod("android.view.View",lpparam.classLoader,"setOnClickListener", View.OnClickListener.class,new SetOnClickListenerHook());
             XposedHelpers.findAndHookMethod("android.view.View", lpparam.classLoader,"findViewById",int.class,new FindViewByIdHook());
 //            XposedHelpers.findAndHookMethod("android.widget.EditText", lpparam.classLoader,"setText",CharSequence.class,new TrackMethod(new Class[]{CharSequence.class}));
         }

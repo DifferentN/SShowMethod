@@ -1,5 +1,8 @@
 package com.example.monitormethod.util;
 
+import android.app.Activity;
+import android.content.Context;
+import android.content.ContextWrapper;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
@@ -62,6 +65,21 @@ public class ViewUtil {
             }
         }
         return "";
+    }
+    public static String getActivityNameByView(View view){
+        Context context = null;
+        String activityName = null;
+        if(view!=null){
+            context = view.getContext();
+            while(context instanceof ContextWrapper){
+                if(context instanceof Activity){
+                    activityName = ((Activity)context).getComponentName().getClassName();
+                    break;
+                }
+                context = ((ContextWrapper)context).getBaseContext();
+            }
+        }
+        return activityName;
     }
     static class ViewNode{
         public View view;

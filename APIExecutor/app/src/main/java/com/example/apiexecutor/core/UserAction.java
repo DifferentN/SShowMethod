@@ -5,21 +5,37 @@ import android.os.Parcelable;
 
 public class UserAction implements Parcelable {
     private String actionName;
+    private String activityName;
     private String viewPath;
     private int viewId;
     private String text;
-    public UserAction(String actionName,String viewPath,int viewId){
+    public UserAction(String actionName,String viewPath,int viewId,String activityName){
         this.actionName = actionName;
         this.viewPath = viewPath;
         this.viewId = viewId;
+        this.activityName = activityName;
     }
-
 
     protected UserAction(Parcel in) {
         actionName = in.readString();
+        activityName = in.readString();
         viewPath = in.readString();
         viewId = in.readInt();
         text = in.readString();
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(actionName);
+        dest.writeString(activityName);
+        dest.writeString(viewPath);
+        dest.writeInt(viewId);
+        dest.writeString(text);
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
     }
 
     public static final Creator<UserAction> CREATOR = new Creator<UserAction>() {
@@ -54,16 +70,8 @@ public class UserAction implements Parcelable {
         this.text = text;
     }
 
-    @Override
-    public int describeContents() {
-        return 0;
+    public String getActivityName() {
+        return activityName;
     }
 
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeString(actionName);
-        dest.writeString(viewPath);
-        dest.writeInt(viewId);
-        dest.writeString(text);
-    }
 }

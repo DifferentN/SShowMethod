@@ -22,9 +22,9 @@ import de.robv.android.xposed.XC_MethodHook;
 public class HookOnDraw extends XC_MethodHook {
     private LogWriter logWriter;
     private String fileName = "methodLog.txt";
-    public HookOnDraw(){
+    public HookOnDraw(String packageName){
         fileName = Environment.getExternalStorageDirectory().getAbsolutePath()+"/"+fileName;
-        logWriter = LogWriter.getInstance(fileName,"com.douban.movie");
+        logWriter = LogWriter.getInstance(fileName,packageName);
     }
     @Override
     protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
@@ -33,7 +33,6 @@ public class HookOnDraw extends XC_MethodHook {
 
     @Override
     protected void afterHookedMethod(MethodHookParam param) throws Throwable {
-//        super.afterHookedMethod(param);
         View view = (View) param.thisObject;
         Activity activity = getActivity(view);
         if(view!=null&&view instanceof TextView){

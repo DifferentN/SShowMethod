@@ -89,6 +89,7 @@ public class LocalActivityReceiver extends BroadcastReceiver implements CallBack
     private boolean isSetText = false;
 
     private MethodExecutor methodExecutor;
+    private MethodTrackPool methodTrackPool;
     public LocalActivityReceiver(Activity activity){
         selfActivity = activity;
         selfActivityName = activity.getComponentName().getClassName();
@@ -120,18 +121,19 @@ public class LocalActivityReceiver extends BroadcastReceiver implements CallBack
                 break;
             case LocalActivityReceiver.AFTER_METHOD:
                 //2131298054
-                if(showActivityName.compareTo(selfActivityName)!=0||!selfActivity.getClass().getName().contains("NewSearchActivity")){
+                UserAction userAction = intent.getParcelableExtra(USER_ACTION);
+                if(showActivityName.compareTo(selfActivityName)!=0||!selfActivity.getClass().getName().contains(userAction.getActivityName())){
                     break;
                 }
-                UserAction userAction = intent.getParcelableExtra(USER_ACTION);
+                Log.i("LZH",userAction.getActionName());
                 executeUserAction(userAction);
                 break;
             case LocalActivityReceiver.INPUT_TEXT:
                 //2131298054 com.douban.frodo.search.activity.NewSearchActivity
 //                amodule.activity.HomeSearch  2131296313
-                if(selfActivityName.contains("NewSearchActivity")){
+                if(selfActivityName.contains("com.ichi2.anki.DeckPicker")){
 //                    doClick(0);
-                    MethodTrackPool methodTrackPool = MethodTrackPool.getInstance();
+                    methodTrackPool = MethodTrackPool.getInstance();
                     methodTrackPool.clearRunTimeRecord();
                     methodTrackPool.LaunchUserAction();
 
@@ -154,11 +156,15 @@ public class LocalActivityReceiver extends BroadcastReceiver implements CallBack
     }
     private void executeUserAction(UserAction userAction){
         if(userAction.getActionName().equals("setText")){
-            TextView textView;
-            if(userAction.getViewId()>0){
+            TextView textView = null;
+//            if(userAction.getViewId()>0){
+//                textView = selfActivity.findViewById(userAction.getViewId());
+//            }else{
+//                textView = (TextView) getViewByPath(userAction.getViewPath());
+//            }
+            textView = (TextView) getViewByPath(userAction.getViewPath());
+            if(textView==null){
                 textView = selfActivity.findViewById(userAction.getViewId());
-            }else{
-                textView = (TextView) getViewByPath(userAction.getViewPath());
             }
             if(textView==null){
                 Log.i("LZH","textView is null:setText");
@@ -167,12 +173,14 @@ public class LocalActivityReceiver extends BroadcastReceiver implements CallBack
             textView.setText(userAction.getText());
 //            textView.setText("锅盔");
         }else if(userAction.getActionName().equals("dispatchTouchEvent")){
-            View view;
+            View view = null;
             if(userAction.getViewId()>0){
                 view = selfActivity.findViewById(userAction.getViewId());
+                Log.i("LZH","findById: "+view.getId());
             }else{
                 view = getViewByPath(userAction.getViewPath());
             }
+
             if(view==null){
                 Log.i("LZH","view is null:dispatchTouchEvent");
                 return;
@@ -224,10 +232,12 @@ public class LocalActivityReceiver extends BroadcastReceiver implements CallBack
         int y = clickPos[1];
         int metaState = 0;
         MotionEvent motionEvent = MotionEvent.obtain(downTime, eventTime, action, x, y, metaState);
-        selfActivity.dispatchTouchEvent(motionEvent);
+//        selfActivity.dispatchTouchEvent(motionEvent);
+        view.dispatchTouchEvent(motionEvent);
         action = MotionEvent.ACTION_UP;
         motionEvent = MotionEvent.obtain(downTime, eventTime, action, x, y, metaState);
-        selfActivity.dispatchTouchEvent(motionEvent);
+//        selfActivity.dispatchTouchEvent(motionEvent);
+        view.dispatchTouchEvent(motionEvent);
     }
     private void tryLaunchUserAction(){
         MethodTrackPool methodTrackPool = MethodTrackPool.getInstance();
