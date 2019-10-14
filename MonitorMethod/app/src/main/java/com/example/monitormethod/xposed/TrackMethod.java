@@ -46,7 +46,7 @@ public class TrackMethod extends XC_MethodHook {
             logWriter.writeLog("before: "+jsonObject.toJSONString());
 //            Log.i("LZH-Method","before: "+jsonObject.toJSONString());
         }
-        Log.i("LZH-Method","before: "+jsonObject.toJSONString());
+//        Log.i("LZH-Method","before: "+jsonObject.toJSONString());
     }
 
     @Override
@@ -173,6 +173,8 @@ public class TrackMethod extends XC_MethodHook {
                 hash = dataRecorder.addRef(result);
             }
             resultJSON.put("resultClassName",result.getClass().getName());
+            Log.i("LZH",result.getClass().getName()+" "+param.method.getName());
+
             resultJSON.put("resultHashCode",hash);
             if(ParserConfig.getGlobalInstance().isPrimitive(result.getClass())){
                 resultJSON.put("resultValue",result.toString());

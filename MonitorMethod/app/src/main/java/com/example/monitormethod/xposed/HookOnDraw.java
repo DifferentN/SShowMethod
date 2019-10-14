@@ -44,13 +44,13 @@ public class HookOnDraw extends XC_MethodHook {
         if(view instanceof TextView){
             TextView textView = (TextView) view;
             String text = textView.getText().toString();
-            if(text.equals("哪吒之魔童降世")&&logWriter.num==0){
+            if(text.equals("007：幽灵党")&&logWriter.num==0){
                 imitateClick(view,activity);
                 logWriter.num++;
             }else if(text.contains("影视")&&logWriter.num==1){
                 imitateClick(view,activity);
                 logWriter.num++;
-            }else if(text.contains("哪吒之魔童降")&&text.contains("2019")&&logWriter.num==2){
+            }else if(text.contains("007：幽灵党")&&text.contains("2015")&&logWriter.num==2){
                 imitateClick(view,activity);
                 Log.i("LZH","哪吒之魔童降世(2019)");
                 logWriter.num++;
