@@ -10,6 +10,7 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.example.monitormethod.trackData.DataCollectioner;
 import com.example.monitormethod.trackData.DataRecorder;
+import com.example.monitormethod.trackData.TouchedView;
 import com.example.monitormethod.util.LogWriter;
 import com.example.monitormethod.util.ViewUtil;
 
@@ -47,6 +48,8 @@ public class DispatchTouchEventHook extends XC_MethodHook {
         MotionEvent motionEvent = (MotionEvent) param.args[0];
         JSONObject json = null,resultJSON = null;
         View view = (View) param.thisObject;
+        //记录刚刚点击的view
+        sendDispatchView(view);
         if(motionEvent!=null){
             json = writeInfo(view,motionEvent);
             resultJSON = writeResult(param);
@@ -61,6 +64,13 @@ public class DispatchTouchEventHook extends XC_MethodHook {
 
     }
 
+    /**
+     * 记录刚刚点击的View
+     * @param view
+     */
+    private void sendDispatchView(View view){
+        TouchedView.setView(view);
+    }
     /**
      * 将点击信息转化为一个JSON
      * @param view

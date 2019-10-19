@@ -92,6 +92,10 @@ public class MyTextWatcher implements TextWatcher {
 
     @Override
     public void afterTextChanged(Editable s) {
+        //如果不是用户点击的View产生的文本变化，则忽略
+        if(view!=TouchedView.getView()){
+            return;
+        }
         String info = writeInfo(view,s.toString()).toJSONString();
         if(logWriter!=null){
             logWriter.writeLog("before: "+info);
