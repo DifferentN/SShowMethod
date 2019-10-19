@@ -68,7 +68,9 @@ public class LocalActivityReceiver extends BroadcastReceiver{
         switch (action){
             case LocalActivityReceiver.WRITE_LOG:
 
-                if(selfPackageName.contains("com.douban.movie")){
+                //com.douban.movie
+                //
+                if(selfPackageName.contains("com.ichi2.anki")){
                     //设置LogWriter可以写入日志
                     LogWriter.turnWriteAble();
                 }
