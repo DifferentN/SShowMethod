@@ -10,6 +10,6 @@ public class TouchedView {
         viewRefer = new WeakReference<>(view);
     }
     public static View getView(){
-        return viewRefer.get();
+        return viewRefer==null?null:viewRefer.get();
     }
 }
