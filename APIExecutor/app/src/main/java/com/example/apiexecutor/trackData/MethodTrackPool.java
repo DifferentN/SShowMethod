@@ -5,9 +5,12 @@ import android.content.Intent;
 import android.os.Environment;
 import android.util.Log;
 
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.example.apiexecutor.core.Event;
 import com.example.apiexecutor.core.UserAction;
 import com.example.apiexecutor.receive.LocalActivityReceiver;
+import com.example.apiexecutor.util.ProcessEventUtil;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -26,6 +29,8 @@ public class MethodTrackPool {
     private ArrayList<String> sequence;
     private List<String> runTimeRecord;
     private List<MyMethod> subCall;
+    private List<Event> events;
+    private Event curEvent;
     private boolean isAvailable = false;
     public MethodTrackPool(){
         sequence = new ArrayList<String>();
@@ -49,6 +54,7 @@ public class MethodTrackPool {
     private void readSequence(String fileName){
         String filePath = Environment.getExternalStorageDirectory().getAbsolutePath()+"/"+fileName;
         File file = new File(filePath);
+        StringBuffer buf = new StringBuffer();
         try {
             if(!file.exists()){
                 Log.i("LZH","序列文件不存在");
@@ -57,55 +63,38 @@ public class MethodTrackPool {
             BufferedReader reader = new BufferedReader(fileReader);
             String line = null;
             while( (line = reader.readLine())!=null ){
-                sequence.add(line);
+                buf.append(line);
             }
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
         }
-        Log.i("LZH","sequence size "+sequence.size());
+        JSONArray jsonArray = JSONArray.parseArray(buf.toString());
+        events = new ArrayList<>();
+        for(int i=0;i<jsonArray.size();i++){
+            events.add(ProcessEventUtil.transformJSONToEvent(jsonArray.getJSONObject(i)));
+        }
     }
     public synchronized void sendMessage(String message){
         if(!isAvailable()){
-//            Log.i("LZH","unavailable");
             return;
         }
-//        Log.i("LZH",message);
         addSubCall(message);
-//        String body = null;
-//        if(message.startsWith("before: ")){
-//            body = message.substring("before: ".length());
-//            runTimeRecord.add(body);
-//        }else if(message.startsWith("after: ")){
-//            body = message.substring("after: ".length());
-//            String last = runTimeRecord.get(runTimeRecord.size()-1);
-//            if(last.equals(body)){
-//                last = runTimeRecord.remove(runTimeRecord.size()-1);
-////                Log.i("LZH-SRC",last);
-//                if(runTimeRecord.size()==0){
-//                    removeSequenceItem(last);
-//                }
-//            }else{
-//                Log.i("LZH","runTimeRecord error");
-//            }
-//        }else{
-//            Log.i("LZH","error: "+message);
-//        }
     }
     private void removeSequenceItem(String last){
-        int deleteNum = skipSequence(last,1);
-        if(deleteNum>0){
-            Log.i("LZH",last);
+        List<String> invokeStrs = curEvent.getInvokeList();
+//        if(curEvent.invokePoint<invokeStrs.size()){
+//            Log.i("LZH","method: "+last+" "+invokeStrs.get(curEvent.invokePoint));
+//        }
+        if(curEvent.invokePoint<invokeStrs.size()&&
+                check(invokeStrs.get(curEvent.invokePoint),last)){
+            curEvent.invokePoint++;
+            Log.i("LZH","match method");
         }else{
-            Log.i("LZH","未匹配,要求："+sequence.get(0)+" 现有："+last);
-//            Log.i("LZH","未匹配,"+" 现有："+last);
+            Log.i("LZH","curMethod"+last+" \n record: "+invokeStrs.get(curEvent.invokePoint));
         }
-
-        if( !sequence.isEmpty()&&deleteNum>0 ){
-            deleteSameSequence(deleteNum);
-            checkNotification();
-        }
+        checkNotification(curEvent);
     }
 
 
@@ -181,27 +170,12 @@ public class MethodTrackPool {
         String res = src.substring(start+1,end);
         return res;
     }
-    private void deleteSameSequence(int num){
-        while(num>0&&!sequence.isEmpty()){
-            sequence.remove(0);
-            num--;
-        }
-    }
 
-    private void checkNotification() {
-        if(sequence.isEmpty()){
-            return ;
-        }
-        String first = sequence.get(0);
-        if( first.startsWith("{")&&( first.contains("dispatchTouchEvent")
-                ||first.contains("setText") ) ){
-
-            String jsonStr = sequence.remove(0);
-            if(jsonStr.contains("dispatchTouchEvent")){
-                Log.i("LZH","dispatchTouchEvent");
-                sendNotification(jsonStr,"dispatchTouchEvent");
-            }else if(jsonStr.contains("setText")){
-                sendNotification(jsonStr,"setText");
+    private void checkNotification(Event event) {
+        if(event==null||event.invokePoint>=event.getInvokeList().size()){
+            if(!events.isEmpty()){
+                curEvent = events.remove(0);
+                sendNotification(curEvent);
             }
         }
     }
@@ -212,23 +186,24 @@ public class MethodTrackPool {
         return false;
     }
 
-    private void sendNotification(String jsonStr,String actionName){
+    private void sendNotification(Event event){
         if(context==null){
             Log.i("LZH","context is null can't send notification");
             return;
         }
-        JSONObject jsonObject = JSONObject.parseObject(jsonStr);
         Intent intent = new Intent();
-        intent.setAction(LocalActivityReceiver.AFTER_METHOD);
-        UserAction userAction = new UserAction(actionName,jsonObject.getString("path"),
-                jsonObject.getIntValue("componentID"),jsonObject.getString("ActivityID"));
-        if(actionName.equals("setText")){
-            userAction.setText(jsonObject.getString("parameter"));
+        intent.setAction(LocalActivityReceiver.EXECUTE_EVENT);
+        UserAction userAction = new UserAction(event.getMethodName(),
+                event.getPath(),
+                Integer.valueOf(event.getComponentId()),
+                event.getActivityId());
+
+        if(event.getMethodName().equals(Event.SETTEXT)){
+            userAction.setText(event.getParameters().get(0).value);
         }
         intent.putExtra(LocalActivityReceiver.USER_ACTION,userAction);
         context.sendBroadcast(intent);
     }
-
     public void setContext(Context context){
         this.context = context;
     }
@@ -240,21 +215,10 @@ public class MethodTrackPool {
         if(!isAvailable()){
             return;
         }
-        if(sequence.isEmpty()){
-            return;
+        if(curEvent==null||curEvent.invokePoint>=curEvent.getInvokeList().size()){
+            curEvent = events.remove(0);
         }
-        String first = sequence.get(0);
-
-        if(first.startsWith("{")&&( first.contains("dispatchTouchEvent")
-                ||first.contains("setText") )){
-            String jsonStr = sequence.remove(0);
-            if(jsonStr.contains("dispatchTouchEvent")){
-                sendNotification(jsonStr,"dispatchTouchEvent");
-
-            }else if(jsonStr.contains("setText")){
-                sendNotification(jsonStr,"setText");
-            }
-        }
+        sendNotification(curEvent);
     }
     public void addSubCall(String message){
         String body = null;
@@ -271,9 +235,7 @@ public class MethodTrackPool {
                     parent = subCall.get(subCall.size()-1);
                     parent.add(last.getDetail());
                 }else {
-//                    Log.i("LZH-SRC",last.getDetail());
                     removeSequenceItem(last.getDetail());
-//                    skipSequence(last.getHash());
                 }
             }else{
                 Log.i("LZH","runTimeRecord error");

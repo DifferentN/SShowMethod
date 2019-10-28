@@ -70,37 +70,4 @@ public class FloatViewManager {
             }
         });
     }
-    public void showGetActivityTextBt(){
-        windowManager = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
-        saveIntentView = new SaveIntentView(context);
-        if(layoutParams == null){
-            layoutParams = new WindowManager.LayoutParams();
-            layoutParams.width = saveIntentView.width;
-            layoutParams.height = saveIntentView.height;
-            layoutParams.gravity = Gravity.BOTTOM|Gravity.LEFT;
-            if (Build.VERSION.SDK_INT > 24) {
-                layoutParams.type = WindowManager.LayoutParams.TYPE_PHONE;
-            } else {
-                layoutParams.type = WindowManager.LayoutParams.TYPE_TOAST;
-            }
-            layoutParams.flags = WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE | WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL;
-            layoutParams.format = PixelFormat.RGBA_8888;
-
-            layoutParams.x = 0;
-            layoutParams.y = 0;
-        }
-
-        saveIntentView.setLayoutParams(layoutParams);
-
-        windowManager.addView(saveIntentView,layoutParams);
-
-        saveIntentView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Log.i("LZH","click createBt");
-
-
-            }
-        });
-    }
 }

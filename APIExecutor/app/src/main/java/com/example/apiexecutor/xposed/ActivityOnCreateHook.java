@@ -94,7 +94,7 @@ public class ActivityOnCreateHook extends XC_MethodHook {
         filter.addAction(LocalActivityReceiver.CLICK_DELETE);
         filter.addAction(CoordinatorReceiver.ON_RESUME);
         filter.addAction(CoordinatorReceiver.EXECUTE_METHOD);
-        filter.addAction(LocalActivityReceiver.AFTER_METHOD);
+        filter.addAction(LocalActivityReceiver.EXECUTE_EVENT);
 
         Object o = XposedHelpers.getAdditionalInstanceField(activity,"iasReceiver");
         if(o!=null){
