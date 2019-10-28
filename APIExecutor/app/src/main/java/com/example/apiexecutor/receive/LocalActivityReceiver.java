@@ -21,6 +21,7 @@ import android.widget.TextView;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.example.apiexecutor.core.CoordinatorReceiver;
+import com.example.apiexecutor.core.Event;
 import com.example.apiexecutor.core.MethodExecutor;
 import com.example.apiexecutor.core.UserAction;
 import com.example.apiexecutor.test.MyRunnable;
@@ -65,7 +66,7 @@ public class LocalActivityReceiver extends BroadcastReceiver implements CallBack
     public static final String FIND_SPECIFY = "FIND_SPECIFY";
     public static final String CLICK_DELETE = "CLICK_DELETE";
 
-    public static final String AFTER_METHOD = "AFTER_METHOD";
+    public static final String EXECUTE_EVENT = "EXECUTE_EVENT";
     public static final String METHOD_NAME = "METHOD_NAME";
 
     public static final String USER_ACTION = "USER_ACTION";
@@ -105,7 +106,7 @@ public class LocalActivityReceiver extends BroadcastReceiver implements CallBack
         switch (action){
             case CoordinatorReceiver.ON_RESUME:
                 showActivityName = intent.getStringExtra(CoordinatorReceiver.RESUME_ACTIVITY);
-                Log.i("LZH","showActivity: "+showActivityName);
+//                Log.i("LZH","showActivity: "+showActivityName);
 //                curPackageName = (String)bundle.get("curPackage");
 //                curAppName = (String) bundle.get("curApp");
                 break;
@@ -119,7 +120,7 @@ public class LocalActivityReceiver extends BroadcastReceiver implements CallBack
                 }
                 selfActivity.startActivity(tarIntent);
                 break;
-            case LocalActivityReceiver.AFTER_METHOD:
+            case LocalActivityReceiver.EXECUTE_EVENT:
                 //2131298054
                 UserAction userAction = intent.getParcelableExtra(USER_ACTION);
                 if(showActivityName.compareTo(selfActivityName)!=0||!selfActivity.getClass().getName().contains(userAction.getActivityName())){
@@ -129,39 +130,18 @@ public class LocalActivityReceiver extends BroadcastReceiver implements CallBack
                 executeUserAction(userAction);
                 break;
             case LocalActivityReceiver.INPUT_TEXT:
-                //2131298054 com.douban.frodo.search.activity.NewSearchActivity
-//                amodule.activity.HomeSearch  2131296313
                 if(selfActivityName.contains("com.ichi2.anki.DeckPicker")){
-//                    doClick(0);
                     methodTrackPool = MethodTrackPool.getInstance();
                     methodTrackPool.clearRunTimeRecord();
                     methodTrackPool.LaunchUserAction();
-
-//                    final TextView textView = selfActivity.findViewById(2131298054);
-//                    textView.setText("哪吒之魔童降世");
-//                    textView.postDelayed(new Runnable() {
-//                        @Override
-//                        public void run() {
-//                            textView.setText("哪吒之魔童降世");
-//                        }
-//                    },1000);
-//                    textView.setText("上海堡垒");
-//                    textView.setText("追龙");
-//                    textView.setText("锅盔");
                     isSetText = true;
-//                    doClick(clickTime);
                 }
                 break;
         }
     }
     private void executeUserAction(UserAction userAction){
-        if(userAction.getActionName().equals("setText")){
+        if(userAction.getActionName().equals(Event.SETTEXT)){
             TextView textView = null;
-//            if(userAction.getViewId()>0){
-//                textView = selfActivity.findViewById(userAction.getViewId());
-//            }else{
-//                textView = (TextView) getViewByPath(userAction.getViewPath());
-//            }
             textView = (TextView) getViewByPath(userAction.getViewPath());
             if(textView==null){
                 textView = selfActivity.findViewById(userAction.getViewId());
@@ -171,8 +151,7 @@ public class LocalActivityReceiver extends BroadcastReceiver implements CallBack
                 return;
             }
             textView.setText(userAction.getText());
-//            textView.setText("锅盔");
-        }else if(userAction.getActionName().equals("dispatchTouchEvent")){
+        }else if(userAction.getActionName().equals(Event.DISPATCH)){
             View view = null;
             if(userAction.getViewId()>0){
                 view = selfActivity.findViewById(userAction.getViewId());
@@ -185,6 +164,7 @@ public class LocalActivityReceiver extends BroadcastReceiver implements CallBack
                 Log.i("LZH","view is null:dispatchTouchEvent");
                 return;
             }
+            Log.i("LZH","click view");
             imitateClick(view);
         }
         tryLaunchUserAction();
