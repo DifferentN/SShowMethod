@@ -22,6 +22,7 @@ import de.robv.android.xposed.XC_MethodHook;
 
 
 public class TrackMethod extends XC_MethodHook {
+
     Class pclazz[];
     private LogWriter logWriter;
     private DataRecorder dataRecorder;
