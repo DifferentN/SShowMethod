@@ -25,8 +25,8 @@ public class TrackMethod extends XC_MethodHook {
     private String fileName = "methodLog.txt";
     private MethodTrackPool methodTrackPool;
     public TrackMethod(Class pclazz[],String packageName){
-        fileName = Environment.getExternalStorageDirectory().getAbsolutePath()+"/"+fileName;
-        this.pclazz = pclazz;
+//        fileName = Environment.getExternalStorageDirectory().getAbsolutePath()+"/"+fileName;
+//        this.pclazz = pclazz;
         methodTrackPool = MethodTrackPool.getInstance();
     }
     @Override
@@ -40,6 +40,7 @@ public class TrackMethod extends XC_MethodHook {
         if(Thread.currentThread().getId()==1){
             methodTrackPool.sendMessage(message);
         }
+        Log.i("LZH-Method","before: "+message);
     }
 
 

@@ -104,6 +104,34 @@ public class IASXposedModule implements IXposedHookLoadPackage{
         }
     }
     private void hookAPPMethod(String filename,ClassLoader classLoader,String packageName){
+//        List<String> names = getClassName(filename);
+//        int sum = names.size();
+//        int num = 0;
+//        String last = "";
+//        for(String line :names){
+//            if(line.contains("android.widget")){
+//                Log.i("LZH","contain: "+line);
+//
+//
+//            }
+//            if(line.startsWith("android.support")||line.startsWith("dalvik")||line.startsWith("java")
+//                    ||line.startsWith("timber")||line.startsWith("androidx")){
+//                continue;
+//            }
+//            if(!line.contains(packageName)){
+//                continue;
+//            }
+//            hook_methods(line,classLoader,packageName);
+//            num++;
+//            //可以监听的方法有限，对于有些应用，它的方法不能全部监听
+////            if(num>=7000){//7000
+////                break;
+////            }
+//            last = line;
+//        }
+//        Log.i("LZH","last: "+last);
+
+
         List<String> names = getClassName(filename);
         int sum = names.size();
         int num = 0;
@@ -111,22 +139,17 @@ public class IASXposedModule implements IXposedHookLoadPackage{
         for(String line :names){
             if(line.contains("android.widget")){
                 Log.i("LZH","contain: "+line);
-
-
             }
             if(line.startsWith("android.support")||line.startsWith("dalvik")||line.startsWith("java")
-                    ||line.startsWith("timber")||line.startsWith("androidx")){
-                continue;
-            }
-            if(!line.contains(packageName)){
+                    ||line.startsWith("timber")||line.startsWith("androidx")||line.startsWith("android.")){
                 continue;
             }
             hook_methods(line,classLoader,packageName);
             num++;
             //可以监听的方法有限，对于有些应用，它的方法不能全部监听
-//            if(num>=7000){//7000
-//                break;
-//            }
+            if(num>=7000){//7000
+                break;
+            }
             last = line;
         }
         Log.i("LZH","last: "+last);

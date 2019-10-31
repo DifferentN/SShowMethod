@@ -130,10 +130,11 @@ public class LocalActivityReceiver extends BroadcastReceiver implements CallBack
                 executeUserAction(userAction);
                 break;
             case LocalActivityReceiver.INPUT_TEXT:
-                if(selfActivityName.contains("com.ichi2.anki.DeckPicker")){
+                if(selfActivityName.equals("com.ichi2.anki.DeckPicker")){
                     methodTrackPool = MethodTrackPool.getInstance();
                     methodTrackPool.clearRunTimeRecord();
                     methodTrackPool.LaunchUserAction();
+                    Log.i("LZH","start action");
                     isSetText = true;
                 }
                 break;
@@ -152,18 +153,16 @@ public class LocalActivityReceiver extends BroadcastReceiver implements CallBack
             }
             textView.setText(userAction.getText());
         }else if(userAction.getActionName().equals(Event.DISPATCH)){
-            View view = null;
-            if(userAction.getViewId()>0){
+            View view = getViewByPath(userAction.getViewPath());
+            if(view==null&&userAction.getViewId()>0){
                 view = selfActivity.findViewById(userAction.getViewId());
-                Log.i("LZH","findById: "+view.getId());
-            }else{
-                view = getViewByPath(userAction.getViewPath());
             }
 
             if(view==null){
                 Log.i("LZH","view is null:dispatchTouchEvent");
                 return;
             }
+            Log.i("LZH","findById: "+view.getId());
             Log.i("LZH","click view");
             imitateClick(view);
         }
@@ -210,6 +209,8 @@ public class LocalActivityReceiver extends BroadcastReceiver implements CallBack
         int action = MotionEvent.ACTION_DOWN;
         int x = clickPos[0];
         int y = clickPos[1];
+        x = 0;
+        y = 0;
         int metaState = 0;
         MotionEvent motionEvent = MotionEvent.obtain(downTime, eventTime, action, x, y, metaState);
 //        selfActivity.dispatchTouchEvent(motionEvent);
@@ -222,11 +223,6 @@ public class LocalActivityReceiver extends BroadcastReceiver implements CallBack
     private void tryLaunchUserAction(){
         MethodTrackPool methodTrackPool = MethodTrackPool.getInstance();
         methodTrackPool.LaunchUserAction();
-    }
-    private void IsEndMethod() {
-//        curTime = System.currentTimeMillis();
-//        selfActivity.getWindow().getDecorView().postDelayed(new MyRunnable(this,curTime,clickTime),1000);
-        doClick(clickTime);
     }
 
     public void doClick(int eTime) {
@@ -274,14 +270,6 @@ public class LocalActivityReceiver extends BroadcastReceiver implements CallBack
         }
     }
 
-    private void executeMethods(String methods,Activity activity){
-        JSONArray array = JSONArray.parseArray(methods);
-        JSONObject methodJson;
-        for(int i=0;i<array.size();i++){
-            methodJson = array.getJSONObject(i);
-            methodExecutor.executeMethod(methodJson,activity);
-        }
-    }
     @Override
     public String getContent() {
         return content;

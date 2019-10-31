@@ -72,8 +72,12 @@ public class MethodTrackPool {
         }
         JSONArray jsonArray = JSONArray.parseArray(buf.toString());
         events = new ArrayList<>();
+        int index = 0;
+        Event event = null;
         for(int i=0;i<jsonArray.size();i++){
-            events.add(ProcessEventUtil.transformJSONToEvent(jsonArray.getJSONObject(i)));
+            index = jsonArray.getJSONObject(i).getInteger("seqId");
+            event = ProcessEventUtil.transformJSONToEvent(jsonArray.getJSONObject(i));
+            events.add(index,event);
         }
     }
     public synchronized void sendMessage(String message){
@@ -82,93 +86,39 @@ public class MethodTrackPool {
         }
         addSubCall(message);
     }
+    public void addSubCall(String message){
+        String body = null;
+        if(message.startsWith("before: ")){
+            body = message.substring("before: ".length());
+            subCall.add(new MyMethod(body));
+        }else if(message.startsWith("after: ")){
+            body = message.substring("after: ".length());
+            MyMethod last = subCall.get(subCall.size()-1);
+            MyMethod parent = null;
+            if(last.name.equals(body)){
+                last = subCall.remove(subCall.size()-1);
+                if(!subCall.isEmpty()){
+                    parent = subCall.get(subCall.size()-1);
+                    parent.add(last.getDetail());
+                }else {
+                    removeSequenceItem(last.getDetail());
+                }
+            }else{
+                Log.i("LZH","runTimeRecord error");
+            }
+        }
+    }
     private void removeSequenceItem(String last){
         List<String> invokeStrs = curEvent.getInvokeList();
-//        if(curEvent.invokePoint<invokeStrs.size()){
-//            Log.i("LZH","method: "+last+" "+invokeStrs.get(curEvent.invokePoint));
-//        }
+        Log.i("LZH","curMethod: "+last);
         if(curEvent.invokePoint<invokeStrs.size()&&
-                check(invokeStrs.get(curEvent.invokePoint),last)){
+                invokeStrs.get(curEvent.invokePoint).equals(last)){
             curEvent.invokePoint++;
             Log.i("LZH","match method");
         }else{
             Log.i("LZH","curMethod"+last+" \n record: "+invokeStrs.get(curEvent.invokePoint));
         }
         checkNotification(curEvent);
-    }
-
-
-    /**
-     * 不只检查Sequence中的第一个序列，检查前checkNum个
-     * @param last 当前要比较的调用字符串
-     * @param checkNum checkNum=1相当于检查第一个序列
-     * @return
-     */
-    private int skipSequence(String last,int checkNum){
-        int num = 0;
-        boolean same = false;
-        while(num<sequence.size()&&checkNum>0){//||check(sequence.get(num),last)
-            if( last.equals(sequence.get(num)) ){//||check(last,sequence.get(num))
-                same = true;
-                num++;
-                break;
-            }
-            num++;
-            checkNum--;
-        }
-        if(!same){
-            num = -1;
-        }
-        return num;
-    }
-
-    /**
-     *
-     * @param cur
-     * @param record
-     * @return
-     */
-    private boolean check(String cur,String record){
-        int curLen = cur.length(),recLen = record.length();
-        String s1 = null,s2 = null;
-        int i=0,j=0;
-        for(;i<curLen&&j<recLen;){
-            s1 = getFirstFun(cur,i);
-            s2 = getFirstFun(record,j);
-            if(s1==null&&s2!=null){
-                return false;
-            }
-            if(s2==null){
-                return true;
-            }
-            i=cur.indexOf(s1,i)+s1.length();
-            if(s1.equals(s2)){
-                j=record.indexOf(s2,j)+s2.length();
-            }
-
-        }
-        Log.i("LZH","出错："+i+" "+curLen+" "+j+" "+recLen);
-        return false;
-    }
-
-    /**
-     * 获取src中从pos开始的第一个方法名称
-    * @param src
-     * @param pos
-     * @return
-     */
-    private String getFirstFun(String src,int pos){
-        int start = src.indexOf("(",pos);
-        if(start<0){
-            return null;
-        }
-        int end = src.indexOf(")",start);
-        int temp = src.indexOf(":",start);
-        if(temp>0){
-            end = Math.min(end,temp);
-        }
-        String res = src.substring(start+1,end);
-        return res;
     }
 
     private void checkNotification(Event event) {
@@ -217,31 +167,11 @@ public class MethodTrackPool {
         }
         if(curEvent==null||curEvent.invokePoint>=curEvent.getInvokeList().size()){
             curEvent = events.remove(0);
+            sendNotification(curEvent);
         }
-        sendNotification(curEvent);
+
     }
-    public void addSubCall(String message){
-        String body = null;
-        if(message.startsWith("before: ")){
-            body = message.substring("before: ".length());
-            subCall.add(new MyMethod(body));
-        }else if(message.startsWith("after: ")){
-            body = message.substring("after: ".length());
-            MyMethod last = subCall.get(subCall.size()-1);
-            MyMethod parent = null;
-            if(last.name.equals(body)){
-                last = subCall.remove(subCall.size()-1);
-                if(!subCall.isEmpty()){
-                    parent = subCall.get(subCall.size()-1);
-                    parent.add(last.getDetail());
-                }else {
-                    removeSequenceItem(last.getDetail());
-                }
-            }else{
-                Log.i("LZH","runTimeRecord error");
-            }
-        }
-    }
+
     private static class MyMethod{
         public String name;
         private List<String> childs;
