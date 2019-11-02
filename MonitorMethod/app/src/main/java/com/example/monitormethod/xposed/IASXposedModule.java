@@ -141,15 +141,16 @@ public class IASXposedModule implements IXposedHookLoadPackage{
                 Log.i("LZH","contain: "+line);
             }
             if(line.startsWith("android.support")||line.startsWith("dalvik")||line.startsWith("java")
-                    ||line.startsWith("timber")||line.startsWith("androidx")||line.startsWith("android.")){
+                    ||line.startsWith("timber")||line.startsWith("androidx")||line.startsWith("android.")
+                    ||line.startsWith("com.brsanthu")){
                 continue;
             }
             hook_methods(line,classLoader,packageName);
             num++;
             //可以监听的方法有限，对于有些应用，它的方法不能全部监听
-            if(num>=7000){//7000
-                break;
-            }
+//            if(num>=7000){//7000
+//                break;
+//            }
             last = line;
         }
         Log.i("LZH","last: "+last);

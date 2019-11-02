@@ -40,7 +40,7 @@ public class TrackMethod extends XC_MethodHook {
         if(Thread.currentThread().getId()==1){
             methodTrackPool.sendMessage(message);
         }
-        Log.i("LZH-Method","before: "+message);
+//        Log.i("LZH-Method",message);
     }
 
 
