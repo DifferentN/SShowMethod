@@ -209,15 +209,11 @@ public class LocalActivityReceiver extends BroadcastReceiver implements CallBack
         int action = MotionEvent.ACTION_DOWN;
         int x = clickPos[0];
         int y = clickPos[1];
-        x = 0;
-        y = 0;
         int metaState = 0;
         MotionEvent motionEvent = MotionEvent.obtain(downTime, eventTime, action, x, y, metaState);
-//        selfActivity.dispatchTouchEvent(motionEvent);
         view.dispatchTouchEvent(motionEvent);
         action = MotionEvent.ACTION_UP;
         motionEvent = MotionEvent.obtain(downTime, eventTime, action, x, y, metaState);
-//        selfActivity.dispatchTouchEvent(motionEvent);
         view.dispatchTouchEvent(motionEvent);
     }
     private void tryLaunchUserAction(){
