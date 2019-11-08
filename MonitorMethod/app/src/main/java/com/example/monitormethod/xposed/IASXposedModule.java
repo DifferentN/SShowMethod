@@ -48,9 +48,10 @@ public class IASXposedModule implements IXposedHookLoadPackage{
             XposedHelpers.findAndHookMethod("android.app.Activity",lpparam.classLoader,"dispatchTouchEvent",MotionEvent.class,new TrackMethod(new Class[]{MotionEvent.class},"com.ichi2.anki"));
             XposedHelpers.findAndHookMethod("android.view.View",lpparam.classLoader,"dispatchTouchEvent",MotionEvent.class,new DispatchTouchEventHook("com.ichi2.anki"));
             XposedHelpers.findAndHookMethod("android.view.View", lpparam.classLoader, "onDraw",Canvas.class, new HookOnDraw("com.ichi2.anki"));
-
+            //不设置过滤器
+            List<String> list = new ArrayList<>();
 //            hook_methods("android.view.View",lpparam.classLoader,"com.ichi2.anki");
-            hookAPPMethod(classNames,classLoader,"com.ichi2.anki");
+            hookAPPMethod(classNames,classLoader,"com.ichi2.anki",list);
 
 //            XposedHelpers.findAndHookMethod("android.view.View", lpparam.classLoader,"findViewById",int.class,new FindViewByIdHook());
         }
@@ -60,21 +61,24 @@ public class IASXposedModule implements IXposedHookLoadPackage{
             XposedHelpers.findAndHookMethod("android.app.Activity",lpparam.classLoader,"dispatchTouchEvent",MotionEvent.class,new TrackMethod(new Class[]{MotionEvent.class},"com.douban.movie"));
             XposedHelpers.findAndHookMethod("android.view.View",lpparam.classLoader,"dispatchTouchEvent",MotionEvent.class,new DispatchTouchEventHook("com.douban.movie"));
             XposedHelpers.findAndHookMethod("android.view.View", lpparam.classLoader, "onDraw",Canvas.class, new HookOnDraw("com.douban.movie"));
+            List<String> filter = new ArrayList<>();
+            filter.add("douban");
+            filter.add("android");
             //设置监听的应用方法
-            hookAPPMethod(classNames,classLoader,"com.douban.movie");
+            hookAPPMethod(classNames,classLoader,"com.douban.movie",filter);
 
-            XposedHelpers.findAndHookMethod("android.view.View", lpparam.classLoader,"findViewById",int.class,new FindViewByIdHook());
+//            XposedHelpers.findAndHookMethod("android.view.View", lpparam.classLoader,"findViewById",int.class,new FindViewByIdHook());
         }
         //监听食谱大全的方法调用
-        classNames = "shipudaquan.txt";
-        if(lpparam.packageName.contains("com.jnzc.shipudaquan")){
-            XposedHelpers.findAndHookMethod("android.view.View",lpparam.classLoader,"dispatchTouchEvent",MotionEvent.class,new DispatchTouchEventHook("com.jnzc.shipudaquan"));
-            XposedHelpers.findAndHookMethod("android.view.View", lpparam.classLoader, "onDraw",Canvas.class, new HookOnDraw("com.jnzc.shipudaquan"));
-            hookAPPMethod(classNames,classLoader,"com.jnzc.shipudaquan");
-
-            XposedHelpers.findAndHookMethod("android.view.View", lpparam.classLoader,"findViewById",int.class,new FindViewByIdHook());
-//            XposedHelpers.findAndHookMethod("android.widget.EditText", lpparam.classLoader,"setText",CharSequence.class,new TrackMethod(new Class[]{CharSequence.class}));
-        }
+//        classNames = "shipudaquan.txt";
+//        if(lpparam.packageName.contains("com.jnzc.shipudaquan")){
+//            XposedHelpers.findAndHookMethod("android.view.View",lpparam.classLoader,"dispatchTouchEvent",MotionEvent.class,new DispatchTouchEventHook("com.jnzc.shipudaquan"));
+//            XposedHelpers.findAndHookMethod("android.view.View", lpparam.classLoader, "onDraw",Canvas.class, new HookOnDraw("com.jnzc.shipudaquan"));
+//            hookAPPMethod(classNames,classLoader,"com.jnzc.shipudaquan");
+//
+//            XposedHelpers.findAndHookMethod("android.view.View", lpparam.classLoader,"findViewById",int.class,new FindViewByIdHook());
+////            XposedHelpers.findAndHookMethod("android.widget.EditText", lpparam.classLoader,"setText",CharSequence.class,new TrackMethod(new Class[]{CharSequence.class}));
+//        }
     }
     private void hook_methods(String className,ClassLoader loader,String packageName) {
 
@@ -103,35 +107,7 @@ public class IASXposedModule implements IXposedHookLoadPackage{
             Log.i("LZH",className+" error: "+e.getMessage());
         }
     }
-    private void hookAPPMethod(String filename,ClassLoader classLoader,String packageName){
-//        List<String> names = getClassName(filename);
-//        int sum = names.size();
-//        int num = 0;
-//        String last = "";
-//        for(String line :names){
-//            if(line.contains("android.widget")){
-//                Log.i("LZH","contain: "+line);
-//
-//
-//            }
-//            if(line.startsWith("android.support")||line.startsWith("dalvik")||line.startsWith("java")
-//                    ||line.startsWith("timber")||line.startsWith("androidx")){
-//                continue;
-//            }
-//            if(!line.contains(packageName)){
-//                continue;
-//            }
-//            hook_methods(line,classLoader,packageName);
-//            num++;
-//            //可以监听的方法有限，对于有些应用，它的方法不能全部监听
-////            if(num>=7000){//7000
-////                break;
-////            }
-//            last = line;
-//        }
-//        Log.i("LZH","last: "+last);
-
-
+    private void hookAPPMethod(String filename,ClassLoader classLoader,String packageName,List<String> filters){
         List<String> names = getClassName(filename);
         int sum = names.size();
         int num = 0;
@@ -141,16 +117,29 @@ public class IASXposedModule implements IXposedHookLoadPackage{
                 Log.i("LZH","contain: "+line);
             }
             if(line.startsWith("android.support")||line.startsWith("dalvik")||line.startsWith("java")
-                    ||line.startsWith("timber")||line.startsWith("androidx")||line.startsWith("android.")
+                    ||line.startsWith("timber")||line.startsWith("androidx")
                     ||line.startsWith("com.brsanthu")){
+                continue;
+            }
+            //根据filter进行过滤,line中有filter中字符串的通过
+            boolean isSkip = false;
+            for (String item:filters){
+                if(!line.contains(item)){
+                    isSkip = true;
+                }else{
+                    isSkip = false;
+                    break;
+                }
+            }
+            if(isSkip){
                 continue;
             }
             hook_methods(line,classLoader,packageName);
             num++;
             //可以监听的方法有限，对于有些应用，它的方法不能全部监听
-//            if(num>=7000){//7000
-//                break;
-//            }
+            if(num>=7000){//7000
+                break;
+            }
             last = line;
         }
         Log.i("LZH","last: "+last);

@@ -70,17 +70,17 @@ public class LocalActivityReceiver extends BroadcastReceiver{
 
                 //com.douban.movie
                 //
-                if(selfPackageName.contains("com.ichi2.anki")){
+                if(selfPackageName.contains("com.douban.movie")){
                     //设置LogWriter可以写入日志
                     LogWriter.turnWriteAble();
                 }
                 //模拟用户在豆瓣电影中搜索“哪吒”的操作
-                if(selfActivityName.contains("NewSearchActivity")){
-                    final TextView textView = selfActivity.findViewById(2131298054);
-                    textView.setText("007");
-                    String fileName = Environment.getExternalStorageDirectory().getAbsolutePath()+"/methodLog.txt";
-                    LogWriter.getInstance(fileName,"com.douban.movie").TempIsSetText = true;
-                }
+//                if(selfActivityName.contains("NewSearchActivity")){
+//                    final TextView textView = selfActivity.findViewById(2131298054);
+//                    textView.setText("007");
+//                    String fileName = Environment.getExternalStorageDirectory().getAbsolutePath()+"/methodLog.txt";
+//                    LogWriter.getInstance(fileName,"com.douban.movie").TempIsSetText = true;
+//                }
                 break;
         }
     }
