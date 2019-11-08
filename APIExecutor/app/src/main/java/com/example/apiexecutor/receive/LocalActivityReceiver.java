@@ -106,9 +106,6 @@ public class LocalActivityReceiver extends BroadcastReceiver implements CallBack
         switch (action){
             case CoordinatorReceiver.ON_RESUME:
                 showActivityName = intent.getStringExtra(CoordinatorReceiver.RESUME_ACTIVITY);
-//                Log.i("LZH","showActivity: "+showActivityName);
-//                curPackageName = (String)bundle.get("curPackage");
-//                curAppName = (String) bundle.get("curApp");
                 break;
             case LocalActivityReceiver.openTargetActivityByIntent:
                 Intent tarIntent = intent.getParcelableExtra(LocalActivityReceiver.TARGET_INTENT);
@@ -186,7 +183,6 @@ public class LocalActivityReceiver extends BroadcastReceiver implements CallBack
         View child = null;
         while(!queue.isEmpty()){
             temp = queue.remove(0);
-//            Log.i("LZH",temp.path);
             if(temp.path.equals(viewPath)){
                 return temp.view;
             }else if(temp.view instanceof ViewGroup){

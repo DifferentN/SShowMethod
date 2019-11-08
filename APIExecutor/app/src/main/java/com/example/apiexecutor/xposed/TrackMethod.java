@@ -30,10 +30,7 @@ public class TrackMethod extends XC_MethodHook {
         methodTrackPool = MethodTrackPool.getInstance();
     }
     @Override
-    protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
-//        super.beforeHookedMethod(param);
-//        objectPool.addGlobalHookParam(param);
-
+    protected void beforeHookedMethod(MethodHookParam param)  {
         String callerName = param.method.getDeclaringClass().getName();
         String methodName = param.method.getName();
         String message = "before: "+callerName+"/"+methodName;
@@ -45,8 +42,7 @@ public class TrackMethod extends XC_MethodHook {
 
 
     @Override
-    protected void afterHookedMethod(MethodHookParam param) throws Throwable {
-//        super.afterHookedMethod(param);
+    protected void afterHookedMethod(MethodHookParam param){
         String callerName = param.method.getDeclaringClass().getName();
         String methodName = param.method.getName();
         String message = "after: "+callerName+"/"+methodName;
