@@ -6,6 +6,7 @@ import android.os.Environment;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.TextView;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -27,7 +28,6 @@ public class IASXposedModule implements IXposedHookLoadPackage{
     @Override
     public void handleLoadPackage(XC_LoadPackage.LoadPackageParam lpparam) throws Throwable {
         Log.i("LZH","Loaded app: "+lpparam.packageName);
-
         XposedHelpers.findAndHookMethod("android.app.Activity", lpparam.classLoader, "onCreate", Bundle.class, new ActivityOnCreateHook(lpparam));
         XposedHelpers.findAndHookMethod("android.app.Activity", lpparam.classLoader, "onResume", new ActivityOnResumeHook());
 //        XposedHelpers.findAndHookMethod("android.app.Activity",lpparam.classLoader,"dispatchTouchEvent",MotionEvent.class,new DispatchTouchEventActivityHook());
@@ -58,32 +58,66 @@ public class IASXposedModule implements IXposedHookLoadPackage{
         //监听豆瓣电影的方法调用
         classNames = "douban.txt";
         if(lpparam.packageName.contains("com.douban.movie")){
+            XposedHelpers.findAndHookMethod("android.app.Activity",lpparam.classLoader,"dispatchTouchEvent",MotionEvent.class,new DispatchTouchEventActivityHook());
             XposedHelpers.findAndHookMethod("android.app.Activity",lpparam.classLoader,"dispatchTouchEvent",MotionEvent.class,new TrackMethod(new Class[]{MotionEvent.class},"com.douban.movie"));
             XposedHelpers.findAndHookMethod("android.view.View",lpparam.classLoader,"dispatchTouchEvent",MotionEvent.class,new DispatchTouchEventHook("com.douban.movie"));
             XposedHelpers.findAndHookMethod("android.view.View", lpparam.classLoader, "onDraw",Canvas.class, new HookOnDraw("com.douban.movie"));
+            XposedHelpers.findAndHookMethod("android.view.inputmethod.BaseInputConnection", lpparam.classLoader, "commitText",CharSequence.class, int.class,
+                    new TrackMethod(new Class[]{CharSequence.class, int.class},"com.douban.movie"));
             List<String> filter = new ArrayList<>();
             filter.add("douban");
-            filter.add("android");
+//            filter.add("android");
             //设置监听的应用方法
             hookAPPMethod(classNames,classLoader,"com.douban.movie",filter);
 
 //            XposedHelpers.findAndHookMethod("android.view.View", lpparam.classLoader,"findViewById",int.class,new FindViewByIdHook());
         }
-        //监听食谱大全的方法调用
-//        classNames = "shipudaquan.txt";
-//        if(lpparam.packageName.contains("com.jnzc.shipudaquan")){
-//            XposedHelpers.findAndHookMethod("android.view.View",lpparam.classLoader,"dispatchTouchEvent",MotionEvent.class,new DispatchTouchEventHook("com.jnzc.shipudaquan"));
-//            XposedHelpers.findAndHookMethod("android.view.View", lpparam.classLoader, "onDraw",Canvas.class, new HookOnDraw("com.jnzc.shipudaquan"));
-//            hookAPPMethod(classNames,classLoader,"com.jnzc.shipudaquan");
-//
+        classNames = "qqmusic.txt";
+        if(lpparam.packageName.contains("com.tencent.qqmusic")){
+            XposedHelpers.findAndHookMethod("android.app.Activity",lpparam.classLoader,"dispatchTouchEvent",MotionEvent.class,new TrackMethod(new Class[]{MotionEvent.class},"com.tencent.qqmusic"));
+            XposedHelpers.findAndHookMethod("android.view.View",lpparam.classLoader,"dispatchTouchEvent",MotionEvent.class,new DispatchTouchEventHook("com.tencent.qqmusic"));
+            XposedHelpers.findAndHookMethod("android.view.View", lpparam.classLoader, "onDraw",Canvas.class, new HookOnDraw("com.tencent.qqmusic"));
+            XposedHelpers.findAndHookMethod("android.view.inputmethod.BaseInputConnection", lpparam.classLoader, "commitText",CharSequence.class, int.class,
+                    new TrackMethod(new Class[]{CharSequence.class, int.class},"com.tencent.qqmusic"));
+            List<String> filter = new ArrayList<>();
+            filter.add("qqmusic");
+//            filter.add("android");
+            //设置监听的应用方法
+            hookAPPMethod(classNames,classLoader,"com.tencent.qqmusic",filter);
+
 //            XposedHelpers.findAndHookMethod("android.view.View", lpparam.classLoader,"findViewById",int.class,new FindViewByIdHook());
-////            XposedHelpers.findAndHookMethod("android.widget.EditText", lpparam.classLoader,"setText",CharSequence.class,new TrackMethod(new Class[]{CharSequence.class}));
-//        }
+        }
+
+        //监听食谱大全的方法调用
+        classNames = "shipudaquan.txt";
+        if(lpparam.packageName.contains("com.jnzc.shipudaquan")){
+            XposedHelpers.findAndHookMethod("android.app.Activity",lpparam.classLoader,"dispatchTouchEvent",MotionEvent.class,new TrackMethod(new Class[]{MotionEvent.class},"com.jnzc.shipudaquan"));
+            XposedHelpers.findAndHookMethod("android.view.View",lpparam.classLoader,"dispatchTouchEvent",MotionEvent.class,new DispatchTouchEventHook("com.jnzc.shipudaquan"));
+            XposedHelpers.findAndHookMethod("android.view.View", lpparam.classLoader, "onDraw",Canvas.class, new HookOnDraw("com.jnzc.shipudaquan"));
+            XposedHelpers.findAndHookMethod("android.view.inputmethod.BaseInputConnection", lpparam.classLoader, "commitText",CharSequence.class, int.class,
+                    new TrackMethod(new Class[]{CharSequence.class, int.class},"com.jnzc.shipudaquan"));
+            List<String> filter = new ArrayList<>();
+            filter.add("shipudaquan");
+            filter.add("amodule");
+            hookAPPMethod(classNames,classLoader,"com.jnzc.shipudaquan",filter);
+        }
+        classNames = "jiachangcai.txt";
+        if(lpparam.packageName.contains("cn.ecook.jiachangcai")){
+            XposedHelpers.findAndHookMethod("android.app.Activity",lpparam.classLoader,"dispatchTouchEvent",MotionEvent.class,new TrackMethod(new Class[]{MotionEvent.class},"cn.ecook.jiachangcai"));
+            XposedHelpers.findAndHookMethod("android.view.View",lpparam.classLoader,"dispatchTouchEvent",MotionEvent.class,new DispatchTouchEventHook("cn.ecook.jiachangcai"));
+            XposedHelpers.findAndHookMethod("android.view.View", lpparam.classLoader, "onDraw",Canvas.class, new HookOnDraw("cn.ecook.jiachangcai"));
+            XposedHelpers.findAndHookMethod("android.view.inputmethod.BaseInputConnection", lpparam.classLoader, "commitText",CharSequence.class, int.class,
+                    new TrackMethod(new Class[]{CharSequence.class, int.class},"cn.ecook.jiachangcai"));
+            List<String> filter = new ArrayList<>();
+            filter.add("jiachangcai");
+            hookAPPMethod(classNames,classLoader,"cn.ecook.jiachangcai",filter);
+        }
     }
     private void hook_methods(String className,ClassLoader loader,String packageName) {
 
         try {
             Class<?> clazz = loader.loadClass(className);
+//            Class<?> clazz = Class.forName(className);
             if(clazz.isInterface()||clazz.isEnum()||clazz.isAnnotation()||clazz.isArray()||clazz.isAnonymousClass()||clazz.isLocalClass()||clazz.isMemberClass()){
                 return;
             }
@@ -132,6 +166,9 @@ public class IASXposedModule implements IXposedHookLoadPackage{
                 }
             }
             if(isSkip){
+                continue;
+            }
+            if(line.contains("FordManager$b")){
                 continue;
             }
             hook_methods(line,classLoader,packageName);

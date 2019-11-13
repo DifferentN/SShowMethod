@@ -95,6 +95,7 @@ public class ActivityOnCreateHook extends XC_MethodHook {
         filter.addAction(CoordinatorReceiver.ON_RESUME);
         filter.addAction(CoordinatorReceiver.EXECUTE_METHOD);
         filter.addAction(LocalActivityReceiver.EXECUTE_EVENT);
+        filter.addAction(LocalActivityReceiver.DRAW_OVER);
 
         Object o = XposedHelpers.getAdditionalInstanceField(activity,"iasReceiver");
         if(o!=null){

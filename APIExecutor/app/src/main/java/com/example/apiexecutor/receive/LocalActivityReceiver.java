@@ -24,7 +24,6 @@ import com.example.apiexecutor.core.CoordinatorReceiver;
 import com.example.apiexecutor.core.Event;
 import com.example.apiexecutor.core.MethodExecutor;
 import com.example.apiexecutor.core.UserAction;
-import com.example.apiexecutor.test.MyRunnable;
 import com.example.apiexecutor.trackData.MethodTrackPool;
 import com.example.apiexecutor.util.ViewUtil;
 
@@ -46,18 +45,12 @@ public class LocalActivityReceiver extends BroadcastReceiver implements CallBack
     public static final String openTargetActivityByIntent = "openTargetActivityByIntent";
     public static final String openTargetActivityByDeepLink = "openTargetActivityByDeepLink";
     public static final String INPUT_TEXT = "INPUT_TEXT";
-    public static final String TEXT_KEY = "TEXT_KEY";
     public static final String INPUT_EVENT = "INPUT_EVENT";
-    public static final String EVENTS = "EVENTS";
-    public static final String DEEP_LINK_KEY = "DEEP_LINK_KEY";
-    public static final String DEEP_LINK = "DEEP_LINK";
 
 
     public static final String GenerateIntentData = "GenerateIntentData";
     public static final String GenerateDeepLink = "GenerateDeepLink";
 
-    public static final String fromActivityPlay = "fromActivityPlay";
-    public static final String tarPackageName = "tarPackageName";
     public static final String TARGET_INTENT = "targetIntent";
 
     public static final String WRITE_LOG = "WRITE_LOG";
@@ -67,6 +60,7 @@ public class LocalActivityReceiver extends BroadcastReceiver implements CallBack
     public static final String CLICK_DELETE = "CLICK_DELETE";
 
     public static final String EXECUTE_EVENT = "EXECUTE_EVENT";
+    public static final String DRAW_OVER = "DRAW_OVER";
     public static final String METHOD_NAME = "METHOD_NAME";
 
     public static final String USER_ACTION = "USER_ACTION";
@@ -79,10 +73,6 @@ public class LocalActivityReceiver extends BroadcastReceiver implements CallBack
     private String selfAppName;
     private String curPackageName = "";
     private String curAppName;
-    private String textKey ;
-    private byte[] eventBytes;
-    private String startActivityFrom;
-    private String startActivityFromApp;
     private String selfpackageName;
 
     private int clickTime = 0;
@@ -91,6 +81,7 @@ public class LocalActivityReceiver extends BroadcastReceiver implements CallBack
 
     private MethodExecutor methodExecutor;
     private MethodTrackPool methodTrackPool;
+    private UserAction prepareUserAction;
     public LocalActivityReceiver(Activity activity){
         selfActivity = activity;
         selfActivityName = activity.getComponentName().getClassName();
@@ -120,14 +111,22 @@ public class LocalActivityReceiver extends BroadcastReceiver implements CallBack
             case LocalActivityReceiver.EXECUTE_EVENT:
                 //2131298054
                 UserAction userAction = intent.getParcelableExtra(USER_ACTION);
-                if(showActivityName.compareTo(selfActivityName)!=0||!selfActivity.getClass().getName().contains(userAction.getActivityName())){
+                prepareUserAction = userAction;
+//                Log.i("LZH",selfActivityName+"\n"+showActivityName+"\n"+userAction.getActivityName());
+                if(showActivityName.compareTo(selfActivityName)!=0||!selfActivityName.contains(userAction.getActivityName())){
                     break;
                 }
                 Log.i("LZH",userAction.getActionName());
-                executeUserAction(userAction);
+                if(executeUserAction(userAction)){
+                    prepareUserAction = null;
+                }
                 break;
             case LocalActivityReceiver.INPUT_TEXT:
-                if(selfActivityName.equals("com.ichi2.anki.DeckPicker")){
+                //amodule.activity.main.MainHomePageNew
+                //com.douban.movie.activity.MainActivity
+                //com.tencent.qqmusic.activity.AppStarterActivity
+                //com.imooc.component.imoocmain.index.MCMainActivity
+                if(selfActivityName.equals("amodule.activity.main.MainHomePageNew")){
                     methodTrackPool = MethodTrackPool.getInstance();
                     methodTrackPool.clearRunTimeRecord();
                     methodTrackPool.LaunchUserAction();
@@ -135,9 +134,20 @@ public class LocalActivityReceiver extends BroadcastReceiver implements CallBack
                     isSetText = true;
                 }
                 break;
+            case LocalActivityReceiver.DRAW_OVER:
+                if(prepareUserAction!=null){
+                    if(showActivityName.compareTo(selfActivityName)!=0||!selfActivityName.contains(prepareUserAction.getActivityName())){
+                        break;
+                    }
+                    if(executeUserAction(prepareUserAction)){
+                        prepareUserAction = null;
+                    }
+                }
         }
     }
-    private void executeUserAction(UserAction userAction){
+    private boolean executeUserAction(UserAction userAction){
+        boolean executionOver = false;
+        Log.i("LZH","imitate user action "+userAction.getActionName());
         if(userAction.getActionName().equals(Event.SETTEXT)){
             TextView textView = null;
             textView = (TextView) getViewByPath(userAction.getViewPath());
@@ -146,24 +156,32 @@ public class LocalActivityReceiver extends BroadcastReceiver implements CallBack
             }
             if(textView==null){
                 Log.i("LZH","textView is null:setText");
-                return;
+                return executionOver;
             }
             textView.setText(userAction.getText());
+            executionOver = true;
         }else if(userAction.getActionName().equals(Event.DISPATCH)){
             View view = getViewByPath(userAction.getViewPath());
+            Log.i("LZH","viewPath: "+userAction.getViewPath());
             if(view==null&&userAction.getViewId()>0){
+                Log.i("LZH","can't get view by viewPath");
                 view = selfActivity.findViewById(userAction.getViewId());
             }
 
             if(view==null){
                 Log.i("LZH","view is null:dispatchTouchEvent");
-                return;
+                return executionOver;
             }
-            Log.i("LZH","findById: "+view.getId());
+            Log.i("LZH","findById: "+view.getId()+"w: "+view.getWidth()+"h: "+view.getHeight());
             Log.i("LZH","click view");
             imitateClick(view);
+            executionOver = true;
         }
-        tryLaunchUserAction();
+        if(executionOver){
+            tryLaunchUserAction();
+        }
+        return executionOver;
+
     }
     private View getViewByPath(String viewPath){
         class Node{
@@ -175,7 +193,7 @@ public class LocalActivityReceiver extends BroadcastReceiver implements CallBack
             }
         }
         List<Node> queue = new ArrayList<>();
-        View decorView = selfActivity.getWindow().getDecorView();
+        View decorView = selfActivity.getWindow().getDecorView().getRootView();
         String path = decorView.getClass().getName();
         queue.add(new Node(path,decorView));
         Node temp = null;
@@ -183,6 +201,7 @@ public class LocalActivityReceiver extends BroadcastReceiver implements CallBack
         View child = null;
         while(!queue.isEmpty()){
             temp = queue.remove(0);
+            Log.i("LZH","path: "+temp.path);
             if(temp.path.equals(viewPath)){
                 return temp.view;
             }else if(temp.view instanceof ViewGroup){
@@ -207,60 +226,20 @@ public class LocalActivityReceiver extends BroadcastReceiver implements CallBack
         int y = clickPos[1];
         int metaState = 0;
         MotionEvent motionEvent = MotionEvent.obtain(downTime, eventTime, action, x, y, metaState);
-        view.dispatchTouchEvent(motionEvent);
+        selfActivity.dispatchTouchEvent(motionEvent);
+//        view.getRootView().dispatchTouchEvent(motionEvent);
+//        view.dispatchTouchEvent(motionEvent);
         action = MotionEvent.ACTION_UP;
         motionEvent = MotionEvent.obtain(downTime, eventTime, action, x, y, metaState);
-        view.dispatchTouchEvent(motionEvent);
+//        view.dispatchTouchEvent(motionEvent);
+        selfActivity.dispatchTouchEvent(motionEvent);
+//        view.getRootView().dispatchTouchEvent(motionEvent);
     }
     private void tryLaunchUserAction(){
         MethodTrackPool methodTrackPool = MethodTrackPool.getInstance();
         methodTrackPool.LaunchUserAction();
     }
 
-    public void doClick(int eTime) {
-        if(eTime!=clickTime){
-            return;
-        }
-        long downTime = SystemClock.uptimeMillis();
-        long eventTime = SystemClock.uptimeMillis();
-        int action = MotionEvent.ACTION_DOWN;
-        int x = 72;
-        int y = 184;
-        int metaState = 0;
-        clickTime++;
-        if(eTime==0){
-            Log.i("LZH","doclick");
-            x = 193;
-            y = 283;
-//            x = 663;
-//            y = 75;
-            MotionEvent motionEvent = MotionEvent.obtain(downTime, eventTime, action, x, y, metaState);
-            selfActivity.dispatchTouchEvent(motionEvent);
-            action = MotionEvent.ACTION_UP;
-            motionEvent = MotionEvent.obtain(downTime, eventTime, action, x, y, metaState);
-            selfActivity.dispatchTouchEvent(motionEvent);
-
-        }else if(eTime==1){
-            x = 140;
-            y = 134;
-//            x = 322;
-//            y = 186;
-            MotionEvent motionEvent = MotionEvent.obtain(downTime, eventTime, action, x, y, metaState);
-            selfActivity.dispatchTouchEvent(motionEvent);
-            action = MotionEvent.ACTION_UP;
-            motionEvent = MotionEvent.obtain(downTime, eventTime, action, x, y, metaState);
-            selfActivity.dispatchTouchEvent(motionEvent);
-
-        }else if(eTime==2){
-            x = 484;
-            y = 245;
-            MotionEvent motionEvent = MotionEvent.obtain(downTime, eventTime, action, x, y, metaState);
-            selfActivity.dispatchTouchEvent(motionEvent);
-            action = MotionEvent.ACTION_UP;
-            motionEvent = MotionEvent.obtain(downTime, eventTime, action, x, y, metaState);
-            selfActivity.dispatchTouchEvent(motionEvent);
-        }
-    }
 
     @Override
     public String getContent() {

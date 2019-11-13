@@ -38,7 +38,7 @@ public class DispatchTouchEventHook extends XC_MethodHook {
             writeViewInfo(jsonObject,view);
             writeViewFlag(jsonObject,view);
             writeActivityID(jsonObject,view);
-//            Log.i("LZH-Method","before: "+jsonObject.toJSONString());
+//            Log.i("LZH","before: "+jsonObject.toJSONString());
             logWriter.writeLog("before: "+jsonObject.toJSONString());
         }
     }

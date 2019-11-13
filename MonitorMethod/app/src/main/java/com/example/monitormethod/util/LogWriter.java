@@ -20,10 +20,10 @@ public class LogWriter {
     private static String fName;
     private static boolean token = false;//是否可以写入日志的标志
     private static long preTime;
-    private static String targetPKName = "com.douban.movie";
+    private static String targetPKName = "com.tencent.qqmusic";
     public boolean TempIsSetText = false;
     public int num = 0;
-    //com.kingsoft com.ichi2.anki
+    //com.kingsoft com.ichi2.anki  com.tencent.qqmusic
     //com.ichi2.anki  com.yongche.android  com.douban.movie  com.jnzc.shipudaquan
     public LogWriter(String fileName){
         fName = fileName;
@@ -65,8 +65,9 @@ public class LogWriter {
             return;
         }
         try {
+
             writer.write(log+"\n");
-            writer.flush();
+//            writer.flush();
 //            Log.i("LZH","write "+log);
         } catch (IOException e) {
             e.printStackTrace();

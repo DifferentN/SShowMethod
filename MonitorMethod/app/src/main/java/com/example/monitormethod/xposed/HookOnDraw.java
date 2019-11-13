@@ -11,6 +11,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.TextView;
 
+import com.example.monitormethod.receive.LocalActivityReceiver;
 import com.example.monitormethod.trackData.MyTextWatcher;
 import com.example.monitormethod.util.LogWriter;
 
@@ -38,24 +39,28 @@ public class HookOnDraw extends XC_MethodHook {
         if(view!=null&&view instanceof TextView){
             ((TextView) view).addTextChangedListener(new MyTextWatcher(view));
         }
-//        if(!logWriter.TempIsSetText){
-//            return;
-//        }
-//        if(view instanceof TextView){
-//            TextView textView = (TextView) view;
-//            String text = textView.getText().toString();
-//            if(text.equals("007：幽灵党")&&logWriter.num==0){
-//                imitateClick(view,activity);
-//                logWriter.num++;
-//            }else if(text.contains("影视")&&logWriter.num==1){
-//                imitateClick(view,activity);
-//                logWriter.num++;
-//            }else if(text.contains("007：幽灵党")&&text.contains("2015")&&logWriter.num==2){
-//                imitateClick(view,activity);
-//                Log.i("LZH","哪吒之魔童降世(2019)");
-//                logWriter.num++;
-//            }
-//        }
+        if(!LocalActivityReceiver.imitateStart){
+            return;
+        }
+        if(view instanceof TextView){
+            TextView textView = (TextView) view;
+            String text = textView.getText().toString();
+            if(text.equals("罗小黑战记")&&logWriter.num==0){
+                if(textView.getId()==2131298054){
+                    //跳过搜索框
+                    return;
+                }
+                imitateClick(view,activity);
+                logWriter.num++;
+            }else if(text.equals("影视")&&logWriter.num==1){
+                imitateClick(view,activity);
+                logWriter.num++;
+            }else if(text.contains("罗小黑战记")&&text.contains("2019")&&logWriter.num==2){
+                imitateClick(view,activity);
+                Log.i("LZH","罗小黑战记(2019)");
+                logWriter.num++;
+            }
+        }
     }
     private boolean checkAdd(TextView view){
         Class clazz = view.getClass();

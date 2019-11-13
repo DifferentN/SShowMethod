@@ -35,54 +35,128 @@ public class LocalActivityReceiver extends BroadcastReceiver{
     private Activity selfActivity;
     public static final String intent = "intent";
     public static final String currentActivity = "currentActivity";
-    public static final String openTargetActivityByIntent = "openTargetActivityByIntent";
-    public static final String openTargetActivityByDeepLink = "openTargetActivityByDeepLink";
-    public static final String INPUT_TEXT = "INPUT_TEXT";
-    public static final String INPUT_EVENT = "INPUT_EVENT";
-
-    public static final String GenerateIntentData = "GenerateIntentData";
-    public static final String GenerateDeepLink = "GenerateDeepLink";
 
     public static final String WRITE_LOG = "WRITE_LOG";
-    public static final String ON_CLICK = "ON_CLICK";
-    public static final String CREATE_DESK = "CREATE_DESK";
-    public static final String FIND_SPECIFY = "FIND_SPECIFY";
-    public static final String CLICK_DELETE = "CLICK_DELETE";
+    public static final String ON_RESUME = "ON_RESUME";
+    public static final String RESUME_ACTIVITY = "RESUME_ACTIVITY";
 
     public static final String obtainActivityText = "obtainActivityText";
 
     private String selfActivityName = "";
+    private String showActivityName = "";
     private String selfPackageName;
 
-    private int eventTime = 0;
+    public static boolean imitateStart = false;
     public LocalActivityReceiver(Activity activity){
         selfActivity = activity;
         selfActivityName = activity.getComponentName().getClassName();
         selfPackageName = activity.getPackageName();
-        selfPackageName = activity.getPackageName();
+
     }
 
     @Override
     public void onReceive(Context context, Intent intent) {
         String action = intent.getAction();
         switch (action){
+            case ON_RESUME:
+                showActivityName = intent.getStringExtra(RESUME_ACTIVITY);
+//                imitateExecution();
+                break;
             case LocalActivityReceiver.WRITE_LOG:
-
-                //com.douban.movie
-                //
-                if(selfPackageName.contains("com.douban.movie")){
+                //com.douban.movie com.tencent.qqmusic
+                //com.jnzc.shipudaquan
+                if(selfPackageName.contains("com.tencent.qqmusic")){
                     //设置LogWriter可以写入日志
                     LogWriter.turnWriteAble();
                 }
-                //模拟用户在豆瓣电影中搜索“哪吒”的操作
-//                if(selfActivityName.contains("NewSearchActivity")){
-//                    final TextView textView = selfActivity.findViewById(2131298054);
-//                    textView.setText("007");
-//                    String fileName = Environment.getExternalStorageDirectory().getAbsolutePath()+"/methodLog.txt";
-//                    LogWriter.getInstance(fileName,"com.douban.movie").TempIsSetText = true;
-//                }
+//                click();
+//                imitateStart = true;
+//                imitateExecution();
                 break;
         }
+    }
+    private void imitateExecution(){
+        Log.i("LZH","imitateStart: "+imitateStart);
+        if(!imitateStart){
+            return;
+        }
+        if(selfActivityName.equals(showActivityName)&&selfActivityName.equals("com.douban.movie.activity.MainActivity")){
+            List<String> list = new ArrayList<>();
+            list.add("电影");
+            list.add("电视剧");
+            View view = getTargetView(list);
+            imitateClick(view);
+        }else if(selfActivityName.equals(showActivityName)&&selfActivityName.equals("com.douban.frodo.search.activity.NewSearchActivity")){
+            List<String> list = new ArrayList<>();
+            list.add("电影");
+            list.add("电视剧");
+//            View view = selfActivity.findViewById(2131298054);
+//            imitateClick(view);
+//
+//            ((TextView)view).setText("罗小黑战记");
+        }
+    }
+    private void click(){
+        int clickPos[] = new int[2];
+        long downTime = SystemClock.uptimeMillis();
+        long eventTime = SystemClock.uptimeMillis();
+        int action = MotionEvent.ACTION_DOWN;
+        int x = 202;
+        int y = 61;
+        int metaState = 0;
+        MotionEvent motionEvent = MotionEvent.obtain(downTime, eventTime, action, x, y, metaState);
+        selfActivity.dispatchTouchEvent(motionEvent);
+        action = MotionEvent.ACTION_UP;
+        motionEvent = MotionEvent.obtain(downTime, eventTime, action, x, y, metaState);
+        selfActivity.dispatchTouchEvent(motionEvent);
+    }
+    private void imitateClick(View view){
+        int clickPos[] = new int[2];
+        view.getLocationInWindow(clickPos);
+        clickPos[0]+=view.getWidth()/2;
+        clickPos[1]+=view.getHeight()/2;
+        long downTime = SystemClock.uptimeMillis();
+        long eventTime = SystemClock.uptimeMillis();
+        int action = MotionEvent.ACTION_DOWN;
+        int x = clickPos[0];
+        int y = clickPos[1];
+        int metaState = 0;
+        MotionEvent motionEvent = MotionEvent.obtain(downTime, eventTime, action, x, y, metaState);
+        view.getRootView().dispatchTouchEvent(motionEvent);
+        action = MotionEvent.ACTION_UP;
+        motionEvent = MotionEvent.obtain(downTime, eventTime, action, x, y, metaState);
+        view.getRootView().dispatchTouchEvent(motionEvent);
+    }
+    private View getTargetView(List<String> texts){
+        View decor = selfActivity.getWindow().getDecorView();
+        ViewGroup viewGroup;
+        View temp = null,child = null;
+        List<View> queue = new ArrayList<>();
+        queue.add(decor);
+        while(!queue.isEmpty()){
+            temp = queue.remove(0);
+            if(temp instanceof  ViewGroup){
+                viewGroup = (ViewGroup) temp;
+                for(int i=0;i<viewGroup.getChildCount();i++){
+                    queue.add(viewGroup.getChildAt(i));
+                }
+            }else if(check(temp,texts)){
+                return temp;
+            }
+        }
+        return null;
+    }
+    private boolean check(View view,List<String> texts){
+        if(!(view instanceof TextView)){
+            return false;
+        }
+        String viewContent = ((TextView) view).getText().toString();
+        for(String item:texts){
+            if(!viewContent.contains(item)){
+                return false;
+            }
+        }
+        return true;
     }
     private List<View> getRootViews(Activity activity){
         ArrayList<View> views = null;

@@ -67,19 +67,10 @@ public class ActivityOnCreateHook extends XC_MethodHook {
         filter.addAction(LocalActivityReceiver.intent);
 
         filter.addAction(LocalActivityReceiver.currentActivity);
-        filter.addAction(LocalActivityReceiver.openTargetActivityByIntent);
 
-        filter.addAction(LocalActivityReceiver.INPUT_TEXT);
-        filter.addAction(LocalActivityReceiver.INPUT_EVENT);
-        filter.addAction(LocalActivityReceiver.GenerateIntentData);
-        filter.addAction(LocalActivityReceiver.GenerateDeepLink);
-        filter.addAction(LocalActivityReceiver.openTargetActivityByDeepLink);
         filter.addAction(LocalActivityReceiver.obtainActivityText);
         filter.addAction(LocalActivityReceiver.WRITE_LOG);
-        filter.addAction(LocalActivityReceiver.ON_CLICK);
-        filter.addAction(LocalActivityReceiver.CREATE_DESK);
-        filter.addAction(LocalActivityReceiver.FIND_SPECIFY);
-        filter.addAction(LocalActivityReceiver.CLICK_DELETE);
+        filter.addAction(LocalActivityReceiver.ON_RESUME);
 
         Object o = XposedHelpers.getAdditionalInstanceField(activity,"iasReceiver");
         if(o!=null){
@@ -108,6 +99,14 @@ public class ActivityOnCreateHook extends XC_MethodHook {
 //        if(activity.getPackageName().contains("com.ichi2.anki")){
 //            writeAnkiClassName(activity.getPackageName(),activity,fileName);
 //        }
+//        fileName = Environment.getExternalStorageDirectory().getAbsolutePath()+"/qqmusic.txt";
+//        if(activity.getPackageName().contains("com.tencent.qqmusic")){
+//            writeAnkiClassName(activity.getPackageName(),activity,fileName);
+//        }
+//        fileName = Environment.getExternalStorageDirectory().getAbsolutePath()+"/jiachangcai.txt";
+//        if(activity.getPackageName().contains("cn.ecook.jiachangcai")){
+//            writeAnkiClassName(activity.getPackageName(),activity,fileName);
+//        }
     }
     private void showClassName(String pkName, Context context){
         List<String> names = getClassName(pkName,context);
@@ -118,7 +117,6 @@ public class ActivityOnCreateHook extends XC_MethodHook {
     public List<String > getClassName(String packageName, Context context){
         List<String > classNameList=new ArrayList<String >();
         try {
-
             DexFile df = new DexFile(context.getPackageCodePath());//通过DexFile查找当前的APK中可执行文件
             Enumeration<String> enumeration = df.entries();//获取df中的元素  这里包含了所有可执行的类名 该类名包含了包名+类名的方式
             while (enumeration.hasMoreElements()) {//遍历

@@ -35,6 +35,19 @@ public class TrackMethod extends XC_MethodHook {
     }
     @Override
     protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
+        if(Thread.currentThread().getId()!=1){
+            return;
+        }
+        if(param.method.getName().contains("getLayoutDirection")){
+            if(param.method.getDeclaringClass().getName().contains("com.douban.frodo.baseproject.view.flowlayout.DouFlowLayout")){
+                Log.i("LZH","com.douban.frodo.baseproject.view.flowlayout.DouFlowLayout/getLayoutDirection");
+            }
+        }
+        if(param.method.getName().contains("onStop")){
+            if(param.method.getDeclaringClass().getName().contains("com.douban.frodo.baseproject.activity.BaseActivity")){
+                Log.i("LZH","com.douban.frodo.baseproject.activity.BaseActivity/onStop");
+            }
+        }
         JSONObject jsonObject = new JSONObject();
         writeCallerInfo(jsonObject,param);
         writeMethodName(jsonObject,param);
@@ -47,13 +60,17 @@ public class TrackMethod extends XC_MethodHook {
             logWriter.writeLog("before: "+jsonObject.toJSONString());
 //            Log.i("LZH-Method","before: "+jsonObject.toJSONString());
         }
+
+//        Log.i("LZH",""+param.method.getDeclaringClass().getName()+"/"+param.method.getName());
 //        Log.i("LZH-Method","before: "+jsonObject.toJSONString());
     }
 
     @Override
     protected void afterHookedMethod(MethodHookParam param) throws Throwable {
-//        super.afterHookedMethod(param);
 //        checkPermission();
+        if(Thread.currentThread().getId()!=1){
+            return;
+        }
         JSONObject jsonObject = new JSONObject();
         writeCallerInfo(jsonObject,param);
         writeMethodName(jsonObject,param);
@@ -219,6 +236,10 @@ public class TrackMethod extends XC_MethodHook {
      * @param param
      */
     private void writeViewInfo(JSONObject json,MethodHookParam param){
+        String methodName = param.method.getName();
+        if(!methodName.contains("dispatchTouchEvent")){
+            return;
+        }
         Object o = param.thisObject;
         View view = null;
         if(o instanceof View){

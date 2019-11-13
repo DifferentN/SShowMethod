@@ -32,6 +32,7 @@ public class MethodTrackPool {
     private List<Event> events;
     private Event curEvent;
     private boolean isAvailable = false;
+    private int LOG_SIZE = 25;
     public MethodTrackPool(){
         sequence = new ArrayList<String>();
         subCall = new ArrayList<>();
@@ -110,13 +111,29 @@ public class MethodTrackPool {
     }
     private void removeSequenceItem(String last){
         List<String> invokeStrs = curEvent.getInvokeList();
-        Log.i("LZH","curMethod: "+last);
-        if(curEvent.invokePoint<invokeStrs.size()&&
-                invokeStrs.get(curEvent.invokePoint).equals(last)){
-            curEvent.invokePoint++;
-            Log.i("LZH","match method");
-        }else{
-            Log.i("LZH","curMethod"+last+" \n record: "+invokeStrs.get(curEvent.invokePoint));
+//        Log.i("LZH","curMethod: "+last);
+        String invoke = null;
+        boolean match = false;
+        runTimeRecord.add(last);
+        if(curEvent.invokePoint<invokeStrs.size()){
+            invoke = invokeStrs.get(curEvent.invokePoint);
+            invoke = invoke.substring(0,invoke.length()-1);
+            for(int i=0;i<runTimeRecord.size();i++){
+                // checkEqual(runTimeRecord.get(i),invoke)
+                if(runTimeRecord.get(i).contains(invoke)){
+                    curEvent.invokePoint++;
+                    match = true;
+                    Log.i("LZH","match method");
+                    break;
+                }
+            }
+//            Log.i("LZH", "curMethod" + last + " \n record: " + curEvent.invokePoint + " " + invokeStrs.get(curEvent.invokePoint));
+        }
+        if(!match&&curEvent.invokePoint<invokeStrs.size()){
+            Log.i("LZH", "curMethod" + last + " \n record: " + curEvent.invokePoint + " " + invokeStrs.get(curEvent.invokePoint));
+        }
+        if(runTimeRecord.size()>LOG_SIZE){
+            runTimeRecord.remove(0);
         }
         checkNotification(curEvent);
     }
@@ -141,6 +158,7 @@ public class MethodTrackPool {
             Log.i("LZH","context is null can't send notification");
             return;
         }
+        Log.i("LZH","sendNotification");
         Intent intent = new Intent();
         intent.setAction(LocalActivityReceiver.EXECUTE_EVENT);
         UserAction userAction = new UserAction(event.getMethodName(),
@@ -153,6 +171,7 @@ public class MethodTrackPool {
         }
         intent.putExtra(LocalActivityReceiver.USER_ACTION,userAction);
         context.sendBroadcast(intent);
+        Log.i("LZH","sendActionIntent");
     }
     public void setContext(Context context){
         this.context = context;
@@ -166,12 +185,34 @@ public class MethodTrackPool {
             return;
         }
         if(curEvent==null||curEvent.invokePoint>=curEvent.getInvokeList().size()){
-            curEvent = events.remove(0);
-            sendNotification(curEvent);
-        }
+            if(!events.isEmpty()){
+                curEvent = events.remove(0);
+                sendNotification(curEvent);
+            }else{
+                Log.i("LZH","event has done");
+            }
 
+        }
     }
 
+    private boolean checkEqual(String curMethod,String invoke){
+        int start = 0,end = 0;
+        while(start>=0){
+            start = curMethod.indexOf("(",start);
+            end = curMethod.indexOf(":",start);
+            if(end<0){
+                end = curMethod.indexOf(")",start);
+            }
+            if(start<0){
+                break;
+            }
+            if(!invoke.contains(curMethod.substring(start,end))){
+                return false;
+            }
+            start = end+1;
+        }
+        return true;
+    }
     private static class MyMethod{
         public String name;
         private List<String> childs;

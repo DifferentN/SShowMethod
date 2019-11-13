@@ -31,6 +31,17 @@ public class TrackMethod extends XC_MethodHook {
     }
     @Override
     protected void beforeHookedMethod(MethodHookParam param)  {
+        if(param.method.getName().contains("getLayoutDirection")){
+            if(param.method.getDeclaringClass().getName().contains("com.douban.frodo.baseproject.view.flowlayout.DouFlowLayout")){
+                Log.i("LZH","com.douban.frodo.baseproject.view.flowlayout.DouFlowLayout/getLayoutDirection");
+            }
+        }
+        if(param.method.getName().contains("onStop")){
+            if(param.method.getDeclaringClass().getName().contains("com.douban.frodo.baseproject.activity.BaseActivity")){
+                Log.i("LZH","com.douban.frodo.baseproject.activity.BaseActivity/onStop");
+            }
+        }
+
         String callerName = param.method.getDeclaringClass().getName();
         String methodName = param.method.getName();
         String message = "before: "+callerName+"/"+methodName;
@@ -49,7 +60,6 @@ public class TrackMethod extends XC_MethodHook {
         if(Thread.currentThread().getId()==1){
             methodTrackPool.sendMessage(message);
         }
-
 //        Log.i("LZH-Method","after: "+message);
     }
 }
