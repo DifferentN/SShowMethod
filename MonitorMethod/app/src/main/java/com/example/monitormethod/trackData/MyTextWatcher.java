@@ -1,5 +1,6 @@
 package com.example.monitormethod.trackData;
 
+import android.content.Intent;
 import android.os.Environment;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -9,6 +10,7 @@ import android.widget.TextView;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.example.monitormethod.receive.RecordMethodLogReceiver;
 import com.example.monitormethod.util.LogWriter;
 import com.example.monitormethod.util.ViewUtil;
 
@@ -101,6 +103,7 @@ public class MyTextWatcher implements TextWatcher {
             logWriter.writeLog("before: "+info);
         }
 //        Log.i("LZH","Text: "+info);
+
         if(logWriter!=null){
             logWriter.writeLog("after: "+info);
         }

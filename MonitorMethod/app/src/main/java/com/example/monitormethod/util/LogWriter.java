@@ -9,6 +9,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * 单实例模式，确保所有方法调用Log顺序的写入文件中
@@ -20,14 +21,16 @@ public class LogWriter {
     private static String fName;
     private static boolean token = false;//是否可以写入日志的标志
     private static long preTime;
-    private static String targetPKName = "com.tencent.qqmusic";
+    private static String targetPKName = "cn.cuco";
     public boolean TempIsSetText = false;
     public int num = 0;
-    //com.kingsoft com.ichi2.anki  com.tencent.qqmusic
+    private static List<String> list ;
+    //com.kingsoft com.ichi2.anki  com.tencent.qqmusic  com.ss.android.autoprice
     //com.ichi2.anki  com.yongche.android  com.douban.movie  com.jnzc.shipudaquan
     public LogWriter(String fileName){
         fName = fileName;
         file = new File(fName);
+        list = new ArrayList<>();
         if(!file.exists()){
             try {
                 file.createNewFile();
@@ -64,14 +67,15 @@ public class LogWriter {
         if(!token){
             return;
         }
-        try {
-
-            writer.write(log+"\n");
-//            writer.flush();
-//            Log.i("LZH","write "+log);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        list.add(log);
+//        try {
+////            Log.i("LZH","thread id: "+Thread.currentThread().getId());
+//            writer.write(log+"\n");
+////            writer.flush();
+////            Log.i("LZH","write "+log);
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
     }
 
     public static void turnWriteAble(){
@@ -89,6 +93,7 @@ public class LogWriter {
                 Log.i("LZH","writer is null");
                 return;
             }
+            writeLogList();
             try {
                 writer.flush();
                 writer.close();
@@ -96,5 +101,18 @@ public class LogWriter {
                 e.printStackTrace();
             }
         }
+    }
+    private static void writeLogList(){
+        try {
+//            Log.i("LZH","thread id: "+Thread.currentThread().getId());
+            for(String log:list){
+                writer.write(log+"\n");
+            }
+//            writer.flush();
+//            Log.i("LZH","write "+log);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
     }
 }

@@ -64,8 +64,8 @@ public class LocalActivityReceiver extends BroadcastReceiver{
                 break;
             case LocalActivityReceiver.WRITE_LOG:
                 //com.douban.movie com.tencent.qqmusic
-                //com.jnzc.shipudaquan
-                if(selfPackageName.contains("com.tencent.qqmusic")){
+                //com.jnzc.shipudaquan com.yongche.android
+                if(selfPackageName.contains("cn.cuco")){
                     //设置LogWriter可以写入日志
                     LogWriter.turnWriteAble();
                 }
@@ -95,20 +95,6 @@ public class LocalActivityReceiver extends BroadcastReceiver{
 //
 //            ((TextView)view).setText("罗小黑战记");
         }
-    }
-    private void click(){
-        int clickPos[] = new int[2];
-        long downTime = SystemClock.uptimeMillis();
-        long eventTime = SystemClock.uptimeMillis();
-        int action = MotionEvent.ACTION_DOWN;
-        int x = 202;
-        int y = 61;
-        int metaState = 0;
-        MotionEvent motionEvent = MotionEvent.obtain(downTime, eventTime, action, x, y, metaState);
-        selfActivity.dispatchTouchEvent(motionEvent);
-        action = MotionEvent.ACTION_UP;
-        motionEvent = MotionEvent.obtain(downTime, eventTime, action, x, y, metaState);
-        selfActivity.dispatchTouchEvent(motionEvent);
     }
     private void imitateClick(View view){
         int clickPos[] = new int[2];

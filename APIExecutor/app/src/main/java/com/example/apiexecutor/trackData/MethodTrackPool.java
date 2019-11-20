@@ -19,6 +19,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Vector;
@@ -31,8 +32,9 @@ public class MethodTrackPool {
     private List<MyMethod> subCall;
     private List<Event> events;
     private Event curEvent;
+    private boolean curActionFinish = false; //false 表示当前操作未执行
     private boolean isAvailable = false;
-    private int LOG_SIZE = 25;
+    private int LOG_SIZE = 0;
     public MethodTrackPool(){
         sequence = new ArrayList<String>();
         subCall = new ArrayList<>();
@@ -135,16 +137,30 @@ public class MethodTrackPool {
         if(runTimeRecord.size()>LOG_SIZE){
             runTimeRecord.remove(0);
         }
-        checkNotification(curEvent);
+        if(invokeStrs.size()>0){
+            checkNotification(curEvent);
+        }
+
     }
 
     private void checkNotification(Event event) {
         if(event==null||event.invokePoint>=event.getInvokeList().size()){
             if(!events.isEmpty()){
                 curEvent = events.remove(0);
+                Log.i("LZH","invoke 0");
                 sendNotification(curEvent);
             }
         }
+    }
+
+    /**
+     * 当前的操作已经执行完成，将curEvent设置为null
+     */
+    public void finishCurAction(){
+        curActionFinish = true;
+    }
+    public boolean isCurActionFinish(){
+        return curActionFinish;
     }
     private boolean isAvailable(){
         if(context!=null&&isAvailable){
@@ -171,6 +187,7 @@ public class MethodTrackPool {
         }
         intent.putExtra(LocalActivityReceiver.USER_ACTION,userAction);
         context.sendBroadcast(intent);
+        curActionFinish = false;
         Log.i("LZH","sendActionIntent");
     }
     public void setContext(Context context){
@@ -191,7 +208,6 @@ public class MethodTrackPool {
             }else{
                 Log.i("LZH","event has done");
             }
-
         }
     }
 

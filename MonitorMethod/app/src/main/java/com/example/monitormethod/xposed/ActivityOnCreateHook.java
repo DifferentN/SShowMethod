@@ -19,7 +19,9 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
+import java.util.NavigableMap;
 import java.util.PriorityQueue;
+import java.util.TreeMap;
 
 import dalvik.system.DexFile;
 import de.robv.android.xposed.XC_MethodHook;
@@ -107,6 +109,12 @@ public class ActivityOnCreateHook extends XC_MethodHook {
 //        if(activity.getPackageName().contains("cn.ecook.jiachangcai")){
 //            writeAnkiClassName(activity.getPackageName(),activity,fileName);
 //        }
+//        fileName = Environment.getExternalStorageDirectory().getAbsolutePath()+"/cuco.txt";
+//        if(activity.getPackageName().contains("cn.cuco")){
+//            writeAnkiClassName(activity.getPackageName(),activity,fileName);
+//        }
+
+
     }
     private void showClassName(String pkName, Context context){
         List<String> names = getClassName(pkName,context);

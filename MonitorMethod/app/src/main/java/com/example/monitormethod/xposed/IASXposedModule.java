@@ -1,5 +1,6 @@
 package com.example.monitormethod.xposed;
 
+import android.content.Context;
 import android.graphics.Canvas;
 import android.os.Bundle;
 import android.os.Environment;
@@ -58,7 +59,6 @@ public class IASXposedModule implements IXposedHookLoadPackage{
         //监听豆瓣电影的方法调用
         classNames = "douban.txt";
         if(lpparam.packageName.contains("com.douban.movie")){
-            XposedHelpers.findAndHookMethod("android.app.Activity",lpparam.classLoader,"dispatchTouchEvent",MotionEvent.class,new DispatchTouchEventActivityHook());
             XposedHelpers.findAndHookMethod("android.app.Activity",lpparam.classLoader,"dispatchTouchEvent",MotionEvent.class,new TrackMethod(new Class[]{MotionEvent.class},"com.douban.movie"));
             XposedHelpers.findAndHookMethod("android.view.View",lpparam.classLoader,"dispatchTouchEvent",MotionEvent.class,new DispatchTouchEventHook("com.douban.movie"));
             XposedHelpers.findAndHookMethod("android.view.View", lpparam.classLoader, "onDraw",Canvas.class, new HookOnDraw("com.douban.movie"));
@@ -112,6 +112,44 @@ public class IASXposedModule implements IXposedHookLoadPackage{
             filter.add("jiachangcai");
             hookAPPMethod(classNames,classLoader,"cn.ecook.jiachangcai",filter);
         }
+
+//        classNames = "cuco.txt";
+//        if(lpparam.packageName.contains("cn.cuco")){
+//            XposedHelpers.findAndHookMethod("android.app.Activity",lpparam.classLoader,"dispatchTouchEvent",MotionEvent.class,new TrackMethod(new Class[]{MotionEvent.class},"cn.cuco"));
+//            XposedHelpers.findAndHookMethod("android.view.View",lpparam.classLoader,"dispatchTouchEvent",MotionEvent.class,new DispatchTouchEventHook("cn.cuco"));
+//            XposedHelpers.findAndHookMethod("android.view.View", lpparam.classLoader, "onDraw",Canvas.class, new HookOnDraw("cn.cuco"));
+//            XposedHelpers.findAndHookMethod("android.view.inputmethod.BaseInputConnection", lpparam.classLoader, "commitText",CharSequence.class, int.class,
+//                    new TrackMethod(new Class[]{CharSequence.class, int.class},"cn.cuco"));
+//            List<String> filter = new ArrayList<>();
+//            filter.add("cuco");
+////            filter.add("android");
+//            //设置监听的应用方法
+//            hookAPPMethod(classNames,classLoader,"cn.cuco",filter);
+////            XposedHelpers.findAndHookMethod("android.view.View", lpparam.classLoader,"findViewById",int.class,new FindViewByIdHook());
+//        }
+        if (lpparam.packageName.equals("cn.cuco")) {
+            XposedHelpers.findAndHookMethod("com.stub.StubApp", lpparam.classLoader,
+                    "attachBaseContext", Context.class, new XC_MethodHook() {
+                        @Override
+                        protected void afterHookedMethod(MethodHookParam param) throws Throwable {
+                            super.afterHookedMethod(param);
+                            Log.i("LZH","hook classLoader");
+                            Context context = (Context) param.args[0];
+                            ClassLoader classLoader =context.getClassLoader();
+                            XposedHelpers.findAndHookMethod("android.app.Activity",classLoader,"dispatchTouchEvent",MotionEvent.class,new TrackMethod(new Class[]{MotionEvent.class},"cn.cuco"));
+                            XposedHelpers.findAndHookMethod("android.view.View",classLoader,"dispatchTouchEvent",MotionEvent.class,new DispatchTouchEventHook("cn.cuco"));
+                            XposedHelpers.findAndHookMethod("android.view.View", classLoader, "onDraw",Canvas.class, new HookOnDraw("cn.cuco"));
+                            XposedHelpers.findAndHookMethod("android.view.inputmethod.BaseInputConnection", classLoader, "commitText",CharSequence.class, int.class,
+                                    new TrackMethod(new Class[]{CharSequence.class, int.class},"cn.cuco"));
+                            List<String> filter = new ArrayList<>();
+                            filter.add("cuco");
+                            //设置监听的应用方法
+                            hookAPPMethod("cuco.txt",classLoader,"cn.cuco",filter);
+
+                        }
+                    });
+        }
+
     }
     private void hook_methods(String className,ClassLoader loader,String packageName) {
 
@@ -139,6 +177,32 @@ public class IASXposedModule implements IXposedHookLoadPackage{
         } catch (Exception e) {
             XposedBridge.log(e);
             Log.i("LZH",className+" error: "+e.getMessage());
+        }
+    }
+    private void hook_methods(Class clazz,String packageName){
+        Log.i("LZH","prepate hook: "+clazz.getName());
+        try {
+            if(clazz.isInterface()||clazz.isEnum()||clazz.isAnnotation()||clazz.isArray()||clazz.isAnonymousClass()||clazz.isLocalClass()||clazz.isMemberClass()){
+                return;
+            }
+            Method methods[] = clazz.getDeclaredMethods();
+            for (Method method : methods) {
+                int methodId = method.getModifiers();
+
+                if(Modifier.isAbstract(methodId)||Modifier.isInterface(methodId)||Modifier.isNative(methodId)){
+                    continue;
+                }
+                //如果 （通过反射找到的方法名和准备hook的方法名相同 && 方法判定如果整数参数包含abstract修饰符，则返回true，否则返回false &&
+                // 方法判断如果给定参数包含public修饰符，则返回true，否则返回false )
+                //Modifier.isPublic(method.getModifiers())
+
+                if (true) {
+                    XposedBridge.hookMethod(method, new TrackMethod(method.getParameterTypes(),packageName));
+                }
+            }
+        } catch (Exception e) {
+            XposedBridge.log(e);
+            Log.i("LZH",clazz.getName()+" error: "+e.getMessage());
         }
     }
     private void hookAPPMethod(String filename,ClassLoader classLoader,String packageName,List<String> filters){
@@ -169,12 +233,13 @@ public class IASXposedModule implements IXposedHookLoadPackage{
                 continue;
             }
             if(line.contains("FordManager$b")){
+                //针对QQ音乐出错纠正
                 continue;
             }
             hook_methods(line,classLoader,packageName);
             num++;
             //可以监听的方法有限，对于有些应用，它的方法不能全部监听
-            if(num>=7000){//7000
+            if(num>=4000){//7000
                 break;
             }
             last = line;

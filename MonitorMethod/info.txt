@@ -1,0 +1,150 @@
+TASK com.douban.movie id=2
+  ACTIVITY com.douban.movie/com.douban.frodo.search.activity.NewSearchActivity 3ed48d38 pid=3019
+    Local Activity 45eb413 State:
+      mResumed=true mStopped=false mFinished=false
+      mLoadersStarted=true
+      mChangingConfigurations=false
+      mCurrentConfig={1.0 460mcc7mnc zh_CN ?layoutDir sw480dp w480dp h828dp 240dpi lrg long port finger -keyb/v/h -nav/h s.4}
+    Active Fragments in 2b8594e1:
+      #0: ReportFragment{2432206 #0 androidx.lifecycle.LifecycleDispatcher.report_fragment_tag}
+        mFragmentId=#0 mContainerId=#0 mTag=androidx.lifecycle.LifecycleDispatcher.report_fragment_tag
+        mState=5 mIndex=0 mWho=android:fragment:0 mBackStackNesting=0
+        mAdded=true mRemoving=false mResumed=true mFromLayout=false mInLayout=false
+        mHidden=false mDetached=false mMenuVisible=true mHasMenu=false
+        mRetainInstance=false mRetaining=false mUserVisibleHint=true
+        mFragmentManager=FragmentManager{2b8594e1 in NewSearchActivity{45eb413}}
+        mActivity=com.douban.frodo.search.activity.NewSearchActivity@45eb413
+        Child FragmentManager{19780c7 in ReportFragment{2432206}}:
+          FragmentManager misc state:
+            mActivity=com.douban.frodo.search.activity.NewSearchActivity@45eb413
+            mContainer=android.app.Fragment$1@37a8a6f4
+            mParent=ReportFragment{2432206 #0 androidx.lifecycle.LifecycleDispatcher.report_fragment_tag}
+            mCurState=5 mStateSaved=false mDestroyed=false
+    Added Fragments:
+      #0: ReportFragment{2432206 #0 androidx.lifecycle.LifecycleDispatcher.report_fragment_tag}
+    FragmentManager misc state:
+      mActivity=com.douban.frodo.search.activity.NewSearchActivity@45eb413
+      mContainer=android.app.Activity$1@2a659e1d
+      mCurState=5 mStateSaved=false mDestroyed=false
+    ViewRoot:
+      mAdded=true mRemoved=false
+      mConsumeBatchedInputScheduled=false
+      mConsumeBatchedInputImmediatelyScheduled=false
+      mPendingInputEventCount=0
+      mProcessInputEventsScheduled=false
+      mTraversalScheduled=false
+      android.view.ViewRootImpl$NativePreImeInputStage: mQueueLength=0
+      android.view.ViewRootImpl$ImeInputStage: mQueueLength=0
+      android.view.ViewRootImpl$NativePostImeInputStage: mQueueLength=0
+    Choreographer:
+      mFrameScheduled=true
+      mLastFrameTime=668649 (37 ms ago)
+    View Hierarchy:
+      com.android.internal.policy.impl.PhoneWindow$DecorView{2adf5892 V.E..... R....... 0,0-720,1280}
+        android.widget.LinearLayout{21016263 V.E..... ........ 0,0-720,1280}
+          android.view.ViewStub{35233e60 G.E..... ......I. 0,0-0,0 #1020373}
+          android.widget.FrameLayout{3b42ff19 V.E..... ........ 0,38-720,1279}
+            androidx.appcompat.widget.FitWindowsFrameLayout{b966bde V.E..... ........ 0,0-720,1241 #7f09001d app:id/action_bar_root}
+              androidx.appcompat.widget.ContentFrameLayout{f9dc1bf V.E..... ........ 0,0-720,1241 #1020002 android:id/content}
+                android.widget.LinearLayout{fede08c V.E..... ........ 0,0-720,1241}
+                  com.douban.frodo.baseproject.widget.TitleCenterToolbar{3afb73d5 V.E...C. ........ 0,0-720,72 #7f0908a5 app:id/tool_bar}
+                    android.widget.RelativeLayout{261967ea V.E..... ........ 720,0-720,72}
+                      android.widget.TextView{3f76badb V.ED.... ......ID 0,18-0,54 #7f0900ce app:id/base_ui_title_center_tool_bar_title}
+                      android.widget.ImageView{12de7978 G.ED.... ......I. 0,0-0,0}
+                    com.douban.frodo.search.view.SearchView{3c8c7851 V.E..... ........ 0,0-720,72}
+                      android.widget.LinearLayout{341e18b6 V.E..... ........ 0,0-720,72 #7f090472 app:id/layout}
+                        android.widget.RelativeLayout{2f1c29b7 V.E..... ........ 12,10-639,61 #7f090415 app:id/input_layout}
+                          android.widget.LinearLayout{1e3db524 V.E..... ........ 0,0-625,51}
+                            androidx.appcompat.widget.AppCompatEditText{2b4f488d VFED..CL .F...... 30,0-625,51 #7f090728 app:id/search}
+                          androidx.appcompat.widget.AppCompatImageView{2eb0a42 V.ED.... ........ 0,0-66,51}
+                          androidx.appcompat.widget.AppCompatImageView{c3faa53 G.ED..C. ......I. 562,0-625,51 #7f09022a app:id/delete}
+                          androidx.appcompat.widget.AppCompatImageView{2c32ff90 G.ED.... ......I. 0,0-0,0 #7f090736 app:id/search_scan}
+                          androidx.appcompat.widget.AppCompatTextView{14f4e089 V.ED.... ........ 625,0-627,33 #7f090701 app:id/right_position}
+                        android.widget.LinearLayout{3ba3888e V.E...C. ........ 639,0-720,72 #7f090126 app:id/cancel_field}
+                          androidx.appcompat.widget.AppCompatTextView{241098af G.ED.... ......ID 0,0-0,0 #7f090125 app:id/cancel_divider}
+                          androidx.appcompat.widget.AppCompatTextView{2ff084bc V.ED.... ........ 0,0-81,72 #7f090122 app:id/cancel}
+                    androidx.appcompat.widget.ActionMenuView{1741fc45 V.E..... ........ 720,0-720,72}
+                  androidx.appcompat.widget.AppCompatImageView{24539f9a V.ED.... ........ 0,72-720,73 #7f09075a app:id/shadow_divider}
+                  android.widget.FrameLayout{3d5810cb V.E..... ........ 0,73-720,1241 #7f0901d5 app:id/content_container}
+                    com.douban.frodo.baseproject.view.KeyboardRelativeLayout{3b9f30a8 V.E..... ........ 0,0-720,1168 #7f090460 app:id/keyboard_layout}
+                      android.widget.FrameLayout{2d8b17c1 V.E..... ........ 0,0-720,1168 #7f09070a app:id/root}
+                        android.widget.FrameLayout{25bc1b66 V.E..... ........ 0,0-720,1168 #7f0901cb app:id/container}
+                          com.douban.frodo.search.view.TouchableNestedScrollView{3854eea7 VFED.... ........ 0,0-720,1168 #7f09070a app:id/root}
+                            android.widget.LinearLayout{190aaf54 V.E..... ........ 0,0-720,214 #7f0901cb app:id/container}
+                              android.widget.LinearLayout{19f06efd V.E..... ........ 0,15-720,120 #7f09068b app:id/recent_container}
+                                android.widget.RelativeLayout{21de87f2 V.E..... ........ 23,0-720,28}
+                                  com.douban.frodo.baseproject.view.colortextview.SubtitleTextView{1057ce43 V.ED.... ........ 0,0-697,28 #7f09068d app:id/recent_title}
+                                  androidx.appcompat.widget.AppCompatImageView{10d6cc0 V.ED..C. ........ 653,0-697,24 #7f09068a app:id/recent_clear}
+                                com.douban.frodo.baseproject.view.flowlayout.DouFlowLayout{2659fdf9 V.E..... ........ 23,46-720,105 #7f09068c app:id/recent_items}
+                                  android.widget.FrameLayout{2749313e V.E...C. ........ 0,0-87,59}
+                                    android.widget.LinearLayout{1b1f0b9f V.E..... ........ 0,0-64,44 #7f09042d app:id/item}
+                                      androidx.appcompat.widget.AppCompatTextView{1dbc94ec V.ED.... ........ 12,8-52,36 #7f09085a app:id/text}
+                                  android.widget.FrameLayout{393380b5 V.E...C. ........ 87,0-194,59}
+                                    android.widget.LinearLayout{d23234a V.E..... ........ 0,0-84,44 #7f09042d app:id/item}
+                                      androidx.appcompat.widget.AppCompatTextView{21f2c2bb V.ED.... ........ 12,8-72,36 #7f09085a app:id/text}
+                                  android.widget.FrameLayout{35413d8 V.E...C. ........ 194,0-332,59}
+                                    android.widget.LinearLayout{39e87331 V.E..... ........ 0,0-115,44 #7f09042d app:id/item}
+                                      androidx.appcompat.widget.AppCompatTextView{3f82a16 V.ED.... ........ 12,8-103,36 #7f09085a app:id/text}
+                                  android.widget.FrameLayout{3080cf97 V.E...C. ........ 332,0-459,59}
+                                    android.widget.LinearLayout{be29584 V.E..... ........ 0,0-104,44 #7f09042d app:id/item}
+                                      androidx.appcompat.widget.AppCompatTextView{120116d V.ED.... ........ 12,8-92,36 #7f09085a app:id/text}
+                                  android.widget.FrameLayout{2744d1a2 V.E...C. ........ 459,0-586,59}
+                                    android.widget.LinearLayout{3578ce33 V.E..... ........ 0,0-104,44 #7f09042d app:id/item}
+                                      androidx.appcompat.widget.AppCompatTextView{1b585f0 V.ED.... ........ 12,8-92,36 #7f09085a app:id/text}
+                              androidx.recyclerview.widget.RecyclerView{10b95769 VFED.... ........ 0,120-720,135 #7f0903bf app:id/hot_items}
+                              android.view.View{1bc265ee G.ED.... ......ID 0,0-0,0 #7f0903c0 app:id/hot_items_divider}
+                              com.douban.frodo.baseproject.view.colortextview.SubtitleTextView{10e81a8f G.ED.... ......I. 0,0-0,0 #7f0903c2 app:id/hot_subject_title}
+                              androidx.recyclerview.widget.RecyclerView{485111c VFED.... ........ 0,150-720,150 #7f0903c3 app:id/hot_subjects}
+                              com.douban.frodo.baseproject.view.colortextview.SubtitleTextView{f870125 I.ED.... ......I. 277,150-442,196 #7f0908a3 app:id/to_subject_tab_view}
+                              androidx.recyclerview.widget.RecyclerView{672f2fa VFED.... ........ 0,196-32,211 #7f0901a5 app:id/collections_layout}
+                              android.view.View{2c55d0ab G.ED.... ......ID 0,0-0,0 #7f0901a4 app:id/collections_divider}
+                              com.douban.frodo.baseproject.view.colortextview.SubtitleTextView{15602308 G.ED.... ......I. 0,0-0,0 #7f0903be app:id/hot_groups_title}
+                              androidx.recyclerview.widget.RecyclerView{4cb8aa1 VFED.... ........ 0,211-720,211 #7f0903bd app:id/hot_groups}
+                              android.view.View{286d44c6 G.ED.... ......ID 0,0-0,0 #7f090382 app:id/groups_divider}
+                              com.douban.frodo.baseproject.view.colortextview.SubtitleTextView{389ecc87 G.ED.... ......I. 0,0-0,0 #7f090355 app:id/gallery_topic_title}
+                              androidx.recyclerview.widget.RecyclerView{355867b4 VFED.... ........ 0,211-720,211 #7f090356 app:id/gallery_topics}
+                              androidx.appcompat.widget.AppCompatTextView{f752fdd G.ED.... ......ID 0,0-0,0 #7f0902b2 app:id/end_hint}
+                        android.widget.LinearLayout{2b68e752 G.E..... ......ID 0,0-0,0 #7f0901cd app:id/content}
+                          com.astuetz.PagerSlidingTabStrip{2d91aa23 GFED.... ......I. 0,0-0,0 #7f090849 app:id/tab_strip}
+                            android.widget.LinearLayout{2ee4b20 V.E..... ......I. 0,0-0,0}
+                              android.widget.TextView{1519ecd9 VFED..CL ......ID 0,0-0,0}
+                              android.widget.TextView{2b0a269e VFED..CL ......ID 0,0-0,0}
+                          android.view.View{274ac57f G.ED.... ......ID 0,0-0,0 #7f09084a app:id/tab_strip_divider}
+                          com.douban.frodo.baseproject.view.HackViewPager{23cf94c GFED.... ......I. 0,0-0,0 #7f090965 app:id/view_pager}
+                        com.douban.frodo.baseproject.view.EmptyView{24b37d95 G.E..... ......I. 0,0-0,0 #7f0902ac app:id/empty_view}
+                          android.widget.LinearLayout{6ee0eaa G.E..... ......I. 0,0-0,0 #7f090397 app:id/header_container}
+                          android.view.ViewStub{3d503a9b G.E..... ......I. 0,0-0,0 #7f0902ad}
+                          android.view.ViewStub{3be65e38 G.E..... ......I. 0,0-0,0 #7f0902ca}
+              androidx.appcompat.widget.ViewStubCompat{91b5e11 G.E..... ......I. 0,0-0,0 #7f09002c app:id/action_mode_bar_stub}
+        android.view.View{9766b76 V.ED.... ........ 0,0-720,38 #102002f android:id/statusBarBackground}
+    Looper (main, tid 1) {287b6f82}
+      Message 0: { when=+408ms callback=android.widget.Editor$Blink target=android.widget.Editor$Blink }
+      Message 1: { when=+17s850ms what=4 target=com.douban.amonsul.core.MobileStatManager$1 }
+      (Total messages: 2, idling=false, quitting=false)
+    Local FragmentActivity 45eb413 State:
+      mCreated=true mResumed=true mStopped=false    Active Fragments in 2f6de577:
+      #0: null
+      #1: SearchTrendsFragment{1affc0eb #10 id=0x7f0901cb SearchTrendsFragment}
+        mFragmentId=#7f0901cb mContainerId=#7f0901cb mTag=SearchTrendsFragment
+        mState=4 mIndex=10 mWho=android:fragment:10 mBackStackNesting=0
+        mAdded=true mRemoving=false mFromLayout=false mInLayout=false
+        mHidden=false mDetached=false mMenuVisible=true mHasMenu=false
+        mRetainInstance=false mRetaining=false mUserVisibleHint=true
+        mFragmentManager=FragmentManager{2f6de577 in HostCallbacks{1ebf25e4}}
+        mHost=androidx.fragment.app.FragmentActivity$HostCallbacks@1ebf25e4
+        mArguments=Bundle[{query=}]
+        mContainer=android.widget.FrameLayout{25bc1b66 V.E..... ........ 0,0-720,1168 #7f0901cb app:id/container}
+        mView=com.douban.frodo.search.view.TouchableNestedScrollView{3854eea7 VFED.... ........ 0,0-720,1168 #7f09070a app:id/root}
+        mInnerView=com.douban.frodo.search.view.TouchableNestedScrollView{3854eea7 VFED.... ........ 0,0-720,1168 #7f09070a app:id/root}
+        Child FragmentManager{746ca4d in SearchTrendsFragment{1affc0eb}}:
+          FragmentManager misc state:
+            mHost=androidx.fragment.app.FragmentActivity$HostCallbacks@1ebf25e4
+            mContainer=androidx.fragment.app.Fragment$2@2f55c902
+            mParent=SearchTrendsFragment{1affc0eb #10 id=0x7f0901cb SearchTrendsFragment}
+            mCurState=4 mStateSaved=false mStopped=false mDestroyed=false
+    Added Fragments:
+      #0: SearchTrendsFragment{1affc0eb #10 id=0x7f0901cb SearchTrendsFragment}
+    FragmentManager misc state:
+      mHost=androidx.fragment.app.FragmentActivity$HostCallbacks@1ebf25e4
+      mContainer=androidx.fragment.app.FragmentActivity$HostCallbacks@1ebf25e4
+      mCurState=4 mStateSaved=false mStopped=false mDestroyed=false

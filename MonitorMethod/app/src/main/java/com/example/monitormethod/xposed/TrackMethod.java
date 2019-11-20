@@ -1,6 +1,7 @@
 package com.example.monitormethod.xposed;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Environment;
 import android.provider.ContactsContract;
 import android.util.Log;
@@ -12,6 +13,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.parser.ParserConfig;
+import com.example.monitormethod.receive.RecordMethodLogReceiver;
 import com.example.monitormethod.trackData.DataCollectioner;
 import com.example.monitormethod.trackData.DataRecorder;
 import com.example.monitormethod.trackData.SystemDataCollection;
@@ -85,7 +87,9 @@ public class TrackMethod extends XC_MethodHook {
 //            Log.i("LZH-Method","after: "+jsonObject.toJSONString());
         }
     }
+    private void sendMethodLog(){
 
+    }
     /**
      * 向JSON中写入方法调用者的信息
      * @param json

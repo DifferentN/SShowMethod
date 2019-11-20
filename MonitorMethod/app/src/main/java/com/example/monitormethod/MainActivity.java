@@ -1,6 +1,7 @@
 package com.example.monitormethod;
 
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.SystemClock;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -17,6 +18,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.example.monitormethod.ViewManager.FloatViewManager;
+import com.example.monitormethod.receive.RecordMethodLogReceiver;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
@@ -86,6 +88,11 @@ public class MainActivity extends AppCompatActivity {
         FloatViewManager floatViewManager = FloatViewManager.getInstance(this);
         floatViewManager.showSaveIntentViewBt();
 
+        RecordMethodLogReceiver recordMethodLogReceiver = new RecordMethodLogReceiver();
+        IntentFilter intentFilter = new IntentFilter();
+        intentFilter.addAction(RecordMethodLogReceiver.WRITE_LOG);
+        intentFilter.addAction(RecordMethodLogReceiver.RECORD_SWITCH);
+        registerReceiver(recordMethodLogReceiver,intentFilter);
     }
 
     @Override

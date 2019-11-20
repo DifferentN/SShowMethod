@@ -126,7 +126,8 @@ public class LocalActivityReceiver extends BroadcastReceiver implements CallBack
                 //com.douban.movie.activity.MainActivity
                 //com.tencent.qqmusic.activity.AppStarterActivity
                 //com.imooc.component.imoocmain.index.MCMainActivity
-                if(selfActivityName.equals("amodule.activity.main.MainHomePageNew")){
+                //cn.cuco.model.version3.home.HomeVersion3Activity
+                if(selfActivityName.equals("cn.cuco.model.version3.home.HomeVersion3Activity")){
                     methodTrackPool = MethodTrackPool.getInstance();
                     methodTrackPool.clearRunTimeRecord();
                     methodTrackPool.LaunchUserAction();
@@ -141,6 +142,11 @@ public class LocalActivityReceiver extends BroadcastReceiver implements CallBack
                     }
                     if(executeUserAction(prepareUserAction)){
                         prepareUserAction = null;
+                    }
+                }else if(selfActivity.getPackageName().contains("cn.cuco")){
+                    MethodTrackPool methodTrackPool = MethodTrackPool.getInstance();
+                    if(!methodTrackPool.isCurActionFinish()){
+                        tryLaunchUserAction();
                     }
                 }
         }
@@ -158,6 +164,7 @@ public class LocalActivityReceiver extends BroadcastReceiver implements CallBack
                 Log.i("LZH","textView is null:setText");
                 return executionOver;
             }
+            Log.i("LZH","setText");
             textView.setText(userAction.getText());
             executionOver = true;
         }else if(userAction.getActionName().equals(Event.DISPATCH)){
@@ -168,7 +175,7 @@ public class LocalActivityReceiver extends BroadcastReceiver implements CallBack
                 view = selfActivity.findViewById(userAction.getViewId());
             }
 
-            if(view==null){
+            if(view==null||view.getWidth()==0||view.getHeight()==0){
                 Log.i("LZH","view is null:dispatchTouchEvent");
                 return executionOver;
             }
@@ -178,6 +185,9 @@ public class LocalActivityReceiver extends BroadcastReceiver implements CallBack
             executionOver = true;
         }
         if(executionOver){
+            //通知methodTrackPool 当前发过来的event已经完成
+            MethodTrackPool methodTrackPool = MethodTrackPool.getInstance();
+            methodTrackPool.finishCurAction();
             tryLaunchUserAction();
         }
         return executionOver;
@@ -201,8 +211,11 @@ public class LocalActivityReceiver extends BroadcastReceiver implements CallBack
         View child = null;
         while(!queue.isEmpty()){
             temp = queue.remove(0);
-            Log.i("LZH","path: "+temp.path);
+//            Log.i("LZH","path: "+temp.path);
             if(temp.path.equals(viewPath)){
+                if(temp.view instanceof TextView){
+                    Log.i("LZH","text: "+((TextView) temp.view).getText());
+                }
                 return temp.view;
             }else if(temp.view instanceof ViewGroup){
                 viewGroup = (ViewGroup) temp.view;
