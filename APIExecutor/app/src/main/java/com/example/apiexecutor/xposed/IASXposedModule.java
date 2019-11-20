@@ -1,6 +1,7 @@
 package com.example.apiexecutor.xposed;
 
 import android.app.Activity;
+import android.content.Context;
 import android.graphics.Canvas;
 import android.os.Bundle;
 import android.os.Environment;
@@ -94,6 +95,39 @@ public class IASXposedModule implements IXposedHookLoadPackage{
             List<String> filter = new ArrayList<>();
             filter.add("mooc");
             hookAPPMethod(classNames,classLoader,"cn.com.open.mooc",filter);
+        }
+        if (lpparam.packageName.equals("cn.cuco")) {
+            XposedHelpers.findAndHookMethod("com.stub.StubApp", lpparam.classLoader,
+                    "attachBaseContext", Context.class, new XC_MethodHook() {
+                        @Override
+                        protected void afterHookedMethod(MethodHookParam param) throws Throwable {
+                            super.afterHookedMethod(param);
+                            Log.i("LZH","hook classLoader");
+                            Context context = (Context) param.args[0];
+                            ClassLoader classLoader =context.getClassLoader();
+                            List<String> filter = new ArrayList<>();
+                            filter.add("cuco");
+                            //设置监听的应用方法
+                            hookAPPMethod("cuco.txt",classLoader,"cn.cuco",filter);
+
+                        }
+                    });
+        }
+    }
+    private void hook_MyBus(XC_LoadPackage.LoadPackageParam lpparam){
+        if (lpparam.packageName.equals("com.mygolbs.mybus")) {
+            XposedHelpers.findAndHookMethod("com.secneo.apkwrapper.ApplicationWrapper", lpparam.classLoader,
+                    "attachBaseContext", Context.class, new XC_MethodHook() {
+                        @Override
+                        protected void afterHookedMethod(MethodHookParam param) throws Throwable {
+                            super.afterHookedMethod(param);
+                            Log.i("LZH","hook classLoader");
+                            Context context = (Context) param.args[0];
+                            ClassLoader classLoader =context.getClassLoader();
+
+
+                        }
+                    });
         }
     }
     private void hook_methods(String className,ClassLoader loader,String packageName) {

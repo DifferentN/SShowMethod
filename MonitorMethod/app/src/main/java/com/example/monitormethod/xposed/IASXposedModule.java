@@ -1,5 +1,6 @@
 package com.example.monitormethod.xposed;
 
+import android.content.Context;
 import android.graphics.Canvas;
 import android.os.Bundle;
 import android.os.Environment;
@@ -9,15 +10,19 @@ import android.view.View;
 import android.widget.TextView;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.List;
 
+import dalvik.system.DexFile;
 import de.robv.android.xposed.IXposedHookLoadPackage;
 import de.robv.android.xposed.XC_MethodHook;
 import de.robv.android.xposed.XposedBridge;
@@ -112,6 +117,19 @@ public class IASXposedModule implements IXposedHookLoadPackage{
             filter.add("jiachangcai");
             hookAPPMethod(classNames,classLoader,"cn.ecook.jiachangcai",filter);
         }
+        classNames = "dangdang.txt";
+        if(lpparam.packageName.contains("com.dangdang.buy2")){
+            XposedHelpers.findAndHookMethod("android.app.Activity",lpparam.classLoader,"dispatchTouchEvent",MotionEvent.class,new TrackMethod(new Class[]{MotionEvent.class},"com.dangdang.buy2"));
+            XposedHelpers.findAndHookMethod("android.view.View",lpparam.classLoader,"dispatchTouchEvent",MotionEvent.class,new DispatchTouchEventHook("com.dangdang.buy2"));
+            XposedHelpers.findAndHookMethod("android.view.View", lpparam.classLoader, "onDraw",Canvas.class, new HookOnDraw("com.dangdang.buy2"));
+            XposedHelpers.findAndHookMethod("android.view.inputmethod.BaseInputConnection", lpparam.classLoader, "commitText",CharSequence.class, int.class,
+                    new TrackMethod(new Class[]{CharSequence.class, int.class},"com.dangdang.buy2"));
+            List<String> filter = new ArrayList<>();
+            filter.add("buy2");
+//            filter.add("android");
+            //设置监听的应用方法
+            hookAPPMethod(classNames,classLoader,"com.dangdang.buy2",filter);
+        }
     }
     private void hook_methods(String className,ClassLoader loader,String packageName) {
 
@@ -174,7 +192,7 @@ public class IASXposedModule implements IXposedHookLoadPackage{
             hook_methods(line,classLoader,packageName);
             num++;
             //可以监听的方法有限，对于有些应用，它的方法不能全部监听
-            if(num>=7000){//7000
+            if(num>=5000){//7000
                 break;
             }
             last = line;

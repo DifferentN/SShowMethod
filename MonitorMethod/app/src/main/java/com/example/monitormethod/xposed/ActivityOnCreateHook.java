@@ -107,6 +107,15 @@ public class ActivityOnCreateHook extends XC_MethodHook {
 //        if(activity.getPackageName().contains("cn.ecook.jiachangcai")){
 //            writeAnkiClassName(activity.getPackageName(),activity,fileName);
 //        }
+//        fileName = Environment.getExternalStorageDirectory().getAbsolutePath()+"/netease.txt";
+//        if(activity.getPackageName().contains("com.netease.cloudmusic")){
+//            writeAnkiClassName(activity.getPackageName(),activity,fileName);
+//        }
+//        fileName = Environment.getExternalStorageDirectory().getAbsolutePath()+"/dangdang.txt";
+//        if(activity.getPackageName().contains("com.dangdang.buy2")){
+//            writeAnkiClassName(activity.getPackageName(),activity,fileName);
+//        }
+
     }
     private void showClassName(String pkName, Context context){
         List<String> names = getClassName(pkName,context);

@@ -126,7 +126,8 @@ public class LocalActivityReceiver extends BroadcastReceiver implements CallBack
                 //com.douban.movie.activity.MainActivity
                 //com.tencent.qqmusic.activity.AppStarterActivity
                 //com.imooc.component.imoocmain.index.MCMainActivity
-                if(selfActivityName.equals("amodule.activity.main.MainHomePageNew")){
+                //cn.cuco.model.version3.home.HomeVersion3Activity
+                if(selfActivityName.equals("com.tencent.qqmusic.activity.AppStarterActivity")){
                     methodTrackPool = MethodTrackPool.getInstance();
                     methodTrackPool.clearRunTimeRecord();
                     methodTrackPool.LaunchUserAction();
@@ -147,7 +148,6 @@ public class LocalActivityReceiver extends BroadcastReceiver implements CallBack
     }
     private boolean executeUserAction(UserAction userAction){
         boolean executionOver = false;
-        Log.i("LZH","imitate user action "+userAction.getActionName());
         if(userAction.getActionName().equals(Event.SETTEXT)){
             TextView textView = null;
             textView = (TextView) getViewByPath(userAction.getViewPath());
@@ -168,16 +168,17 @@ public class LocalActivityReceiver extends BroadcastReceiver implements CallBack
                 view = selfActivity.findViewById(userAction.getViewId());
             }
 
-            if(view==null){
+            if(view==null||view.getHeight()==0||view.getWidth()==0){
                 Log.i("LZH","view is null:dispatchTouchEvent");
                 return executionOver;
             }
             Log.i("LZH","findById: "+view.getId()+"w: "+view.getWidth()+"h: "+view.getHeight());
-            Log.i("LZH","click view");
             imitateClick(view);
             executionOver = true;
         }
         if(executionOver){
+            //通知methodTrackPool 当前发过来的event已经完成
+            MethodTrackPool methodTrackPool = MethodTrackPool.getInstance();
             tryLaunchUserAction();
         }
         return executionOver;
@@ -201,7 +202,7 @@ public class LocalActivityReceiver extends BroadcastReceiver implements CallBack
         View child = null;
         while(!queue.isEmpty()){
             temp = queue.remove(0);
-            Log.i("LZH","path: "+temp.path);
+//            Log.i("LZH","path: "+temp.path);
             if(temp.path.equals(viewPath)){
                 return temp.view;
             }else if(temp.view instanceof ViewGroup){
@@ -228,7 +229,7 @@ public class LocalActivityReceiver extends BroadcastReceiver implements CallBack
         MotionEvent motionEvent = MotionEvent.obtain(downTime, eventTime, action, x, y, metaState);
         selfActivity.dispatchTouchEvent(motionEvent);
 //        view.getRootView().dispatchTouchEvent(motionEvent);
-//        view.dispatchTouchEvent(motionEvent);
+        view.dispatchTouchEvent(motionEvent);
         action = MotionEvent.ACTION_UP;
         motionEvent = MotionEvent.obtain(downTime, eventTime, action, x, y, metaState);
 //        view.dispatchTouchEvent(motionEvent);

@@ -64,14 +64,11 @@ public class LocalActivityReceiver extends BroadcastReceiver{
                 break;
             case LocalActivityReceiver.WRITE_LOG:
                 //com.douban.movie com.tencent.qqmusic
-                //com.jnzc.shipudaquan
-                if(selfPackageName.contains("com.tencent.qqmusic")){
+                //com.jnzc.shipudaquan com.netease.cloudmusic
+                if(selfPackageName.contains("com.dangdang.buy2")){
                     //设置LogWriter可以写入日志
                     LogWriter.turnWriteAble();
                 }
-//                click();
-//                imitateStart = true;
-//                imitateExecution();
                 break;
         }
     }
@@ -90,10 +87,6 @@ public class LocalActivityReceiver extends BroadcastReceiver{
             List<String> list = new ArrayList<>();
             list.add("电影");
             list.add("电视剧");
-//            View view = selfActivity.findViewById(2131298054);
-//            imitateClick(view);
-//
-//            ((TextView)view).setText("罗小黑战记");
         }
     }
     private void click(){

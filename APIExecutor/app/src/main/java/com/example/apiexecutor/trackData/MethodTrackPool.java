@@ -32,7 +32,7 @@ public class MethodTrackPool {
     private List<Event> events;
     private Event curEvent;
     private boolean isAvailable = false;
-    private int LOG_SIZE = 25;
+    private int LOG_SIZE = 0;
     public MethodTrackPool(){
         sequence = new ArrayList<String>();
         subCall = new ArrayList<>();
@@ -158,7 +158,7 @@ public class MethodTrackPool {
             Log.i("LZH","context is null can't send notification");
             return;
         }
-        Log.i("LZH","sendNotification");
+//        Log.i("LZH","sendNotification");
         Intent intent = new Intent();
         intent.setAction(LocalActivityReceiver.EXECUTE_EVENT);
         UserAction userAction = new UserAction(event.getMethodName(),
@@ -191,7 +191,6 @@ public class MethodTrackPool {
             }else{
                 Log.i("LZH","event has done");
             }
-
         }
     }
 
