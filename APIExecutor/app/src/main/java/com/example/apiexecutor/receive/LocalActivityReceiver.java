@@ -127,7 +127,8 @@ public class LocalActivityReceiver extends BroadcastReceiver implements CallBack
                 //com.tencent.qqmusic.activity.AppStarterActivity
                 //com.imooc.component.imoocmain.index.MCMainActivity
                 //cn.cuco.model.version3.home.HomeVersion3Activity
-                if(selfActivityName.equals("cn.cuco.model.version3.home.HomeVersion3Activity")){
+                //com.zhangshangjianzhi.newapp.activity.tab.MainTabActivity
+                if(selfActivityName.equals("com.naman14.timberx.ui.activities.MainActivity")){
                     methodTrackPool = MethodTrackPool.getInstance();
                     methodTrackPool.clearRunTimeRecord();
                     methodTrackPool.LaunchUserAction();
@@ -168,8 +169,9 @@ public class LocalActivityReceiver extends BroadcastReceiver implements CallBack
             textView.setText(userAction.getText());
             executionOver = true;
         }else if(userAction.getActionName().equals(Event.DISPATCH)){
-            View view = getViewByPath(userAction.getViewPath());
-            Log.i("LZH","viewPath: "+userAction.getViewPath());
+            View view = getViewByPath2(userAction.getViewPath());
+//            getViewByPath2(userAction.getViewPath());
+//            Log.i("LZH","viewPath: "+userAction.getViewPath());
             if(view==null&&userAction.getViewId()>0){
                 Log.i("LZH","can't get view by viewPath");
                 view = selfActivity.findViewById(userAction.getViewId());
@@ -192,6 +194,38 @@ public class LocalActivityReceiver extends BroadcastReceiver implements CallBack
         }
         return executionOver;
 
+    }
+    private View getViewByPath2(String path){
+        Object windowManagerImpl = selfActivity.getSystemService(Context.WINDOW_SERVICE);
+        Class windManagerImplClazz = windowManagerImpl.getClass();
+        Object windowManagerGlobal = null;
+        Class windManagaerGlobalClass = null;
+        ArrayList<View> mViews = null;
+        try {
+            Field field = windManagerImplClazz.getDeclaredField("mGlobal");
+            field.setAccessible(true);
+            windowManagerGlobal = field.get(windowManagerImpl);
+            windManagaerGlobalClass = windowManagerGlobal.getClass();
+            field = windManagaerGlobalClass.getDeclaredField("mViews");
+            field.setAccessible(true);
+            mViews = (ArrayList<View>) field.get(windowManagerGlobal);
+        } catch (NoSuchFieldException e) {
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        }
+        Log.i("LZH","view size: "+mViews.size());
+        View targetView = null;
+        if(mViews!=null){
+            for(View view:mViews){
+                targetView = getViewByPath(view,path);
+                if(targetView!=null){
+                    Log.i("LZH","find view");
+                    return targetView;
+                }
+            }
+        }
+        return null;
     }
     private View getViewByPath(String viewPath){
         class Node{
@@ -227,6 +261,40 @@ public class LocalActivityReceiver extends BroadcastReceiver implements CallBack
         }
         return null;
     }
+    private View getViewByPath(View rootView,String viewPath){
+        class Node{
+            public String path;
+            public View view;
+            public Node(String path,View view){
+                this.path = path;
+                this.view = view;
+            }
+        }
+        List<Node> queue = new ArrayList<>();
+        View decorView = rootView;
+        String path = decorView.getClass().getName();
+        queue.add(new Node(path,decorView));
+        Node temp = null;
+        ViewGroup viewGroup;
+        View child = null;
+        while(!queue.isEmpty()){
+            temp = queue.remove(0);
+            Log.i("LZH","path: "+temp.path);
+            if(temp.path.equals(viewPath)){
+                if(temp.view instanceof TextView){
+                    Log.i("LZH","text: "+((TextView) temp.view).getText());
+                }
+                return temp.view;
+            }else if(temp.view instanceof ViewGroup){
+                viewGroup = (ViewGroup) temp.view;
+                for(int i=0;i<viewGroup.getChildCount();i++){
+                    child = viewGroup.getChildAt(i);
+                    queue.add(new Node(temp.path+"/"+child.getClass()+":"+i,child));
+                }
+            }
+        }
+        return null;
+    }
     private void imitateClick(View view){
         int clickPos[] = new int[2];
         view.getLocationInWindow(clickPos);
@@ -239,14 +307,14 @@ public class LocalActivityReceiver extends BroadcastReceiver implements CallBack
         int y = clickPos[1];
         int metaState = 0;
         MotionEvent motionEvent = MotionEvent.obtain(downTime, eventTime, action, x, y, metaState);
-        selfActivity.dispatchTouchEvent(motionEvent);
-//        view.getRootView().dispatchTouchEvent(motionEvent);
+//        selfActivity.dispatchTouchEvent(motionEvent);
+        view.getRootView().dispatchTouchEvent(motionEvent);
 //        view.dispatchTouchEvent(motionEvent);
         action = MotionEvent.ACTION_UP;
         motionEvent = MotionEvent.obtain(downTime, eventTime, action, x, y, metaState);
 //        view.dispatchTouchEvent(motionEvent);
-        selfActivity.dispatchTouchEvent(motionEvent);
-//        view.getRootView().dispatchTouchEvent(motionEvent);
+//        selfActivity.dispatchTouchEvent(motionEvent);
+        view.getRootView().dispatchTouchEvent(motionEvent);
     }
     private void tryLaunchUserAction(){
         MethodTrackPool methodTrackPool = MethodTrackPool.getInstance();

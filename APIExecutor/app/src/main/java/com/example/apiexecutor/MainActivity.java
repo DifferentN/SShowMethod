@@ -1,5 +1,7 @@
 package com.example.apiexecutor;
 
+import android.content.Context;
+import android.content.Intent;
 import android.content.IntentFilter;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -13,6 +15,9 @@ import com.example.apiexecutor.ViewManager.FloatViewManager;
 import com.example.apiexecutor.core.Coordinator;
 import com.example.apiexecutor.core.CoordinatorReceiver;
 
+import java.lang.reflect.Field;
+import java.util.ArrayList;
+
 
 public class MainActivity extends AppCompatActivity {
     private Coordinator coordinator;
@@ -24,6 +29,13 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         init();
     }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        getViewByPath2("");
+    }
+
     private void init(){
         coordinator = new Coordinator();
         coordinatorReceiver = new CoordinatorReceiver(coordinator);
@@ -127,5 +139,38 @@ public class MainActivity extends AppCompatActivity {
         coordinator.setTaskJSON(json.toJSONString());
         Log.i("LZH","DeleteApi: "+json.toJSONString());
         coordinator.startApp(coordinator.getPackageName(),this);
+    }
+    private void getViewByPath2(String path){
+        Object windowManagerImpl = getSystemService(Context.WINDOW_SERVICE);
+        Class windManagerImplClazz = windowManagerImpl.getClass();
+        Object windowManagerGlobal = null;
+        Class windManagaerGlobalClass = null;
+        ArrayList<View> mViews = new ArrayList<>();
+        try {Log.i("LZH","pass 0");
+            Field field = windManagerImplClazz.getDeclaredField("mGlobal");
+            Log.i("LZH","pass 1");
+            field.setAccessible(true);
+            windowManagerGlobal = field.get(windowManagerImpl);
+            windManagaerGlobalClass = windowManagerGlobal.getClass();
+            field = windManagaerGlobalClass.getDeclaredField("mViews");
+            field.setAccessible(true);
+            mViews = (ArrayList<View>) field.get(windowManagerGlobal);
+
+        } catch (NoSuchFieldException e) {
+            Log.i("LZH",e.getMessage());
+            e.printStackTrace();
+
+        } catch (IllegalAccessException e) {
+            Log.i("LZH",e.getMessage());
+            e.printStackTrace();
+
+        }
+        Log.i("LZH","view size: "+mViews.size());
+        if(mViews!=null){
+            for(View view:mViews){
+
+            }
+
+        }
     }
 }

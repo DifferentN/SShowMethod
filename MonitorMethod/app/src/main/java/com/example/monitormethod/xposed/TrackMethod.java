@@ -1,6 +1,7 @@
 package com.example.monitormethod.xposed;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Environment;
 import android.provider.ContactsContract;
@@ -17,6 +18,7 @@ import com.example.monitormethod.receive.RecordMethodLogReceiver;
 import com.example.monitormethod.trackData.DataCollectioner;
 import com.example.monitormethod.trackData.DataRecorder;
 import com.example.monitormethod.trackData.SystemDataCollection;
+import com.example.monitormethod.util.ContextUtil;
 import com.example.monitormethod.util.LogWriter;
 import com.example.monitormethod.util.ViewUtil;
 
@@ -61,12 +63,13 @@ public class TrackMethod extends XC_MethodHook {
         if(logWriter!=null){
             logWriter.writeLog("before: "+jsonObject.toJSONString());
 //            Log.i("LZH-Method","before: "+jsonObject.toJSONString());
+//            sendMethodLog("before: "+jsonObject.toJSONString());
         }
 
 //        Log.i("LZH",""+param.method.getDeclaringClass().getName()+"/"+param.method.getName());
 //        Log.i("LZH-Method","before: "+jsonObject.toJSONString());
-    }
 
+    }
     @Override
     protected void afterHookedMethod(MethodHookParam param) throws Throwable {
 //        checkPermission();
@@ -83,12 +86,20 @@ public class TrackMethod extends XC_MethodHook {
         writeViewInfo(jsonObject,param);
         writeActivityID(jsonObject,param);
         if(logWriter!=null){
+//            sendMethodLog("after: "+jsonObject.toJSONString());
             logWriter.writeLog("after: "+jsonObject.toJSONString());
 //            Log.i("LZH-Method","after: "+jsonObject.toJSONString());
         }
-    }
-    private void sendMethodLog(){
 
+    }
+    private void sendMethodLog(String log){
+        Context context = ContextUtil.getContext();
+        if(context!=null){
+            Intent intent = new Intent();
+            intent.setAction(RecordMethodLogReceiver.WRITE_LOG);
+            intent.putExtra(RecordMethodLogReceiver.METHOD_LOG,log);
+            context.sendBroadcast(intent);
+        }
     }
     /**
      * 向JSON中写入方法调用者的信息

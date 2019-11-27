@@ -21,12 +21,13 @@ public class LogWriter {
     private static String fName;
     private static boolean token = false;//是否可以写入日志的标志
     private static long preTime;
-    private static String targetPKName = "cn.cuco";
+    private static String targetPKName = "com.naman14.timberx";
     public boolean TempIsSetText = false;
     public int num = 0;
     private static List<String> list ;
     //com.kingsoft com.ichi2.anki  com.tencent.qqmusic  com.ss.android.autoprice
     //com.ichi2.anki  com.yongche.android  com.douban.movie  com.jnzc.shipudaquan
+    //com.dangdang.buy2
     public LogWriter(String fileName){
         fName = fileName;
         file = new File(fName);
@@ -68,14 +69,6 @@ public class LogWriter {
             return;
         }
         list.add(log);
-//        try {
-////            Log.i("LZH","thread id: "+Thread.currentThread().getId());
-//            writer.write(log+"\n");
-////            writer.flush();
-////            Log.i("LZH","write "+log);
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
     }
 
     public static void turnWriteAble(){

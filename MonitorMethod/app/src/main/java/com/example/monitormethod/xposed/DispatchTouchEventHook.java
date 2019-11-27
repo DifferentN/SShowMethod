@@ -1,5 +1,6 @@
 package com.example.monitormethod.xposed;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Environment;
 import android.util.Log;
@@ -13,6 +14,7 @@ import com.example.monitormethod.receive.RecordMethodLogReceiver;
 import com.example.monitormethod.trackData.DataCollectioner;
 import com.example.monitormethod.trackData.DataRecorder;
 import com.example.monitormethod.trackData.TouchedView;
+import com.example.monitormethod.util.ContextUtil;
 import com.example.monitormethod.util.LogWriter;
 import com.example.monitormethod.util.ViewUtil;
 
@@ -42,6 +44,7 @@ public class DispatchTouchEventHook extends XC_MethodHook {
             writeActivityID(jsonObject,view);
 //            Log.i("LZH","before: "+jsonObject.toJSONString());
             logWriter.writeLog("before: "+jsonObject.toJSONString());
+//            sendMethodLog("before: "+jsonObject.toJSONString());
         }
     }
 
@@ -62,10 +65,19 @@ public class DispatchTouchEventHook extends XC_MethodHook {
             writeActivityID(json,view);
 //            Log.i("LZH-Method","after: "+json.toJSONString());
             logWriter.writeLog("after: "+json.toJSONString());
+//            sendMethodLog("after: "+json.toJSONString());
         }
 
     }
-
+    private void sendMethodLog(String log){
+        Context context = ContextUtil.getContext();
+        if(context!=null){
+            Intent intent = new Intent();
+            intent.setAction(RecordMethodLogReceiver.WRITE_LOG);
+            intent.putExtra(RecordMethodLogReceiver.METHOD_LOG,log);
+            context.sendBroadcast(intent);
+        }
+    }
     /**
      * 记录刚刚点击的View
      * @param view

@@ -19,6 +19,8 @@
                 <action android:name="android.intent.action.VIEW"/>
             </intent-filter>
         </activity>
+        <activity android:name=".SecondActivity"/>
+
         <meta-data
             android:name="xposedmodule"
             android:value="true" />

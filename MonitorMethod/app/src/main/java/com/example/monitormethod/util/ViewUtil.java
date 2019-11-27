@@ -80,6 +80,10 @@ public class ViewUtil {
                 context = ((ContextWrapper)context).getBaseContext();
             }
         }
+        String curActivityName = ContextUtil.getActivityName();
+        if(!activityName.equals(curActivityName)){
+            activityName = curActivityName;
+        }
         return activityName;
     }
     static class ViewNode{

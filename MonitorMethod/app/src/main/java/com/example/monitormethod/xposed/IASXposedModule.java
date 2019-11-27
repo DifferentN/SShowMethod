@@ -113,20 +113,6 @@ public class IASXposedModule implements IXposedHookLoadPackage{
             hookAPPMethod(classNames,classLoader,"cn.ecook.jiachangcai",filter);
         }
 
-//        classNames = "cuco.txt";
-//        if(lpparam.packageName.contains("cn.cuco")){
-//            XposedHelpers.findAndHookMethod("android.app.Activity",lpparam.classLoader,"dispatchTouchEvent",MotionEvent.class,new TrackMethod(new Class[]{MotionEvent.class},"cn.cuco"));
-//            XposedHelpers.findAndHookMethod("android.view.View",lpparam.classLoader,"dispatchTouchEvent",MotionEvent.class,new DispatchTouchEventHook("cn.cuco"));
-//            XposedHelpers.findAndHookMethod("android.view.View", lpparam.classLoader, "onDraw",Canvas.class, new HookOnDraw("cn.cuco"));
-//            XposedHelpers.findAndHookMethod("android.view.inputmethod.BaseInputConnection", lpparam.classLoader, "commitText",CharSequence.class, int.class,
-//                    new TrackMethod(new Class[]{CharSequence.class, int.class},"cn.cuco"));
-//            List<String> filter = new ArrayList<>();
-//            filter.add("cuco");
-////            filter.add("android");
-//            //设置监听的应用方法
-//            hookAPPMethod(classNames,classLoader,"cn.cuco",filter);
-////            XposedHelpers.findAndHookMethod("android.view.View", lpparam.classLoader,"findViewById",int.class,new FindViewByIdHook());
-//        }
         if (lpparam.packageName.equals("cn.cuco")) {
             XposedHelpers.findAndHookMethod("com.stub.StubApp", lpparam.classLoader,
                     "attachBaseContext", Context.class, new XC_MethodHook() {
@@ -149,10 +135,63 @@ public class IASXposedModule implements IXposedHookLoadPackage{
                         }
                     });
         }
+        if (lpparam.packageName.equals("com.zhangshangjianzhi.newapp")) {
+            XposedHelpers.findAndHookMethod("com.stub.StubApp", lpparam.classLoader,
+                    "attachBaseContext", Context.class, new XC_MethodHook() {
+                        @Override
+                        protected void afterHookedMethod(MethodHookParam param) throws Throwable {
+                            super.afterHookedMethod(param);
+                            Log.i("LZH","hook classLoader");
+                            Context context = (Context) param.args[0];
+                            ClassLoader classLoader =context.getClassLoader();
+                            XposedHelpers.findAndHookMethod("android.app.Activity",classLoader,"dispatchTouchEvent",MotionEvent.class,new TrackMethod(new Class[]{MotionEvent.class},"com.zhangshangjianzhi.newapp"));
+                            XposedHelpers.findAndHookMethod("android.view.View",classLoader,"dispatchTouchEvent",MotionEvent.class,new DispatchTouchEventHook("com.zhangshangjianzhi.newapp"));
+                            XposedHelpers.findAndHookMethod("android.view.View", classLoader, "onDraw",Canvas.class, new HookOnDraw("com.zhangshangjianzhi.newapp"));
+                            XposedHelpers.findAndHookMethod("android.view.inputmethod.BaseInputConnection", classLoader, "commitText",CharSequence.class, int.class,
+                                    new TrackMethod(new Class[]{CharSequence.class, int.class},"com.zhangshangjianzhi.newapp"));
+                            List<String> filter = new ArrayList<>();
+                            filter.add("zhangshangjianzhi");
+                            //设置监听的应用方法
+                            hookAPPMethod("zhangshangjianzhi.txt",classLoader,"com.zhangshangjianzhi.newapp",filter);
 
+                        }
+                    });
+        }
+        if (lpparam.packageName.equals("com.eusoft.eudic")) {
+            XposedHelpers.findAndHookMethod("com.stub.StubApp", lpparam.classLoader,
+                    "attachBaseContext", Context.class, new XC_MethodHook() {
+                        @Override
+                        protected void afterHookedMethod(MethodHookParam param) throws Throwable {
+                            super.afterHookedMethod(param);
+                            Log.i("LZH","hook classLoader");
+                            Context context = (Context) param.args[0];
+                            ClassLoader classLoader =context.getClassLoader();
+                            XposedHelpers.findAndHookMethod("android.app.Activity",classLoader,"dispatchTouchEvent",MotionEvent.class,new TrackMethod(new Class[]{MotionEvent.class},"com.eusoft.eudic"));
+                            XposedHelpers.findAndHookMethod("android.view.View",classLoader,"dispatchTouchEvent",MotionEvent.class,new DispatchTouchEventHook("com.eusoft.eudic"));
+                            XposedHelpers.findAndHookMethod("android.view.View", classLoader, "onDraw",Canvas.class, new HookOnDraw("com.eusoft.eudic"));
+                            XposedHelpers.findAndHookMethod("android.view.inputmethod.BaseInputConnection", classLoader, "commitText",CharSequence.class, int.class,
+                                    new TrackMethod(new Class[]{CharSequence.class, int.class},"com.eusoft.eudic"));
+                            List<String> filter = new ArrayList<>();
+                            filter.add("eusoft");
+                            //设置监听的应用方法
+                            hookAPPMethod("eudic.txt",classLoader,"com.eusoft.eudic",filter);
+
+                        }
+                    });
+        }
+        classNames = "naman14.txt";
+        if(lpparam.packageName.contains("com.naman14.timberx")){
+            XposedHelpers.findAndHookMethod("android.app.Activity",lpparam.classLoader,"dispatchTouchEvent",MotionEvent.class,new TrackMethod(new Class[]{MotionEvent.class},"com.naman14.timberx"));
+            XposedHelpers.findAndHookMethod("android.view.View",lpparam.classLoader,"dispatchTouchEvent",MotionEvent.class,new DispatchTouchEventHook("com.naman14.timberx"));
+            XposedHelpers.findAndHookMethod("android.view.View", lpparam.classLoader, "onDraw",Canvas.class, new HookOnDraw("com.naman14.timberx"));
+            XposedHelpers.findAndHookMethod("android.view.inputmethod.BaseInputConnection", lpparam.classLoader, "commitText",CharSequence.class, int.class,
+                    new TrackMethod(new Class[]{CharSequence.class, int.class},"com.naman14.timberx"));
+            List<String> filter = new ArrayList<>();
+            filter.add("naman14");
+            hookAPPMethod(classNames,classLoader,"com.naman14.timberx",filter);
+        }
     }
     private void hook_methods(String className,ClassLoader loader,String packageName) {
-
         try {
             Class<?> clazz = loader.loadClass(className);
 //            Class<?> clazz = Class.forName(className);
@@ -208,7 +247,7 @@ public class IASXposedModule implements IXposedHookLoadPackage{
     private void hookAPPMethod(String filename,ClassLoader classLoader,String packageName,List<String> filters){
         List<String> names = getClassName(filename);
         int sum = names.size();
-        int num = 0;
+        int num = 0,skipTime = 0;
         String last = "";
         for(String line :names){
             if(line.contains("android.widget")){
@@ -236,10 +275,15 @@ public class IASXposedModule implements IXposedHookLoadPackage{
                 //针对QQ音乐出错纠正
                 continue;
             }
+            if(line.contains("com.ss.android.ugc.aweme.R")||
+                line.contains("com.ss.android.ugc.aweme_push_lib.R")){
+                //针对抖音出错纠正
+                continue;
+            }
             hook_methods(line,classLoader,packageName);
             num++;
             //可以监听的方法有限，对于有些应用，它的方法不能全部监听
-            if(num>=4000){//7000
+            if(num>=5000){//7000
                 break;
             }
             last = line;

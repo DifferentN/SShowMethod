@@ -37,6 +37,12 @@ public class IASXposedModule implements IXposedHookLoadPackage{
         //广播告知当前页面是否已经完成绘制
 //        XposedHelpers.findAndHookMethod("android.view.View",lpparam.classLoader,"onDraw",Canvas.class,new EditTextonDrawHook());
         XposedHelpers.findAndHookMethod("android.view.View",lpparam.classLoader,"dispatchTouchEvent", MotionEvent.class,new DispatchTouchEventActivityHook());
+        XposedHelpers.findAndHookMethod("android.app.Activity", lpparam.classLoader, "finish", new XC_MethodHook() {
+            @Override
+            protected void afterHookedMethod(MethodHookParam param) throws Throwable {
+                Log.i("LZH","finish: "+param.thisObject.getClass().getName());
+            }
+        });
         String className = null;
         ClassLoader classLoader = lpparam.classLoader;
         //查看某个页面的方法调用
@@ -113,6 +119,47 @@ public class IASXposedModule implements IXposedHookLoadPackage{
                         }
                     });
         }
+        if (lpparam.packageName.equals("com.zhangshangjianzhi.newapp")) {
+            XposedHelpers.findAndHookMethod("com.stub.StubApp", lpparam.classLoader,
+                    "attachBaseContext", Context.class, new XC_MethodHook() {
+                        @Override
+                        protected void afterHookedMethod(MethodHookParam param) throws Throwable {
+                            super.afterHookedMethod(param);
+                            Log.i("LZH","hook classLoader");
+                            Context context = (Context) param.args[0];
+                            ClassLoader classLoader =context.getClassLoader();
+
+                            List<String> filter = new ArrayList<>();
+                            filter.add("zhangshangjianzhi");
+                            //设置监听的应用方法
+                            hookAPPMethod("zhangshangjianzhi.txt",classLoader,"com.zhangshangjianzhi.newapp",filter);
+
+                        }
+                    });
+        }
+        if (lpparam.packageName.equals("com.eusoft.eudic")) {
+            XposedHelpers.findAndHookMethod("com.stub.StubApp", lpparam.classLoader,
+                    "attachBaseContext", Context.class, new XC_MethodHook() {
+                        @Override
+                        protected void afterHookedMethod(MethodHookParam param) throws Throwable {
+                            super.afterHookedMethod(param);
+                            Log.i("LZH","hook classLoader");
+                            Context context = (Context) param.args[0];
+                            ClassLoader classLoader =context.getClassLoader();
+                            List<String> filter = new ArrayList<>();
+                            filter.add("eusoft");
+                            //设置监听的应用方法
+                            hookAPPMethod("eudic.txt",classLoader,"com.eusoft.eudic",filter);
+
+                        }
+                    });
+        }
+        classNames = "naman14.txt";
+        if(lpparam.packageName.contains("com.naman14.timberx")){
+            List<String> filter = new ArrayList<>();
+            filter.add("naman14");
+            hookAPPMethod(classNames,classLoader,"com.naman14.timberx",filter);
+        }
     }
     private void hook_methods(String className,ClassLoader loader,String packageName) {
 
@@ -178,7 +225,7 @@ public class IASXposedModule implements IXposedHookLoadPackage{
             hook_methods(line,classLoader,packageName);
             num++;
             //可以监听的方法有限，对于有些应用，它的方法不能全部监听
-            if(num>=7000){//7000
+            if(num>=5000){//7000
                 break;
             }
             last = line;

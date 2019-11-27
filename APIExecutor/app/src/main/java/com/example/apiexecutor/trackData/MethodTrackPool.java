@@ -116,13 +116,20 @@ public class MethodTrackPool {
 //        Log.i("LZH","curMethod: "+last);
         String invoke = null;
         boolean match = false;
+//        if(last.length()>=300){
+//            last = last.substring(0,300);
+//        }
         runTimeRecord.add(last);
+
         if(curEvent.invokePoint<invokeStrs.size()){
             invoke = invokeStrs.get(curEvent.invokePoint);
+//            if(invoke.length()>=300){
+//                invoke = invoke.substring(0,300);
+//            }
             invoke = invoke.substring(0,invoke.length()-1);
             for(int i=0;i<runTimeRecord.size();i++){
                 // checkEqual(runTimeRecord.get(i),invoke)
-                if(runTimeRecord.get(i).contains(invoke)){
+                if(runTimeRecord.get(i).equals(invoke)){
                     curEvent.invokePoint++;
                     match = true;
                     Log.i("LZH","match method");

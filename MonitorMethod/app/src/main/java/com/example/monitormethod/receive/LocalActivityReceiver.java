@@ -19,6 +19,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.example.monitormethod.trackData.SystemDataCollection;
+import com.example.monitormethod.util.ContextUtil;
 import com.example.monitormethod.util.LogWriter;
 
 import java.lang.reflect.Field;
@@ -60,59 +61,30 @@ public class LocalActivityReceiver extends BroadcastReceiver{
         switch (action){
             case ON_RESUME:
                 showActivityName = intent.getStringExtra(RESUME_ACTIVITY);
+                ContextUtil.setContext(selfActivity);
+                ContextUtil.setActivityName(showActivityName);
 //                imitateExecution();
                 break;
             case LocalActivityReceiver.WRITE_LOG:
                 //com.douban.movie com.tencent.qqmusic
                 //com.jnzc.shipudaquan com.yongche.android
-                if(selfPackageName.contains("cn.cuco")){
+                //com.dangdang.buy2 cn.cuco com.zhangshangjianzhi.newapp
+                //com.ss.android.ugc.aweme
+                if(selfPackageName.contains("com.naman14.timberx")){
                     //设置LogWriter可以写入日志
                     LogWriter.turnWriteAble();
+//                    Log.i("LZH","send");
+//                    sendRecordPermission();
                 }
-//                click();
-//                imitateStart = true;
-//                imitateExecution();
                 break;
         }
     }
-    private void imitateExecution(){
-        Log.i("LZH","imitateStart: "+imitateStart);
-        if(!imitateStart){
-            return;
-        }
-        if(selfActivityName.equals(showActivityName)&&selfActivityName.equals("com.douban.movie.activity.MainActivity")){
-            List<String> list = new ArrayList<>();
-            list.add("电影");
-            list.add("电视剧");
-            View view = getTargetView(list);
-            imitateClick(view);
-        }else if(selfActivityName.equals(showActivityName)&&selfActivityName.equals("com.douban.frodo.search.activity.NewSearchActivity")){
-            List<String> list = new ArrayList<>();
-            list.add("电影");
-            list.add("电视剧");
-//            View view = selfActivity.findViewById(2131298054);
-//            imitateClick(view);
-//
-//            ((TextView)view).setText("罗小黑战记");
-        }
+    private void sendRecordPermission(){
+        Intent intent = new Intent();
+        intent.setAction(RecordMethodLogReceiver.RECORD_SWITCH);
+        selfActivity.sendBroadcast(intent);
     }
-    private void imitateClick(View view){
-        int clickPos[] = new int[2];
-        view.getLocationInWindow(clickPos);
-        clickPos[0]+=view.getWidth()/2;
-        clickPos[1]+=view.getHeight()/2;
-        long downTime = SystemClock.uptimeMillis();
-        long eventTime = SystemClock.uptimeMillis();
-        int action = MotionEvent.ACTION_DOWN;
-        int x = clickPos[0];
-        int y = clickPos[1];
-        int metaState = 0;
-        MotionEvent motionEvent = MotionEvent.obtain(downTime, eventTime, action, x, y, metaState);
-        view.getRootView().dispatchTouchEvent(motionEvent);
-        action = MotionEvent.ACTION_UP;
-        motionEvent = MotionEvent.obtain(downTime, eventTime, action, x, y, metaState);
-        view.getRootView().dispatchTouchEvent(motionEvent);
-    }
+
     private View getTargetView(List<String> texts){
         View decor = selfActivity.getWindow().getDecorView();
         ViewGroup viewGroup;
