@@ -97,6 +97,17 @@ public class LocalActivityReceiver extends BroadcastReceiver implements CallBack
         switch (action){
             case CoordinatorReceiver.ON_RESUME:
                 showActivityName = intent.getStringExtra(CoordinatorReceiver.RESUME_ACTIVITY);
+                if(prepareUserAction==null){
+                    prepareUserAction = getUserAction();
+                }
+                if(selfActivityName.equals("yst.apk.activity.login.LoginActivity")&&
+                        selfActivityName.equals(showActivityName)){
+                    methodTrackPool = MethodTrackPool.getInstance();
+                    methodTrackPool.clearRunTimeRecord();
+                    methodTrackPool.LaunchUserAction();
+                    Log.i("LZH","start action");
+                    isSetText = true;
+                }
                 break;
             case LocalActivityReceiver.openTargetActivityByIntent:
                 Intent tarIntent = intent.getParcelableExtra(LocalActivityReceiver.TARGET_INTENT);
@@ -128,7 +139,7 @@ public class LocalActivityReceiver extends BroadcastReceiver implements CallBack
                 //com.imooc.component.imoocmain.index.MCMainActivity
                 //cn.cuco.model.version3.home.HomeVersion3Activity
                 //com.zhangshangjianzhi.newapp.activity.tab.MainTabActivity
-                if(selfActivityName.equals("com.naman14.timberx.ui.activities.MainActivity")){
+                if(selfActivityName.equals("yst.apk.activity.login.LoginActivity")){
                     methodTrackPool = MethodTrackPool.getInstance();
                     methodTrackPool.clearRunTimeRecord();
                     methodTrackPool.LaunchUserAction();
@@ -138,6 +149,7 @@ public class LocalActivityReceiver extends BroadcastReceiver implements CallBack
                 break;
             case LocalActivityReceiver.DRAW_OVER:
                 if(prepareUserAction!=null){
+//                    Log.i("LZH",selfActivityName+"\n"+showActivityName+"\n"+prepareUserAction.getActivityName());
                     if(showActivityName.compareTo(selfActivityName)!=0||!selfActivityName.contains(prepareUserAction.getActivityName())){
                         break;
                     }
@@ -145,12 +157,24 @@ public class LocalActivityReceiver extends BroadcastReceiver implements CallBack
                         prepareUserAction = null;
                     }
                 }else if(selfActivity.getPackageName().contains("cn.cuco")){
-                    MethodTrackPool methodTrackPool = MethodTrackPool.getInstance();
-                    if(!methodTrackPool.isCurActionFinish()){
-                        tryLaunchUserAction();
-                    }
                 }
         }
+    }
+    //从MethodTrackPool获取还未执行的userAction
+    private UserAction getUserAction(){
+        methodTrackPool = MethodTrackPool.getMethodTrackPool();
+        if(methodTrackPool!=null&&methodTrackPool.isAvailable()){
+            return methodTrackPool.getCurUserAction();
+        }
+        return null;
+    }
+    private void notifyUserActionFinish(UserAction userAction){
+        methodTrackPool = MethodTrackPool.getMethodTrackPool();
+        if(methodTrackPool==null){
+            return;
+        }
+        String actionFlag = userAction.getViewPath()+"/"+userAction.getActionName();
+        methodTrackPool.setActionFinish(actionFlag);
     }
     private boolean executeUserAction(UserAction userAction){
         boolean executionOver = false;
@@ -169,14 +193,19 @@ public class LocalActivityReceiver extends BroadcastReceiver implements CallBack
             textView.setText(userAction.getText());
             executionOver = true;
         }else if(userAction.getActionName().equals(Event.DISPATCH)){
-            View view = getViewByPath2(userAction.getViewPath());
-//            getViewByPath2(userAction.getViewPath());
-//            Log.i("LZH","viewPath: "+userAction.getViewPath());
+            View view = getViewByPath(selfActivity.getWindow().getDecorView().getRootView(),
+                    userAction.getViewPath());
+            if(view==null){
+                //可能会存在多个相同路径的view
+                view = getViewByPath2(userAction.getViewPath());
+            }
+            if(view!=null){
+                Log.i("LZH","view Width: "+view.getWidth()+" height: "+view.getHeight());
+            }
             if(view==null&&userAction.getViewId()>0){
                 Log.i("LZH","can't get view by viewPath");
                 view = selfActivity.findViewById(userAction.getViewId());
             }
-
             if(view==null||view.getWidth()==0||view.getHeight()==0){
                 Log.i("LZH","view is null:dispatchTouchEvent");
                 return executionOver;
@@ -188,8 +217,7 @@ public class LocalActivityReceiver extends BroadcastReceiver implements CallBack
         }
         if(executionOver){
             //通知methodTrackPool 当前发过来的event已经完成
-            MethodTrackPool methodTrackPool = MethodTrackPool.getInstance();
-            methodTrackPool.finishCurAction();
+            notifyUserActionFinish(userAction);
             tryLaunchUserAction();
         }
         return executionOver;
@@ -214,19 +242,20 @@ public class LocalActivityReceiver extends BroadcastReceiver implements CallBack
         } catch (IllegalAccessException e) {
             e.printStackTrace();
         }
-        Log.i("LZH","view size: "+mViews.size());
         View targetView = null;
         if(mViews!=null){
             for(View view:mViews){
                 targetView = getViewByPath(view,path);
                 if(targetView!=null){
                     Log.i("LZH","find view");
-                    return targetView;
+//                    return targetView;
                 }
             }
+            return targetView;
         }
         return null;
     }
+
     private View getViewByPath(String viewPath){
         class Node{
             public String path;
@@ -279,7 +308,7 @@ public class LocalActivityReceiver extends BroadcastReceiver implements CallBack
         View child = null;
         while(!queue.isEmpty()){
             temp = queue.remove(0);
-            Log.i("LZH","path: "+temp.path);
+//            Log.i("LZH","path: "+temp.path);
             if(temp.path.equals(viewPath)){
                 if(temp.view instanceof TextView){
                     Log.i("LZH","text: "+((TextView) temp.view).getText());
@@ -290,6 +319,39 @@ public class LocalActivityReceiver extends BroadcastReceiver implements CallBack
                 for(int i=0;i<viewGroup.getChildCount();i++){
                     child = viewGroup.getChildAt(i);
                     queue.add(new Node(temp.path+"/"+child.getClass()+":"+i,child));
+                }
+            }
+        }
+        return null;
+    }
+    private int[] getViewLocation(View rootView,View targetView){
+        class Node{
+            public float x,y;
+            public View view;
+            public Node(float x,float y,View view){
+                this.x = x;
+                this.y = y;
+                this.view = view;
+            }
+        }
+        List<Node> queue = new ArrayList<>();
+        View decorView = rootView;
+        queue.add(new Node(decorView.getX(),decorView.getY(),decorView));
+        Node temp = null;
+        ViewGroup viewGroup;
+        View child = null;
+        while(!queue.isEmpty()){
+            temp = queue.remove(0);
+            if(targetView==temp.view){
+                int location[] = new int[2];
+                location[0] = (int) temp.x;
+                location[1] = (int) temp.y;
+                return location;
+            }else if(temp.view instanceof ViewGroup){
+                viewGroup = (ViewGroup) temp.view;
+                for(int i=0;i<viewGroup.getChildCount();i++){
+                    child = viewGroup.getChildAt(i);
+                    queue.add(new Node(temp.x+child.getX(),temp.y+child.getY(),child));
                 }
             }
         }
@@ -317,11 +379,11 @@ public class LocalActivityReceiver extends BroadcastReceiver implements CallBack
         view.getRootView().dispatchTouchEvent(motionEvent);
     }
     private void tryLaunchUserAction(){
-        MethodTrackPool methodTrackPool = MethodTrackPool.getInstance();
-        methodTrackPool.LaunchUserAction();
+        methodTrackPool = MethodTrackPool.getMethodTrackPool();
+        if(methodTrackPool!=null){
+            methodTrackPool.LaunchUserAction();
+        }
     }
-
-
     @Override
     public String getContent() {
         return content;

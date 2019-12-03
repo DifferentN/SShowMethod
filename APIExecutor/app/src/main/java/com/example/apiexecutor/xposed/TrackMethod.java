@@ -15,6 +15,8 @@ import com.example.apiexecutor.trackData.ActivityUtil;
 import com.example.apiexecutor.trackData.MethodTrackPool;
 import com.example.apiexecutor.trackData.ObjectPool;
 
+import java.lang.reflect.Method;
+
 import de.robv.android.xposed.XC_MethodHook;
 
 
@@ -41,7 +43,11 @@ public class TrackMethod extends XC_MethodHook {
                 Log.i("LZH","com.douban.frodo.baseproject.activity.BaseActivity/onStop");
             }
         }
-
+        Class clazz = param.method.getClass();
+        Method methods[] = clazz.getDeclaredMethods();
+        for(Method method :methods){
+            method.getParameterTypes();
+        }
         String callerName = param.method.getDeclaringClass().getName();
         String methodName = param.method.getName();
         String message = "before: "+callerName+"/"+methodName;

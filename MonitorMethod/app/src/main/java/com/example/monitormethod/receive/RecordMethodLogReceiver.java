@@ -15,7 +15,7 @@ public class RecordMethodLogReceiver extends BroadcastReceiver {
     private LogWriter logWriter;
     private String fileName = "methodLog.txt";
     //com.dangdang.buy2  com.douban.movie
-    private static String targetPKName = "com.naman14.timberx";
+    private static String targetPKName = "yst.apk";
     public RecordMethodLogReceiver(){
         fileName = Environment.getExternalStorageDirectory().getAbsolutePath()+"/"+fileName;
         logWriter = LogWriter.getInstance(fileName,targetPKName);

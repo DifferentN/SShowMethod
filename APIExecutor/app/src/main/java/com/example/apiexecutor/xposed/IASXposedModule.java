@@ -160,6 +160,12 @@ public class IASXposedModule implements IXposedHookLoadPackage{
             filter.add("naman14");
             hookAPPMethod(classNames,classLoader,"com.naman14.timberx",filter);
         }
+        classNames = "yst.txt";
+        if(lpparam.packageName.contains("yst.apk")){
+            List<String> filter = new ArrayList<>();
+            filter.add("yst");
+            hookAPPMethod(classNames,classLoader,"yst.apk",filter);
+        }
     }
     private void hook_methods(String className,ClassLoader loader,String packageName) {
 
@@ -238,7 +244,7 @@ public class IASXposedModule implements IXposedHookLoadPackage{
         List<String> list = new ArrayList<>();
         String line = null;
         if(!file.exists()){
-            Log.i("LZH","类名文件不存在");
+            Log.i("LZH","类名文件不存在: "+fileName);
         }
         try {
             FileReader fileReader = new FileReader(file);

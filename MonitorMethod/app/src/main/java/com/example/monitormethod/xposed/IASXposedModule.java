@@ -179,16 +179,16 @@ public class IASXposedModule implements IXposedHookLoadPackage{
                         }
                     });
         }
-        classNames = "naman14.txt";
-        if(lpparam.packageName.contains("com.naman14.timberx")){
-            XposedHelpers.findAndHookMethod("android.app.Activity",lpparam.classLoader,"dispatchTouchEvent",MotionEvent.class,new TrackMethod(new Class[]{MotionEvent.class},"com.naman14.timberx"));
-            XposedHelpers.findAndHookMethod("android.view.View",lpparam.classLoader,"dispatchTouchEvent",MotionEvent.class,new DispatchTouchEventHook("com.naman14.timberx"));
-            XposedHelpers.findAndHookMethod("android.view.View", lpparam.classLoader, "onDraw",Canvas.class, new HookOnDraw("com.naman14.timberx"));
+        classNames = "yst.txt";
+        if(lpparam.packageName.contains("yst.apk")){
+            XposedHelpers.findAndHookMethod("android.app.Activity",lpparam.classLoader,"dispatchTouchEvent",MotionEvent.class,new TrackMethod(new Class[]{MotionEvent.class},"yst.apk"));
+            XposedHelpers.findAndHookMethod("android.view.View",lpparam.classLoader,"dispatchTouchEvent",MotionEvent.class,new DispatchTouchEventHook("yst.apk"));
+            XposedHelpers.findAndHookMethod("android.view.View", lpparam.classLoader, "onDraw",Canvas.class, new HookOnDraw("yst.apk"));
             XposedHelpers.findAndHookMethod("android.view.inputmethod.BaseInputConnection", lpparam.classLoader, "commitText",CharSequence.class, int.class,
-                    new TrackMethod(new Class[]{CharSequence.class, int.class},"com.naman14.timberx"));
+                    new TrackMethod(new Class[]{CharSequence.class, int.class},"yst.apk"));
             List<String> filter = new ArrayList<>();
-            filter.add("naman14");
-            hookAPPMethod(classNames,classLoader,"com.naman14.timberx",filter);
+            filter.add("yst");
+            hookAPPMethod(classNames,classLoader,"yst.apk",filter);
         }
     }
     private void hook_methods(String className,ClassLoader loader,String packageName) {

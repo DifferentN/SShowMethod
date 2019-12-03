@@ -27,7 +27,6 @@ public class ActivityOnResumeHook extends XC_MethodHook {
 //        super.beforeHookedMethod(param);
         Activity activity = (Activity) param.thisObject;
 //        ComponentName componentName = activity.getComponentName();
-
         ComponentName componentName = activity.getComponentName();
     }
 

@@ -21,13 +21,13 @@ public class LogWriter {
     private static String fName;
     private static boolean token = false;//是否可以写入日志的标志
     private static long preTime;
-    private static String targetPKName = "com.naman14.timberx";
+    private static String targetPKName = "yst.apk";
     public boolean TempIsSetText = false;
     public int num = 0;
     private static List<String> list ;
     //com.kingsoft com.ichi2.anki  com.tencent.qqmusic  com.ss.android.autoprice
     //com.ichi2.anki  com.yongche.android  com.douban.movie  com.jnzc.shipudaquan
-    //com.dangdang.buy2
+    //com.dangdang.buy2 com.naman14.timberx
     public LogWriter(String fileName){
         fName = fileName;
         file = new File(fName);

@@ -32,7 +32,7 @@ public class MethodTrackPool {
     private List<MyMethod> subCall;
     private List<Event> events;
     private Event curEvent;
-    private boolean curActionFinish = false; //false 表示当前操作未执行
+    private boolean executeActionState = false; //false 表示当前操作未执行
     private boolean isAvailable = false;
     private int LOG_SIZE = 0;
     public MethodTrackPool(){
@@ -52,6 +52,9 @@ public class MethodTrackPool {
                 }
             }
         }
+        return methodTrackPool;
+    }
+    public static MethodTrackPool getMethodTrackPool(){
         return methodTrackPool;
     }
     private void readSequence(String fileName){
@@ -120,27 +123,29 @@ public class MethodTrackPool {
 //            last = last.substring(0,300);
 //        }
         runTimeRecord.add(last);
-
         if(curEvent.invokePoint<invokeStrs.size()){
             invoke = invokeStrs.get(curEvent.invokePoint);
 //            if(invoke.length()>=300){
 //                invoke = invoke.substring(0,300);
 //            }
-            invoke = invoke.substring(0,invoke.length()-1);
+            invoke = invoke.substring(0,invoke.length()-1);//不能用equals
             for(int i=0;i<runTimeRecord.size();i++){
                 // checkEqual(runTimeRecord.get(i),invoke)
-                if(runTimeRecord.get(i).equals(invoke)){
+                if(runTimeRecord.get(i).contains(invoke)){
                     curEvent.invokePoint++;
                     match = true;
                     Log.i("LZH","match method");
                     break;
                 }
             }
+            if(!match&&curEvent.invokePoint<invokeStrs.size()){
+                Log.i("LZH", "curMethod" + last + " \n record: " + curEvent.invokePoint + " " + invoke);
+            }
 //            Log.i("LZH", "curMethod" + last + " \n record: " + curEvent.invokePoint + " " + invokeStrs.get(curEvent.invokePoint));
         }
-        if(!match&&curEvent.invokePoint<invokeStrs.size()){
-            Log.i("LZH", "curMethod" + last + " \n record: " + curEvent.invokePoint + " " + invokeStrs.get(curEvent.invokePoint));
-        }
+//        if(!match&&curEvent.invokePoint<invokeStrs.size()){
+//            Log.i("LZH", "curMethod" + last + " \n record: " + curEvent.invokePoint + " " + invokeStrs.get(curEvent.invokePoint));
+//        }
         if(runTimeRecord.size()>LOG_SIZE){
             runTimeRecord.remove(0);
         }
@@ -161,15 +166,22 @@ public class MethodTrackPool {
     }
 
     /**
-     * 当前的操作已经执行完成，将curEvent设置为null
+     * 当前的操作已经执行完成，将executeActionState设置为true
      */
-    public void finishCurAction(){
-        curActionFinish = true;
+    public void setActionFinish(String flag){
+        String name = curEvent.getPath()+"/"+curEvent.getMethodName();
+        if(flag.equals(name)){
+            executeActionState = true;
+        }
     }
-    public boolean isCurActionFinish(){
-        return curActionFinish;
+    public UserAction getCurUserAction(){
+        //如果当前event的action没有执行，则返回userAction
+        if(!executeActionState){
+            return getUserActionByEvent(curEvent);
+        }
+        return null;
     }
-    private boolean isAvailable(){
+    public boolean isAvailable(){
         if(context!=null&&isAvailable){
             return true;
         }
@@ -184,6 +196,13 @@ public class MethodTrackPool {
         Log.i("LZH","sendNotification");
         Intent intent = new Intent();
         intent.setAction(LocalActivityReceiver.EXECUTE_EVENT);
+        UserAction userAction = getUserActionByEvent(event);
+        intent.putExtra(LocalActivityReceiver.USER_ACTION,userAction);
+        context.sendBroadcast(intent);
+        executeActionState = false;
+        Log.i("LZH","sendActionIntent");
+    }
+    private UserAction getUserActionByEvent(Event event){
         UserAction userAction = new UserAction(event.getMethodName(),
                 event.getPath(),
                 Integer.valueOf(event.getComponentId()),
@@ -192,10 +211,7 @@ public class MethodTrackPool {
         if(event.getMethodName().equals(Event.SETTEXT)){
             userAction.setText(event.getParameters().get(0).value);
         }
-        intent.putExtra(LocalActivityReceiver.USER_ACTION,userAction);
-        context.sendBroadcast(intent);
-        curActionFinish = false;
-        Log.i("LZH","sendActionIntent");
+        return userAction;
     }
     public void setContext(Context context){
         this.context = context;
