@@ -100,14 +100,14 @@ public class LocalActivityReceiver extends BroadcastReceiver implements CallBack
                 if(prepareUserAction==null){
                     prepareUserAction = getUserAction();
                 }
-                if(selfActivityName.equals("yst.apk.activity.login.LoginActivity")&&
-                        selfActivityName.equals(showActivityName)){
-                    methodTrackPool = MethodTrackPool.getInstance();
-                    methodTrackPool.clearRunTimeRecord();
-                    methodTrackPool.LaunchUserAction();
-                    Log.i("LZH","start action");
-                    isSetText = true;
-                }
+//                if(selfActivityName.equals("yst.apk.activity.login.LoginActivity")&&
+//                        selfActivityName.equals(showActivityName)){
+//                    methodTrackPool = MethodTrackPool.getInstance();
+//                    methodTrackPool.clearRunTimeRecord();
+//                    methodTrackPool.LaunchUserAction();
+//                    Log.i("LZH","start action");
+//                    isSetText = true;
+//                }
                 break;
             case LocalActivityReceiver.openTargetActivityByIntent:
                 Intent tarIntent = intent.getParcelableExtra(LocalActivityReceiver.TARGET_INTENT);
