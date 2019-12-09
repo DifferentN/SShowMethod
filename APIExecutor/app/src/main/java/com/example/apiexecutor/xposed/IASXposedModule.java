@@ -36,7 +36,7 @@ public class IASXposedModule implements IXposedHookLoadPackage{
         XposedHelpers.findAndHookMethod("android.view.ViewRootImpl", lpparam.classLoader, "performTraversals", new ViewRootImplPerformTraversalsHook());
         //广播告知当前页面是否已经完成绘制
 //        XposedHelpers.findAndHookMethod("android.view.View",lpparam.classLoader,"onDraw",Canvas.class,new EditTextonDrawHook());
-        XposedHelpers.findAndHookMethod("android.view.View",lpparam.classLoader,"dispatchTouchEvent", MotionEvent.class,new DispatchTouchEventActivityHook());
+//        XposedHelpers.findAndHookMethod("android.view.View",lpparam.classLoader,"dispatchTouchEvent", MotionEvent.class,new DispatchTouchEventActivityHook());
         XposedHelpers.findAndHookMethod("android.app.Activity", lpparam.classLoader, "finish", new XC_MethodHook() {
             @Override
             protected void afterHookedMethod(MethodHookParam param) throws Throwable {

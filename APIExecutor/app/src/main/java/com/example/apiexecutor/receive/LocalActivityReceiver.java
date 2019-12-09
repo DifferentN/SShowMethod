@@ -24,6 +24,7 @@ import com.example.apiexecutor.core.CoordinatorReceiver;
 import com.example.apiexecutor.core.Event;
 import com.example.apiexecutor.core.MethodExecutor;
 import com.example.apiexecutor.core.UserAction;
+import com.example.apiexecutor.trackData.ActivityNameRecord;
 import com.example.apiexecutor.trackData.MethodTrackPool;
 import com.example.apiexecutor.util.ViewUtil;
 
@@ -46,7 +47,8 @@ public class LocalActivityReceiver extends BroadcastReceiver implements CallBack
     public static final String openTargetActivityByDeepLink = "openTargetActivityByDeepLink";
     public static final String INPUT_TEXT = "INPUT_TEXT";
     public static final String INPUT_EVENT = "INPUT_EVENT";
-
+    public static final String SEND_ACTIVITY_NAME = "SEND_ACTIVITY_NAME";
+    public static final String FLAG_ACTIVITY_NAME = "FLAG_ACTIVITY_NAME";
 
     public static final String GenerateIntentData = "GenerateIntentData";
     public static final String GenerateDeepLink = "GenerateDeepLink";
@@ -73,10 +75,8 @@ public class LocalActivityReceiver extends BroadcastReceiver implements CallBack
     private String selfAppName;
     private String curPackageName = "";
     private String curAppName;
-    private String selfpackageName;
+    private String launchActivityName = "";
 
-    private int clickTime = 0;
-    public long curTime,preTime;
     private boolean isSetText = false;
 
     private MethodExecutor methodExecutor;
@@ -100,14 +100,18 @@ public class LocalActivityReceiver extends BroadcastReceiver implements CallBack
                 if(prepareUserAction==null){
                     prepareUserAction = getUserAction();
                 }
-//                if(selfActivityName.equals("yst.apk.activity.login.LoginActivity")&&
-//                        selfActivityName.equals(showActivityName)){
-//                    methodTrackPool = MethodTrackPool.getInstance();
-//                    methodTrackPool.clearRunTimeRecord();
-//                    methodTrackPool.LaunchUserAction();
-//                    Log.i("LZH","start action");
-//                    isSetText = true;
-//                }
+                //yst.apk.activity.login.LoginActivity
+                //amodule.activity.main.MainHomePageNew
+                Log.i("LZH","show: "+showActivityName+" launch: "+ActivityNameRecord.launchActivityName);
+                if(selfActivityName.equals(ActivityNameRecord.launchActivityName)&&
+                        selfActivityName.equals(showActivityName)){
+                    methodTrackPool = MethodTrackPool.getInstance();
+                    methodTrackPool.clearRunTimeRecord();
+                    methodTrackPool.LaunchUserAction();
+                    Log.i("LZH","start action");
+                    ActivityNameRecord.launchEnable = false;
+                    isSetText = true;
+                }
                 break;
             case LocalActivityReceiver.openTargetActivityByIntent:
                 Intent tarIntent = intent.getParcelableExtra(LocalActivityReceiver.TARGET_INTENT);
@@ -158,6 +162,11 @@ public class LocalActivityReceiver extends BroadcastReceiver implements CallBack
                     }
                 }else if(selfActivity.getPackageName().contains("cn.cuco")){
                 }
+            case SEND_ACTIVITY_NAME:
+                launchActivityName = intent.getStringExtra(FLAG_ACTIVITY_NAME);
+                ActivityNameRecord.launchActivityName = launchActivityName;
+                ActivityNameRecord.launchEnable = true;
+                break;
         }
     }
     //从MethodTrackPool获取还未执行的userAction

@@ -60,7 +60,10 @@ public class ActivityOnCreateHook extends XC_MethodHook {
 
 //        KLog.v(BuildConfig.GETVIEW, "#*#*#*#*#*#*# enable receiver in: " + activityName);
         injectReceiver(context, activity);
-
+        Intent intent1 = new Intent();
+        intent1.setAction("ON_CREATE");
+        intent1.putExtra("LAUNCH_PACKAGE_NAME",activity.getComponentName().getPackageName());
+        activity.sendBroadcast(intent1);
         Log.i("LZH","after create "+componentName.getClassName());
     }
     private void injectReceiver(Context context, Activity activity) {
@@ -96,6 +99,7 @@ public class ActivityOnCreateHook extends XC_MethodHook {
         filter.addAction(CoordinatorReceiver.EXECUTE_METHOD);
         filter.addAction(LocalActivityReceiver.EXECUTE_EVENT);
         filter.addAction(LocalActivityReceiver.DRAW_OVER);
+        filter.addAction(LocalActivityReceiver.SEND_ACTIVITY_NAME);
 
         Object o = XposedHelpers.getAdditionalInstanceField(activity,"iasReceiver");
         if(o!=null){
@@ -111,6 +115,7 @@ public class ActivityOnCreateHook extends XC_MethodHook {
 //        if(fileName.contains("com.ichi2.anki")){
 //            writeAnkiClassName(activity.getPackageName(),activity,fileName);
 //        }
+
 
     }
     private void showClassName(String pkName, Context context){
