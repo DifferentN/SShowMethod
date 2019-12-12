@@ -70,7 +70,7 @@ public class LocalActivityReceiver extends BroadcastReceiver{
                 //com.jnzc.shipudaquan com.yongche.android
                 //com.dangdang.buy2 cn.cuco com.zhangshangjianzhi.newapp
                 //com.ss.android.ugc.aweme
-                if(selfPackageName.contains("yst.apk")){
+                if(selfPackageName.contains("com.jnzc.shipudaquan")){
                     //设置LogWriter可以写入日志
                     LogWriter.turnWriteAble();
 //                    Log.i("LZH","send");

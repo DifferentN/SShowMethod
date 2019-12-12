@@ -102,7 +102,7 @@ public class LocalActivityReceiver extends BroadcastReceiver implements CallBack
                 }
                 //yst.apk.activity.login.LoginActivity
                 //amodule.activity.main.MainHomePageNew
-                Log.i("LZH","show: "+showActivityName+" launch: "+ActivityNameRecord.launchActivityName);
+                Log.i("LZH","show: "+showActivityName+" launch: "+ActivityNameRecord.launchActivityName+" self: "+selfActivityName);
                 if(selfActivityName.equals(ActivityNameRecord.launchActivityName)&&
                         selfActivityName.equals(showActivityName)){
                     methodTrackPool = MethodTrackPool.getInstance();
@@ -143,7 +143,7 @@ public class LocalActivityReceiver extends BroadcastReceiver implements CallBack
                 //com.imooc.component.imoocmain.index.MCMainActivity
                 //cn.cuco.model.version3.home.HomeVersion3Activity
                 //com.zhangshangjianzhi.newapp.activity.tab.MainTabActivity
-                if(selfActivityName.equals("yst.apk.activity.login.LoginActivity")){
+                if(selfActivityName.equals("com.tencent.qqmusic.activity.AppStarterActivity")){
                     methodTrackPool = MethodTrackPool.getInstance();
                     methodTrackPool.clearRunTimeRecord();
                     methodTrackPool.LaunchUserAction();
@@ -162,6 +162,7 @@ public class LocalActivityReceiver extends BroadcastReceiver implements CallBack
                     }
                 }else if(selfActivity.getPackageName().contains("cn.cuco")){
                 }
+                break;
             case SEND_ACTIVITY_NAME:
                 launchActivityName = intent.getStringExtra(FLAG_ACTIVITY_NAME);
                 ActivityNameRecord.launchActivityName = launchActivityName;

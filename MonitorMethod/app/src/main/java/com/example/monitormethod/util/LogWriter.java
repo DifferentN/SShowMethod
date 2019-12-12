@@ -21,7 +21,7 @@ public class LogWriter {
     private static String fName;
     private static boolean token = false;//是否可以写入日志的标志
     private static long preTime;
-    private static String targetPKName = "yst.apk";
+    private static String targetPKName = "com.jnzc.shipudaquan";
     public boolean TempIsSetText = false;
     public int num = 0;
     private static List<String> list ;
