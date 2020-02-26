@@ -12,18 +12,6 @@
         android:layout_height="wrap_content"
         android:id="@+id/textTop"
         android:layout_gravity="center_horizontal"
-        android:text="Hello World!" />
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/testBT"
-        android:onClick="click"
-        android:text="test"/>
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/testBT2"
-        android:onClick="click2"
-        android:text="test"/>
+        android:text="监听应用执行" />
 
 </LinearLayout>

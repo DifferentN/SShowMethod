@@ -1,5 +1,6 @@
 package com.example.apiexecutor.xposed;
 
+import android.animation.ValueAnimator;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Canvas;
@@ -8,6 +9,7 @@ import android.os.Environment;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.animation.Transformation;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -29,7 +31,6 @@ public class IASXposedModule implements IXposedHookLoadPackage{
     @Override
     public void handleLoadPackage(XC_LoadPackage.LoadPackageParam lpparam) throws Throwable {
         Log.i("LZH","Loaded app: "+lpparam.packageName);
-
         XposedHelpers.findAndHookMethod("android.app.Activity", lpparam.classLoader, "onCreate", Bundle.class, new ActivityOnCreateHook(lpparam));
         XposedHelpers.findAndHookMethod("android.app.Activity", lpparam.classLoader, "onResume", new ActivityOnResumeHook());
 //        XposedHelpers.findAndHookMethod("android.app.Activity",lpparam.classLoader,"dispatchTouchEvent",MotionEvent.class,new DispatchTouchEventActivityHook());
@@ -43,6 +44,7 @@ public class IASXposedModule implements IXposedHookLoadPackage{
                 Log.i("LZH","finish: "+param.thisObject.getClass().getName());
             }
         });
+
         String className = null;
         ClassLoader classLoader = lpparam.classLoader;
         //查看某个页面的方法调用
@@ -102,23 +104,23 @@ public class IASXposedModule implements IXposedHookLoadPackage{
             filter.add("mooc");
             hookAPPMethod(classNames,classLoader,"cn.com.open.mooc",filter);
         }
-        if (lpparam.packageName.equals("cn.cuco")) {
-            XposedHelpers.findAndHookMethod("com.stub.StubApp", lpparam.classLoader,
-                    "attachBaseContext", Context.class, new XC_MethodHook() {
-                        @Override
-                        protected void afterHookedMethod(MethodHookParam param) throws Throwable {
-                            super.afterHookedMethod(param);
-                            Log.i("LZH","hook classLoader");
-                            Context context = (Context) param.args[0];
-                            ClassLoader classLoader =context.getClassLoader();
-                            List<String> filter = new ArrayList<>();
-                            filter.add("cuco");
-                            //设置监听的应用方法
-                            hookAPPMethod("cuco.txt",classLoader,"cn.cuco",filter);
-
-                        }
-                    });
-        }
+//        if (lpparam.packageName.equals("cn.cuco")) {
+//            XposedHelpers.findAndHookMethod("com.stub.StubApp", lpparam.classLoader,
+//                    "attachBaseContext", Context.class, new XC_MethodHook() {
+//                        @Override
+//                        protected void afterHookedMethod(MethodHookParam param) throws Throwable {
+//                            super.afterHookedMethod(param);
+//                            Log.i("LZH","hook classLoader");
+//                            Context context = (Context) param.args[0];
+//                            ClassLoader classLoader =context.getClassLoader();
+//                            List<String> filter = new ArrayList<>();
+//                            filter.add("cuco");
+//                            //设置监听的应用方法
+//                            hookAPPMethod("cuco.txt",classLoader,"cn.cuco",filter);
+//
+//                        }
+//                    });
+//        }
         if (lpparam.packageName.equals("com.zhangshangjianzhi.newapp")) {
             XposedHelpers.findAndHookMethod("com.stub.StubApp", lpparam.classLoader,
                     "attachBaseContext", Context.class, new XC_MethodHook() {
@@ -166,6 +168,67 @@ public class IASXposedModule implements IXposedHookLoadPackage{
             filter.add("yst");
             hookAPPMethod(classNames,classLoader,"yst.apk",filter);
         }
+        classNames = "huanyubrowser.txt";
+        if(lpparam.packageName.contains("com.cqrenyi.huanyubrowser")){
+            List<String> filter = new ArrayList<>();
+            filter.add("huanyubrowser");
+            hookAPPMethod(classNames,classLoader,"com.cqrenyi.huanyubrowser",filter); }
+
+        classNames = "yr.txt";
+        if(lpparam.packageName.contains("com.yr.qmzs")){
+            List<String> filter = new ArrayList<>();
+            filter.add("yr");
+            hookAPPMethod(classNames,classLoader,"com.yr.qmzs",filter); }
+
+        classNames = "jrtd.txt";
+        if(lpparam.packageName.contains("com.jrtd.mfxszq")){
+            List<String> filter = new ArrayList<>();
+            filter.add("dzbook");
+            filter.add("dz");
+            hookAPPMethod(classNames,classLoader,"com.jrtd.mfxszq",filter); }
+        //bubei.tingshu
+        classNames = "pris.txt";
+        if(lpparam.packageName.contains("com.netease.pris")){
+            List<String> filter = new ArrayList<>();
+            filter.add("pris");
+            hookAPPMethod(classNames,classLoader,"com.netease.pris",filter); }
+        classNames = "wondertek.txt";
+        if(lpparam.packageName.contains("com.wondertek.paper")){
+            List<String> filter = new ArrayList<>();
+            filter.add("wondertek");
+            filter.add("paper");
+            hookAPPMethod(classNames,classLoader,"com.wondertek.paper",filter); }
+        classNames = "infzm.txt";
+        if(lpparam.packageName.contains("com.infzm.ireader")){
+            List<String> filter = new ArrayList<>();
+            filter.add("infzm");
+            filter.add("ireader");
+            hookAPPMethod(classNames,classLoader,"com.infzm.ireader",filter); }
+        classNames = "ifeng.txt";
+        if(lpparam.packageName.contains("com.ifeng.news2")){
+            List<String> filter = new ArrayList<>();
+            filter.add("ifeng");
+            hookAPPMethod(classNames,classLoader,"com.ifeng.news2",filter); }
+        classNames = "duxiaoman.txt";
+        if(lpparam.packageName.contains("com.duxiaoman.umoney")){
+            List<String> filter = new ArrayList<>();
+            filter.add("duxiaoman");
+            hookAPPMethod(classNames,classLoader,"com.duxiaoman.umoney",filter); }
+        classNames = "boohee.txt";
+        if(lpparam.packageName.contains("com.boohee.food")){
+            List<String> filter = new ArrayList<>();
+            filter.add("boohee");
+            hookAPPMethod(classNames,classLoader,"com.boohee.food",filter); }
+        classNames = "booheeone.txt";
+        if(lpparam.packageName.contains("com.boohee.one")){
+            List<String> filter = new ArrayList<>();
+            filter.add("boohee");
+            hookAPPMethod(classNames,classLoader,"ccom.boohee.one",filter); }
+        classNames = "dailyyoga.txt";
+        if(lpparam.packageName.contains("com.dailyyoga.cn")){
+            List<String> filter = new ArrayList<>();
+            filter.add("dailyyoga");
+            hookAPPMethod(classNames,classLoader,"com.dailyyoga.cn",filter); }
     }
     private void hook_methods(String className,ClassLoader loader,String packageName) {
 

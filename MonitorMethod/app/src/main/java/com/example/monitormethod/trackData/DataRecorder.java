@@ -8,6 +8,7 @@ import java.lang.ref.WeakReference;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Set;
+import java.util.Vector;
 import java.util.WeakHashMap;
 
 /**
@@ -16,9 +17,11 @@ import java.util.WeakHashMap;
 public class DataRecorder {
     private static DataRecorder dataRecorder;
     private Hashtable<Integer, WeakReference<Object>> hashtable;
+    private Vector<SaveNode> objList;
     private int num = 0;
     public DataRecorder(){
         hashtable = new Hashtable<>();
+        objList = new Vector<>();
     }
     public static DataRecorder getInstance(){
         if(dataRecorder==null){
@@ -35,7 +38,8 @@ public class DataRecorder {
     public int addRef(Object o){
         synchronized (DataRecorder.class){
             num++;
-            hashtable.put(num,new WeakReference<Object>(o));
+//            hashtable.put(num,new WeakReference<Object>(o));
+            objList.add(new SaveNode(new WeakReference<Object>(o),num));
         }
         return num;
     }
@@ -49,20 +53,40 @@ public class DataRecorder {
         boolean flag = false;
         int key = -1;
         synchronized (DataRecorder.class){
-            Set<Integer> keys = hashtable.keySet();
-            Iterator<Integer> iterator =  keys.iterator();
-            while (iterator.hasNext()){
-                key = iterator.next();
-                if(hashtable.get(key).get()==o){
+//            Set<Integer> keys = hashtable.keySet();
+//            Iterator<Integer> iterator =  keys.iterator();
+//            while (iterator.hasNext()){
+//                key = iterator.next();
+//                if(hashtable.get(key).get()==o){
+//                    flag = true;
+//                    break;
+//                }
+//            }
+            int i = 0,size = objList.size();
+            i = size-1;
+            while(i>=0){
+                SaveNode saveNode = objList.get(i);
+                if(saveNode.weakReference.get()==o){
                     flag = true;
                     break;
+                }else if(saveNode.weakReference.get()==null){
+                    objList.remove(saveNode);
                 }
+                i--;
             }
         }
         if(flag){
             return key;
         }else{
             return -1;
+        }
+    }
+    private static class SaveNode{
+        public WeakReference<Object> weakReference;
+        public int num;
+        public SaveNode(WeakReference<Object> weakReference,int num){
+            this.weakReference = weakReference;
+            this.num = num;
         }
     }
 

@@ -31,6 +31,7 @@ public class TrackMethod extends XC_MethodHook {
     private LogWriter logWriter;
     private DataRecorder dataRecorder;
     private String fileName = "methodLog.txt";
+    private JSONObject jsonObject = new JSONObject();
     public TrackMethod(Class pclazz[],String packageName){
         fileName = Environment.getExternalStorageDirectory().getAbsolutePath()+"/"+fileName;
         logWriter = LogWriter.getInstance(fileName,packageName);
@@ -39,6 +40,9 @@ public class TrackMethod extends XC_MethodHook {
     }
     @Override
     protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
+//        if(true){
+//            return;
+//        }
         if(Thread.currentThread().getId()!=1){
             return;
         }
@@ -52,7 +56,6 @@ public class TrackMethod extends XC_MethodHook {
                 Log.i("LZH","com.douban.frodo.baseproject.activity.BaseActivity/onStop");
             }
         }
-        JSONObject jsonObject = new JSONObject();
         writeCallerInfo(jsonObject,param);
         writeMethodName(jsonObject,param);
         writeMethodParameter(jsonObject,param);
@@ -72,19 +75,25 @@ public class TrackMethod extends XC_MethodHook {
     }
     @Override
     protected void afterHookedMethod(MethodHookParam param) throws Throwable {
+//        if(true){
+//            return;
+//        }
 //        checkPermission();
         if(Thread.currentThread().getId()!=1){
             return;
+        }else{
+            Log.i("DIF","DIF_Thread");
         }
-        JSONObject jsonObject = new JSONObject();
-        writeCallerInfo(jsonObject,param);
-        writeMethodName(jsonObject,param);
-        writeMethodParameter(jsonObject,param);
+//        JSONObject jsonObject = new JSONObject();
+//        writeCallerInfo(jsonObject,param);
+//        writeMethodName(jsonObject,param);
+//        writeMethodParameter(jsonObject,param);
+//        writeResultInfo(jsonObject,param);
+//        writeThreadId(jsonObject);
+//        writeViewFlag(jsonObject,param);
+//        writeViewInfo(jsonObject,param);
+//        writeActivityID(jsonObject,param);
         writeResultInfo(jsonObject,param);
-        writeThreadId(jsonObject);
-        writeViewFlag(jsonObject,param);
-        writeViewInfo(jsonObject,param);
-        writeActivityID(jsonObject,param);
         if(logWriter!=null){
 //            sendMethodLog("after: "+jsonObject.toJSONString());
             logWriter.writeLog("after: "+jsonObject.toJSONString());
@@ -113,6 +122,13 @@ public class TrackMethod extends XC_MethodHook {
         json.put("callerClassName",callerName);
         if(caller!=null){
             int hash = dataRecorder.getRefKey(caller);
+
+//            Log.i("LZH",caller.toString()+"");
+//            try{
+//                hash = caller.hashCode();
+//            }catch (Exception e){
+//                hash = dataRecorder.getRefKey(caller);
+//            }
             if(hash<=0){
                 hash = dataRecorder.addRef(caller);
             }
@@ -154,6 +170,11 @@ public class TrackMethod extends XC_MethodHook {
             p = param.args[i];
             if(p!=null){
                 int hash = dataRecorder.getRefKey(p);
+//                try{
+//                    hash = p.hashCode();
+//                }catch (Exception e){
+//                    hash = dataRecorder.getRefKey(p);
+//                }
                 if(hash<=0){
                     hash = dataRecorder.addRef(p);
                 }

@@ -9,6 +9,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -21,17 +22,20 @@ public class LogWriter {
     private static String fName;
     private static boolean token = false;//是否可以写入日志的标志
     private static long preTime;
-    private static String targetPKName = "com.jnzc.shipudaquan";
+    private static String targetPKName = "com.dailyyoga.cn";
     public boolean TempIsSetText = false;
     public int num = 0;
     private static List<String> list ;
     //com.kingsoft com.ichi2.anki  com.tencent.qqmusic  com.ss.android.autoprice
     //com.ichi2.anki  com.yongche.android  com.douban.movie  com.jnzc.shipudaquan
-    //com.dangdang.buy2 com.naman14.timberx
+    //com.dangdang.buy2 com.naman14.timberx  yst.apk com.cqrenyi.huanyubrowser
+    //com.yr.qmzs com.jrtd.mfxszq com.netease.pris com.wondertek.paper
+    //com.infzm.ireader com.ifeng.news2 com.duxiaoman.umoney
+    //com.boohee.food com.boohee.one
     public LogWriter(String fileName){
         fName = fileName;
         file = new File(fName);
-        list = new ArrayList<>();
+        list = new LinkedList<>();
         if(!file.exists()){
             try {
                 file.createNewFile();
@@ -93,6 +97,9 @@ public class LogWriter {
             } catch (IOException e) {
                 e.printStackTrace();
             }
+//            MyWriteFileRunnable runnable = new MyWriteFileRunnable(list,writer);
+//            Thread thread = new Thread(runnable);
+//            thread.start();
         }
     }
     private static void writeLogList(){
@@ -107,5 +114,26 @@ public class LogWriter {
             e.printStackTrace();
         }
 
+    }
+    private static class MyWriteFileRunnable implements Runnable{
+        private List<String> contents;
+        private BufferedWriter fileWriter;
+        public MyWriteFileRunnable(List<String> contents,BufferedWriter fileWriter){
+            this.contents = contents;
+            this.fileWriter = fileWriter;
+        }
+        @Override
+        public void run() {
+            try {
+                for(String log:contents){
+                    writer.write(log);
+                }
+                writer.flush();
+                writer.close();
+            }catch (IOException e){
+                e.printStackTrace();
+            }
+            Log.i("LZH","log file write finish");
+        }
     }
 }

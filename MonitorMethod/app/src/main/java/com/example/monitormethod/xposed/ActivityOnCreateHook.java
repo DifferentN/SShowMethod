@@ -113,6 +113,14 @@ public class ActivityOnCreateHook extends XC_MethodHook {
 //        if(activity.getPackageName().contains("yst.apk")){
 //            writeAnkiClassName(activity.getPackageName(),activity,fileName);
 //        }
+//        fileName = Environment.getExternalStorageDirectory().getAbsolutePath()+"/yr.txt";
+//        if(activity.getPackageName().contains("com.yr.qmzs")){
+//            writeAnkiClassName(activity.getPackageName(),activity,fileName);
+//        }
+        fileName = Environment.getExternalStorageDirectory().getAbsolutePath()+"/starbucks.txt";
+        if(activity.getPackageName().contains("com.starbucks.cn")){
+            writeAnkiClassName(activity.getPackageName(),activity,fileName);
+        }
     }
     private void showClassName(String pkName, Context context){
         List<String> names = getClassName(pkName,context);

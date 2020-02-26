@@ -143,7 +143,15 @@ public class LocalActivityReceiver extends BroadcastReceiver implements CallBack
                 //com.imooc.component.imoocmain.index.MCMainActivity
                 //cn.cuco.model.version3.home.HomeVersion3Activity
                 //com.zhangshangjianzhi.newapp.activity.tab.MainTabActivity
-                if(selfActivityName.equals("com.tencent.qqmusic.activity.AppStarterActivity")){
+                //com.cqrenyi.huanyubrowser.activity.MainActivity
+                //com.yr.cdread.activity.MainActivity
+                //com.netease.pris.activity.MainGridActivity
+                //cn.thepaper.paper.ui.main.MainActivity
+                //com.infzm.ireader.activity.HomeActivity
+                //com.duxiaoman.umoney.home.MainActivity
+                //com.boohee.food.HomeActivity
+                //com.boohee.one.app.home.ui.activity.main.MainActivity
+                if(selfActivityName.equals("com.dailyyoga.h2.ui.FrameworkActivity")){
                     methodTrackPool = MethodTrackPool.getInstance();
                     methodTrackPool.clearRunTimeRecord();
                     methodTrackPool.LaunchUserAction();
@@ -213,8 +221,8 @@ public class LocalActivityReceiver extends BroadcastReceiver implements CallBack
                 Log.i("LZH","view Width: "+view.getWidth()+" height: "+view.getHeight());
             }
             if(view==null&&userAction.getViewId()>0){
-                Log.i("LZH","can't get view by viewPath");
-                view = selfActivity.findViewById(userAction.getViewId());
+                Log.i("LZH","can't get view by viewPath; "+userAction.getViewPath());
+//                view = selfActivity.findViewById(userAction.getViewId());
             }
             if(view==null||view.getWidth()==0||view.getHeight()==0){
                 Log.i("LZH","view is null:dispatchTouchEvent");
@@ -231,7 +239,6 @@ public class LocalActivityReceiver extends BroadcastReceiver implements CallBack
             tryLaunchUserAction();
         }
         return executionOver;
-
     }
     private View getViewByPath2(String path){
         Object windowManagerImpl = selfActivity.getSystemService(Context.WINDOW_SERVICE);
@@ -379,14 +386,14 @@ public class LocalActivityReceiver extends BroadcastReceiver implements CallBack
         int y = clickPos[1];
         int metaState = 0;
         MotionEvent motionEvent = MotionEvent.obtain(downTime, eventTime, action, x, y, metaState);
-//        selfActivity.dispatchTouchEvent(motionEvent);
-        view.getRootView().dispatchTouchEvent(motionEvent);
+        selfActivity.dispatchTouchEvent(motionEvent);
+//        view.getRootView().dispatchTouchEvent(motionEvent);
 //        view.dispatchTouchEvent(motionEvent);
         action = MotionEvent.ACTION_UP;
         motionEvent = MotionEvent.obtain(downTime, eventTime, action, x, y, metaState);
 //        view.dispatchTouchEvent(motionEvent);
-//        selfActivity.dispatchTouchEvent(motionEvent);
-        view.getRootView().dispatchTouchEvent(motionEvent);
+        selfActivity.dispatchTouchEvent(motionEvent);
+//        view.getRootView().dispatchTouchEvent(motionEvent);
     }
     private void tryLaunchUserAction(){
         methodTrackPool = MethodTrackPool.getMethodTrackPool();

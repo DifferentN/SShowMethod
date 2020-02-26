@@ -2,6 +2,8 @@ package com.example.monitormethod;
 
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.os.Handler;
+import android.os.Message;
 import android.os.SystemClock;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -32,21 +34,15 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        bt = findViewById(R.id.testBT);
-        textView = findViewById(R.id.textTop);
         init();
+        View.OnClickListener onClickListener = new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            }
+        };
 
 
-        long downTime = SystemClock.uptimeMillis();
-        long eventTime = SystemClock.uptimeMillis();
-        int action = MotionEvent.ACTION_DOWN;
-        int x = 100;
-        int y = 100;
-        int metaState = 0;
-        MotionEvent motionEvent = MotionEvent.obtain(downTime, eventTime, action, x, y, metaState);
-        if(motionEvent!=null){
-            Log.i("LZH","success create MotionEvent");
-        }
 //        bt.dispatchTouchEvent()
 
     }
