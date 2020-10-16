@@ -41,7 +41,6 @@ public class ActivityOnResumeHook extends XC_MethodHook {
         intent.setAction(CoordinatorReceiver.ON_RESUME);
         intent.putExtra(CoordinatorReceiver.RESUME_ACTIVITY,activityName);
         activity.sendBroadcast(intent);
-
         if(!hasSend){
             hasSend = true;
         }

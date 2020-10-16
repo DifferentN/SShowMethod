@@ -1,5 +1,6 @@
 package com.example.apiexecutor.trackData;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Environment;
@@ -32,9 +33,11 @@ public class MethodTrackPool {
     private List<MyMethod> subCall;
     private List<Event> events;
     private Event curEvent;
+    private int progress = 0;//表示没有已经执行的event
     private boolean executeActionState = false; //false 表示当前操作未执行
     private boolean isAvailable = false;
     private int LOG_SIZE = 0;
+    private boolean started = false;
     public MethodTrackPool(){
         sequence = new ArrayList<String>();
         subCall = new ArrayList<>();
@@ -170,6 +173,8 @@ public class MethodTrackPool {
      */
     public void setActionFinish(String flag){
         String name = curEvent.getPath()+"/"+curEvent.getMethodName();
+        //表示progress个event已经完成
+        progress++;
         if(flag.equals(name)){
             executeActionState = true;
         }
@@ -194,11 +199,18 @@ public class MethodTrackPool {
             return;
         }
         Log.i("LZH","sendNotification");
-        Intent intent = new Intent();
+        final Intent intent = new Intent();
         intent.setAction(LocalActivityReceiver.EXECUTE_EVENT);
         UserAction userAction = getUserActionByEvent(event);
         intent.putExtra(LocalActivityReceiver.USER_ACTION,userAction);
-        context.sendBroadcast(intent);
+        Activity activity = (Activity) context;
+        activity.getWindow().getDecorView().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                context.sendBroadcast(intent);
+            }
+        },600);
+//        context.sendBroadcast(intent);
         executeActionState = false;
         Log.i("LZH","sendActionIntent");
     }
@@ -233,7 +245,12 @@ public class MethodTrackPool {
             }
         }
     }
-
+    public boolean isAPIFinished(){
+        if(events!=null&&events.isEmpty()){
+            return true;
+        }
+        return false;
+    }
     private boolean checkEqual(String curMethod,String invoke){
         int start = 0,end = 0;
         while(start>=0){

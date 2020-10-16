@@ -22,33 +22,29 @@ public class LogWriter {
     private static String fName;
     private static boolean token = false;//是否可以写入日志的标志
     private static long preTime;
-    private static String targetPKName = "com.dailyyoga.cn";
+    private static String targetPKName = "com.dragon.read";
     public boolean TempIsSetText = false;
     public int num = 0;
+    public static int fileNumber = 1;
     private static List<String> list ;
     //com.kingsoft com.ichi2.anki  com.tencent.qqmusic  com.ss.android.autoprice
     //com.ichi2.anki  com.yongche.android  com.douban.movie  com.jnzc.shipudaquan
     //com.dangdang.buy2 com.naman14.timberx  yst.apk com.cqrenyi.huanyubrowser
     //com.yr.qmzs com.jrtd.mfxszq com.netease.pris com.wondertek.paper
     //com.infzm.ireader com.ifeng.news2 com.duxiaoman.umoney
-    //com.boohee.food com.boohee.one
+    //com.boohee.food com.boohee.one com.boohee.food com.smartisan.notes
+    //com.dragon.read
     public LogWriter(String fileName){
         fName = fileName;
-        file = new File(fName);
+//        file = new File(fName);
         list = new LinkedList<>();
-        if(!file.exists()){
-            try {
-                file.createNewFile();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-        try {
-            FileWriter fileWriter = new FileWriter(file);
-            writer = new BufferedWriter(fileWriter);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+//        if(!file.exists()){
+//            try {
+//                file.createNewFile();
+//            } catch (IOException e) {
+//                e.printStackTrace();
+//            }
+//        }
     }
     public static LogWriter getInstance(String fileName,String packageName){
         if(!packageName.equals(targetPKName)){
@@ -73,6 +69,7 @@ public class LogWriter {
             return;
         }
         list.add(log);
+//        Log.i("LZH",log);
     }
 
     public static void turnWriteAble(){
@@ -85,6 +82,32 @@ public class LogWriter {
 
         token = !token;
         Log.i("LZH",token+"");
+        if(token){
+            //create new File for saving log
+            int index = fName.indexOf(".");
+            String newFileName = fName.substring(0,index)+fileNumber+fName.substring(index);
+            fileNumber++;
+            file = new File(newFileName);
+            if(file.exists()){
+                file.delete();
+
+            }
+            try {
+                file.createNewFile();
+                Log.i("LZH","new Create File");
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            FileWriter fileWriter = null;
+            try {
+                fileWriter = new FileWriter(file);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            writer = new BufferedWriter(fileWriter);
+
+        }
         if(!token){
             if (writer==null){
                 Log.i("LZH","writer is null");
@@ -97,9 +120,6 @@ public class LogWriter {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-//            MyWriteFileRunnable runnable = new MyWriteFileRunnable(list,writer);
-//            Thread thread = new Thread(runnable);
-//            thread.start();
         }
     }
     private static void writeLogList(){
@@ -108,6 +128,7 @@ public class LogWriter {
             for(String log:list){
                 writer.write(log+"\n");
             }
+            list.clear();
 //            writer.flush();
 //            Log.i("LZH","write "+log);
         } catch (IOException e) {

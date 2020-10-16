@@ -16,7 +16,7 @@ public class OnClickListenerProxy implements View.OnClickListener {
     private int time;
     private LogWriter logWriter;
     private DataRecorder dataRecorder;
-    private String fileName = "methodLog.txt";
+    private String fileName = "APIFile/methodLog.txt";
     public OnClickListenerProxy(View.OnClickListener listener,String packageName){
         this.listener = listener;
         fileName = Environment.getExternalStorageDirectory().getAbsolutePath()+"/"+fileName;
@@ -78,7 +78,6 @@ public class OnClickListenerProxy implements View.OnClickListener {
         json.put("threadId",threadId);
 
         return json;
-
     }
 
 }

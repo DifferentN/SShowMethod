@@ -342,6 +342,31 @@ public class IASXposedModule implements IXposedHookLoadPackage{
             filter.add("starbucks");
             hookAPPMethod(classNames,classLoader,packageName,filter);
         }
+        classNames = "smartisan.txt";
+        packageName = "com.smartisan.notes";
+        if(lpparam.packageName.contains(packageName)){
+            XposedHelpers.findAndHookMethod("android.app.Activity",lpparam.classLoader,"dispatchTouchEvent",MotionEvent.class,new TrackMethod(new Class[]{MotionEvent.class},packageName));
+            XposedHelpers.findAndHookMethod("android.view.View",lpparam.classLoader,"dispatchTouchEvent",MotionEvent.class,new DispatchTouchEventHook(packageName));
+            XposedHelpers.findAndHookMethod("android.view.View", lpparam.classLoader, "onDraw",Canvas.class, new HookOnDraw(packageName));
+            XposedHelpers.findAndHookMethod("android.view.inputmethod.BaseInputConnection", lpparam.classLoader, "commitText",CharSequence.class, int.class,
+                    new TrackMethod(new Class[]{CharSequence.class, int.class},packageName));
+            List<String> filter = new ArrayList<>();
+            filter.add("smartisan");
+            hookAPPMethod(classNames,classLoader,packageName,filter);
+        }
+
+        classNames = "dragon.txt";
+        packageName = "com.dragon.read";
+        if(lpparam.packageName.contains(packageName)){
+            XposedHelpers.findAndHookMethod("android.app.Activity",lpparam.classLoader,"dispatchTouchEvent",MotionEvent.class,new TrackMethod(new Class[]{MotionEvent.class},packageName));
+            XposedHelpers.findAndHookMethod("android.view.View",lpparam.classLoader,"dispatchTouchEvent",MotionEvent.class,new DispatchTouchEventHook(packageName));
+            XposedHelpers.findAndHookMethod("android.view.View", lpparam.classLoader, "onDraw",Canvas.class, new HookOnDraw(packageName));
+            XposedHelpers.findAndHookMethod("android.view.inputmethod.BaseInputConnection", lpparam.classLoader, "commitText",CharSequence.class, int.class,
+                    new TrackMethod(new Class[]{CharSequence.class, int.class},packageName));
+            List<String> filter = new ArrayList<>();
+            filter.add("dragon");
+            hookAPPMethod(classNames,classLoader,packageName,filter);
+        }
     }
     private void hook_methods(String className,ClassLoader loader,String packageName) {
         try {
@@ -430,6 +455,12 @@ public class IASXposedModule implements IXposedHookLoadPackage{
             if(line.contains("com.ss.android.ugc.aweme.R")||
                 line.contains("com.ss.android.ugc.aweme_push_lib.R")){
                 //针对抖音出错纠正
+                continue;
+            }
+            if(line.contains("smartisanos.widget.AppLockView$7")||
+                line.contains("smartisanos.widget.AppLockView$8")||
+                line.contains("smartisanos.widget.pinned.SmartisanStackClient$1")){
+                //针对锤子便签纠错
                 continue;
             }
 //            Log.i("LZH",line);

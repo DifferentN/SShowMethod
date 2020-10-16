@@ -229,6 +229,12 @@ public class IASXposedModule implements IXposedHookLoadPackage{
             List<String> filter = new ArrayList<>();
             filter.add("dailyyoga");
             hookAPPMethod(classNames,classLoader,"com.dailyyoga.cn",filter); }
+
+        classNames = "smartisan.txt";
+        if(lpparam.packageName.contains("com.smartisan.notes")){
+            List<String> filter = new ArrayList<>();
+            filter.add("smartisan");
+            hookAPPMethod(classNames,classLoader,"com.smartisan.notes",filter); }
     }
     private void hook_methods(String className,ClassLoader loader,String packageName) {
 
@@ -257,7 +263,7 @@ public class IASXposedModule implements IXposedHookLoadPackage{
             }
         } catch (Exception e) {
             XposedBridge.log(e);
-            Log.i("LZH",className+" error: "+e.getMessage());
+//            Log.i("LZH",className+" error: "+e.getMessage());
         }
     }
     private void hookAPPMethod(String filename,ClassLoader classLoader,String packageName,List<String> filters){
@@ -288,6 +294,12 @@ public class IASXposedModule implements IXposedHookLoadPackage{
                 continue;
             }
             if(line.contains("FordManager$b")){
+                continue;
+            }
+            if(line.contains("smartisanos.widget.AppLockView$7")||
+                    line.contains("smartisanos.widget.AppLockView$8")||
+                    line.contains("smartisanos.widget.pinned.SmartisanStackClient$1")){
+                //针对锤子便签纠错
                 continue;
             }
 

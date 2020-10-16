@@ -100,6 +100,7 @@ public class ActivityOnCreateHook extends XC_MethodHook {
         filter.addAction(LocalActivityReceiver.EXECUTE_EVENT);
         filter.addAction(LocalActivityReceiver.DRAW_OVER);
         filter.addAction(LocalActivityReceiver.SEND_ACTIVITY_NAME);
+        filter.addAction(LocalActivityReceiver.CAPTURE_PAGE_CONTENT);
 
         Object o = XposedHelpers.getAdditionalInstanceField(activity,"iasReceiver");
         if(o!=null){

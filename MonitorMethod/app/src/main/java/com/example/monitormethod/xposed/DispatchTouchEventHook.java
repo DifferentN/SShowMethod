@@ -24,7 +24,7 @@ public class DispatchTouchEventHook extends XC_MethodHook {
     private LogWriter logWriter;
     private DataCollectioner dataCollectioner;
     private DataRecorder dataRecorder;
-    private String fileName = "methodLog.txt";
+    private String fileName = "APIFile/methodLog.txt";
     public DispatchTouchEventHook(String packageName){
         fileName = Environment.getExternalStorageDirectory().getAbsolutePath()+"/"+fileName;
         logWriter = LogWriter.getInstance(fileName,packageName);
@@ -93,6 +93,7 @@ public class DispatchTouchEventHook extends XC_MethodHook {
      */
     private JSONObject writeInfo(View view,MotionEvent motionEvent){
         JSONObject json = new JSONObject();
+        json.put("packageName",view.getContext().getPackageName());
         json.put("callerClassName",view.getClass().getName());
         int hash = dataRecorder.getRefKey(view);
         if(hash<=0){

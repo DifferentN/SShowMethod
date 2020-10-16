@@ -6,9 +6,12 @@ import android.content.ContextWrapper;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.WebView;
+import android.widget.EditText;
 import android.widget.TextView;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 public class ViewUtil {
@@ -66,6 +69,36 @@ public class ViewUtil {
             }
         }
         return "";
+    }
+    /**
+     * 获取activity页面中的内容
+     * 返回结果中的每一个Item格式： xpath:text
+     * @param activity
+     * @return
+     */
+    public static HashMap<String,String> capturePageContent(Activity activity){
+        HashMap<String,String> hash = new HashMap<>();
+        View decorView = activity.getWindow().getDecorView();
+        ViewGroup viewGroup;
+        View child;
+        ViewNode childNode;
+        ViewNode temp;
+        List<ViewNode> list = new ArrayList<>();
+        list.add(new ViewNode(decorView,decorView.getClass().getName()));
+        while(!list.isEmpty()){
+            temp = list.remove(0);
+            if(temp.view instanceof TextView){
+                hash.put(temp.path,((TextView) temp.view).getText().toString());
+            }else if(temp.view instanceof ViewGroup){
+                viewGroup = (ViewGroup) temp.view;
+                for(int i=0;i<viewGroup.getChildCount();i++){
+                    child = viewGroup.getChildAt(i);
+                    childNode = new ViewNode(child,temp.path+"/"+child.getClass()+":"+i);
+                    list.add(childNode);
+                }
+            }
+        }
+        return hash;
     }
     public static String getActivityNameByView(View view){
         Context context = null;

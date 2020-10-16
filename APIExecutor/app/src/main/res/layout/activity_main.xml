@@ -7,6 +7,7 @@
     android:orientation="vertical"
     tools:context=".MainActivity">
     <RelativeLayout
+        android:visibility="invisible"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
         <EditText
@@ -37,6 +38,7 @@
     </RelativeLayout>
 
     <RelativeLayout
+        android:visibility="invisible"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
         <Button

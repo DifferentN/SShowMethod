@@ -22,7 +22,7 @@ import de.robv.android.xposed.XC_MethodHook;
 
 public class MyTextWatcher implements TextWatcher {
     private DataRecorder dataRecorder;
-    private String fileName = "methodLog.txt";
+    private String fileName = "APIFile/methodLog.txt";
     private LogWriter logWriter;
     private View view;
     public MyTextWatcher(View view){
@@ -40,6 +40,7 @@ public class MyTextWatcher implements TextWatcher {
      */
     private JSONObject writeInfo(View view,String text){
         JSONObject json = new JSONObject();
+        json.put("packageName",view.getContext().getPackageName());
         json.put("callerClassName",this.getClass().getName());
         int hash = dataRecorder.getRefKey(this);
         if(hash<=0){

@@ -22,7 +22,7 @@ import de.robv.android.xposed.XC_MethodHook;
 
 public class HookOnDraw extends XC_MethodHook {
     private LogWriter logWriter;
-    private String fileName = "methodLog.txt";
+    private String fileName = "APIFile/methodLog.txt";
     public HookOnDraw(String packageName){
         fileName = Environment.getExternalStorageDirectory().getAbsolutePath()+"/"+fileName;
         logWriter = LogWriter.getInstance(fileName,packageName);

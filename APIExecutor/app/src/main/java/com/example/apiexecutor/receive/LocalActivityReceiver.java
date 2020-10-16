@@ -24,6 +24,7 @@ import com.example.apiexecutor.core.CoordinatorReceiver;
 import com.example.apiexecutor.core.Event;
 import com.example.apiexecutor.core.MethodExecutor;
 import com.example.apiexecutor.core.UserAction;
+import com.example.apiexecutor.serve.MyAPIExecuteAdapter;
 import com.example.apiexecutor.trackData.ActivityNameRecord;
 import com.example.apiexecutor.trackData.MethodTrackPool;
 import com.example.apiexecutor.util.ViewUtil;
@@ -69,6 +70,12 @@ public class LocalActivityReceiver extends BroadcastReceiver implements CallBack
 
     public static final String obtainActivityText = "obtainActivityText";
 
+    public static final String START_ACTIVITY_NAME = "startActivityName";
+
+    public static final String CAPTURE_PAGE_CONTENT = "CAPTURE_PAGE_CONTENT";
+
+    public static final String CHECK_USER_ACTION_STATE = "CHECK_USER_ACTION_STATE";
+
     private String showActivityName = "";
     private String selfActivityName = "";
     private String selfPackageName;
@@ -82,6 +89,8 @@ public class LocalActivityReceiver extends BroadcastReceiver implements CallBack
     private MethodExecutor methodExecutor;
     private MethodTrackPool methodTrackPool;
     private UserAction prepareUserAction;
+    //执行次数，userAction执行一次就加1
+    private static int executeTime;
     public LocalActivityReceiver(Activity activity){
         selfActivity = activity;
         selfActivityName = activity.getComponentName().getClassName();
@@ -97,21 +106,18 @@ public class LocalActivityReceiver extends BroadcastReceiver implements CallBack
         switch (action){
             case CoordinatorReceiver.ON_RESUME:
                 showActivityName = intent.getStringExtra(CoordinatorReceiver.RESUME_ACTIVITY);
-                if(prepareUserAction==null){
-                    prepareUserAction = getUserAction();
-                }
                 //yst.apk.activity.login.LoginActivity
                 //amodule.activity.main.MainHomePageNew
-                Log.i("LZH","show: "+showActivityName+" launch: "+ActivityNameRecord.launchActivityName+" self: "+selfActivityName);
-                if(selfActivityName.equals(ActivityNameRecord.launchActivityName)&&
-                        selfActivityName.equals(showActivityName)){
-                    methodTrackPool = MethodTrackPool.getInstance();
-                    methodTrackPool.clearRunTimeRecord();
-                    methodTrackPool.LaunchUserAction();
-                    Log.i("LZH","start action");
-                    ActivityNameRecord.launchEnable = false;
-                    isSetText = true;
-                }
+//                Log.i("LZH","show: "+showActivityName+" launch: "+ActivityNameRecord.launchActivityName+" self: "+selfActivityName);
+//                if(selfActivityName.equals(ActivityNameRecord.launchActivityName)&&
+//                        selfActivityName.equals(showActivityName)){
+//                    methodTrackPool = MethodTrackPool.getInstance();
+//                    methodTrackPool.clearRunTimeRecord();
+//                    methodTrackPool.LaunchUserAction();
+//                    Log.i("LZH","start action");
+//                    ActivityNameRecord.launchEnable = false;
+//                    isSetText = true;
+//                }
                 break;
             case LocalActivityReceiver.openTargetActivityByIntent:
                 Intent tarIntent = intent.getParcelableExtra(LocalActivityReceiver.TARGET_INTENT);
@@ -127,11 +133,12 @@ public class LocalActivityReceiver extends BroadcastReceiver implements CallBack
                 //2131298054
                 UserAction userAction = intent.getParcelableExtra(USER_ACTION);
                 prepareUserAction = userAction;
+                Log.i("LZH","showActivityName: "+showActivityName+"self: "+selfActivityName+" target: "+userAction.getActivityName());
 //                Log.i("LZH",selfActivityName+"\n"+showActivityName+"\n"+userAction.getActivityName());
                 if(showActivityName.compareTo(selfActivityName)!=0||!selfActivityName.contains(userAction.getActivityName())){
                     break;
                 }
-                Log.i("LZH",userAction.getActionName());
+                Log.i("LZH","execute event:"+userAction.getActionName());
                 if(executeUserAction(userAction)){
                     prepareUserAction = null;
                 }
@@ -151,12 +158,26 @@ public class LocalActivityReceiver extends BroadcastReceiver implements CallBack
                 //com.duxiaoman.umoney.home.MainActivity
                 //com.boohee.food.HomeActivity
                 //com.boohee.one.app.home.ui.activity.main.MainActivity
-                if(selfActivityName.equals("com.dailyyoga.h2.ui.FrameworkActivity")){
+                String startActivityName = intent.getStringExtra(START_ACTIVITY_NAME);
+                Log.i("LZH","self: "+selfActivityName+" target: "+startActivityName);
+                if(selfActivityName.equals(startActivityName)){
                     methodTrackPool = MethodTrackPool.getInstance();
                     methodTrackPool.clearRunTimeRecord();
                     methodTrackPool.LaunchUserAction();
                     Log.i("LZH","start action");
                     isSetText = true;
+                }
+                break;
+            case LocalActivityReceiver.CAPTURE_PAGE_CONTENT:
+                if(selfActivityName.equals(showActivityName)){
+                    //获取用户屏幕内容
+                    ArrayList<String> contents = ViewUtil.capturePageContent(selfActivity);
+                    //将屏幕内容发送到MyServe
+                    Intent pageResponse = new Intent();
+                    pageResponse.setAction(MyAPIExecuteAdapter.API_RESPONSE);
+                    pageResponse.putExtra(MyAPIExecuteAdapter.PAGE_CONTENT,contents);
+                    pageResponse.putExtra(MyAPIExecuteAdapter.RESULT_STATE,MyAPIExecuteAdapter.RESULT_STATE_SUCCESS);
+                    selfActivity.sendBroadcast(pageResponse);
                 }
                 break;
             case LocalActivityReceiver.DRAW_OVER:
@@ -178,6 +199,18 @@ public class LocalActivityReceiver extends BroadcastReceiver implements CallBack
                 break;
         }
     }
+
+    /**
+     * 发送一个延时通知，去检查userAction是否已经执行
+     *
+     * @return
+     */
+    private void checkHasExecuteUserAction(){
+        ExecuteStateRunnable executeStateRunnable = new ExecuteStateRunnable(this,executeTime);
+        selfActivity.getWindow().getDecorView().postDelayed(executeStateRunnable,
+                9*1000);
+    }
+
     //从MethodTrackPool获取还未执行的userAction
     private UserAction getUserAction(){
         methodTrackPool = MethodTrackPool.getMethodTrackPool();
@@ -196,6 +229,10 @@ public class LocalActivityReceiver extends BroadcastReceiver implements CallBack
     }
     private boolean executeUserAction(UserAction userAction){
         boolean executionOver = false;
+        //userAction已经执行1次
+        executeTime++;
+        checkHasExecuteUserAction();
+
         Log.i("LZH","imitate user action "+userAction.getActionName());
         if(userAction.getActionName().equals(Event.SETTEXT)){
             TextView textView = null;
@@ -224,7 +261,7 @@ public class LocalActivityReceiver extends BroadcastReceiver implements CallBack
                 Log.i("LZH","can't get view by viewPath; "+userAction.getViewPath());
 //                view = selfActivity.findViewById(userAction.getViewId());
             }
-            if(view==null||view.getWidth()==0||view.getHeight()==0){
+            if(view==null||view.getWidth()==0||view.getHeight()==0||!ViewUtil.isVisible(view)){
                 Log.i("LZH","view is null:dispatchTouchEvent");
                 return executionOver;
             }
@@ -237,9 +274,33 @@ public class LocalActivityReceiver extends BroadcastReceiver implements CallBack
             //通知methodTrackPool 当前发过来的event已经完成
             notifyUserActionFinish(userAction);
             tryLaunchUserAction();
+            if(checkAPIFinished()){
+                //API 中的用户事件已经执行完成，发送一个延时广播，去捕获用户页面中的内容
+                selfActivity.getWindow().getDecorView().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        Intent intent = new Intent();
+                        intent.setAction(LocalActivityReceiver.CAPTURE_PAGE_CONTENT);
+                        selfActivity.sendBroadcast(intent);
+                    }
+                },3000);
+            }
+
         }
         return executionOver;
     }
+
+    private boolean checkAPIFinished() {
+        methodTrackPool = MethodTrackPool.getMethodTrackPool();
+        if(methodTrackPool==null){
+            return false;
+        }
+        if(methodTrackPool.isAPIFinished()){
+            return true;
+        }
+        return false;
+    }
+
     private View getViewByPath2(String path){
         Object windowManagerImpl = selfActivity.getSystemService(Context.WINDOW_SERVICE);
         Class windManagerImplClazz = windowManagerImpl.getClass();
@@ -386,14 +447,14 @@ public class LocalActivityReceiver extends BroadcastReceiver implements CallBack
         int y = clickPos[1];
         int metaState = 0;
         MotionEvent motionEvent = MotionEvent.obtain(downTime, eventTime, action, x, y, metaState);
-        selfActivity.dispatchTouchEvent(motionEvent);
-//        view.getRootView().dispatchTouchEvent(motionEvent);
+//        selfActivity.dispatchTouchEvent(motionEvent);
+        view.getRootView().dispatchTouchEvent(motionEvent);
 //        view.dispatchTouchEvent(motionEvent);
         action = MotionEvent.ACTION_UP;
         motionEvent = MotionEvent.obtain(downTime, eventTime, action, x, y, metaState);
 //        view.dispatchTouchEvent(motionEvent);
-        selfActivity.dispatchTouchEvent(motionEvent);
-//        view.getRootView().dispatchTouchEvent(motionEvent);
+//        selfActivity.dispatchTouchEvent(motionEvent);
+        view.getRootView().dispatchTouchEvent(motionEvent);
     }
     private void tryLaunchUserAction(){
         methodTrackPool = MethodTrackPool.getMethodTrackPool();
@@ -406,4 +467,35 @@ public class LocalActivityReceiver extends BroadcastReceiver implements CallBack
         return content;
     }
 
+    private static class ExecuteStateRunnable implements Runnable{
+        //临时保存的执行次数，用来检查某个userAction是否执行
+        private int preExecuteTime;
+        private LocalActivityReceiver localActivityReceiver;
+        public ExecuteStateRunnable(LocalActivityReceiver local,int executeTime){
+            localActivityReceiver = local;
+            preExecuteTime = executeTime;
+        }
+        @Override
+        public void run() {
+            //如果API已经执行完成，则返回
+            if(localActivityReceiver.checkAPIFinished()){
+                return;
+            }
+            Log.i("LZH",preExecuteTime+" "+localActivityReceiver.executeTime);
+            if(preExecuteTime==localActivityReceiver.executeTime){
+
+//                MethodTrackPool methodTrackPool = MethodTrackPool.getMethodTrackPool();
+//                if(!methodTrackPool.isStart()){
+//                    //表示第一个操作没有执行，要重新执行,否则则说明API执行中断
+//                    methodTrackPool.LaunchUserAction();
+//
+//                    return;
+//                }
+                Intent pageResponse = new Intent();
+                pageResponse.setAction(MyAPIExecuteAdapter.API_RESPONSE);
+                pageResponse.putExtra(MyAPIExecuteAdapter.RESULT_STATE,MyAPIExecuteAdapter.RESULT_STATE_ERROR);
+                localActivityReceiver.selfActivity.sendBroadcast(pageResponse);
+            }
+        }
+    }
 }

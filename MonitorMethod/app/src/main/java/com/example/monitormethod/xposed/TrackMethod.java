@@ -30,7 +30,7 @@ public class TrackMethod extends XC_MethodHook {
     Class pclazz[];
     private LogWriter logWriter;
     private DataRecorder dataRecorder;
-    private String fileName = "methodLog.txt";
+    private String fileName = "APIFile/methodLog.txt";
     private JSONObject jsonObject = new JSONObject();
     public TrackMethod(Class pclazz[],String packageName){
         fileName = Environment.getExternalStorageDirectory().getAbsolutePath()+"/"+fileName;
@@ -40,9 +40,9 @@ public class TrackMethod extends XC_MethodHook {
     }
     @Override
     protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
-//        if(true){
-//            return;
-//        }
+        if(true){
+            return;
+        }
         if(Thread.currentThread().getId()!=1){
             return;
         }
@@ -122,13 +122,6 @@ public class TrackMethod extends XC_MethodHook {
         json.put("callerClassName",callerName);
         if(caller!=null){
             int hash = dataRecorder.getRefKey(caller);
-
-//            Log.i("LZH",caller.toString()+"");
-//            try{
-//                hash = caller.hashCode();
-//            }catch (Exception e){
-//                hash = dataRecorder.getRefKey(caller);
-//            }
             if(hash<=0){
                 hash = dataRecorder.addRef(caller);
             }
