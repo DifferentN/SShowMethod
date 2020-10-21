@@ -26,6 +26,7 @@ public class TrackMethod extends XC_MethodHook {
     private ObjectPool objectPool;
     private String fileName = "methodLog.txt";
     private MethodTrackPool methodTrackPool;
+    private String message = null;
     public TrackMethod(Class pclazz[],String packageName){
 //        fileName = Environment.getExternalStorageDirectory().getAbsolutePath()+"/"+fileName;
 //        this.pclazz = pclazz;
@@ -33,39 +34,42 @@ public class TrackMethod extends XC_MethodHook {
     }
     @Override
     protected void beforeHookedMethod(MethodHookParam param)  {
-        if(param.method.getName().contains("getLayoutDirection")){
-            if(param.method.getDeclaringClass().getName().contains("com.douban.frodo.baseproject.view.flowlayout.DouFlowLayout")){
-                Log.i("LZH","com.douban.frodo.baseproject.view.flowlayout.DouFlowLayout/getLayoutDirection");
-            }
+//        if(param.method.getName().contains("getLayoutDirection")){
+//            if(param.method.getDeclaringClass().getName().contains("com.douban.frodo.baseproject.view.flowlayout.DouFlowLayout")){
+//                Log.i("LZH","com.douban.frodo.baseproject.view.flowlayout.DouFlowLayout/getLayoutDirection");
+//            }
+//        }
+//        if(param.method.getName().contains("onStop")){
+//            if(param.method.getDeclaringClass().getName().contains("com.douban.frodo.baseproject.activity.BaseActivity")){
+//                Log.i("LZH","com.douban.frodo.baseproject.activity.BaseActivity/onStop");
+//            }
+//        }
+        if(Thread.currentThread().getId()!=1){
+            return;
         }
-        if(param.method.getName().contains("onStop")){
-            if(param.method.getDeclaringClass().getName().contains("com.douban.frodo.baseproject.activity.BaseActivity")){
-                Log.i("LZH","com.douban.frodo.baseproject.activity.BaseActivity/onStop");
-            }
+        if(message==null){
+            message = obtainMessage(param);
         }
-        Class clazz = param.method.getClass();
-        Method methods[] = clazz.getDeclaredMethods();
-        for(Method method :methods){
-            method.getParameterTypes();
-        }
-        String callerName = param.method.getDeclaringClass().getName();
-        String methodName = param.method.getName();
-        String message = "before: "+callerName+"/"+methodName;
-        if(Thread.currentThread().getId()==1){
-            methodTrackPool.sendMessage(message);
-        }
+        methodTrackPool.sendMessage("before: "+message);
 //        Log.i("LZH-Method",message);
     }
 
 
     @Override
     protected void afterHookedMethod(MethodHookParam param){
+        if(Thread.currentThread().getId()!=1){
+            return;
+        }
+        if(message==null){
+            message = obtainMessage(param);
+        }
+        methodTrackPool.sendMessage("after: "+message);
+//        Log.i("LZH-Method","after: "+message);
+    }
+    private String obtainMessage(MethodHookParam param){
         String callerName = param.method.getDeclaringClass().getName();
         String methodName = param.method.getName();
-        String message = "after: "+callerName+"/"+methodName;
-        if(Thread.currentThread().getId()==1){
-            methodTrackPool.sendMessage(message);
-        }
-//        Log.i("LZH-Method","after: "+message);
+        String message = callerName+"/"+methodName;
+        return message;
     }
 }

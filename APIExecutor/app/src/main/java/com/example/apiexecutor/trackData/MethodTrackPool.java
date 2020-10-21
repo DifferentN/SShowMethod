@@ -4,6 +4,10 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Environment;
+import android.os.Handler;
+import android.os.HandlerThread;
+import android.os.Looper;
+import android.os.Message;
 import android.util.Log;
 
 import com.alibaba.fastjson.JSONArray;
@@ -38,6 +42,9 @@ public class MethodTrackPool {
     private boolean isAvailable = false;
     private int LOG_SIZE = 0;
     private boolean started = false;
+    //开启一个线程处理方法调用信息
+    private HandlerThread handlerThread;
+    private Handler handler;
     public MethodTrackPool(){
         sequence = new ArrayList<String>();
         subCall = new ArrayList<>();
@@ -46,6 +53,9 @@ public class MethodTrackPool {
 //        readSequence("doubanLogDetail.txt");
 //        readSequence("shipudaquanLogDetail.txt");
         readSequence("ankiLogDetail.txt");
+        handlerThread = new HandlerThread("HandlerCallMessageThread");
+        handlerThread.start();
+        handler = new InvokeHandler(handlerThread.getLooper(),this);
     }
     public static MethodTrackPool getInstance(){
         if(methodTrackPool==null){
@@ -89,11 +99,15 @@ public class MethodTrackPool {
             events.add(index,event);
         }
     }
-    public synchronized void sendMessage(String message){
+    public synchronized void sendMessage(String invokeMessage){
         if(!isAvailable()){
             return;
         }
-        addSubCall(message);
+        //将方法调用信息放到子线程处理
+        Message message = handler.obtainMessage();
+        message.obj = invokeMessage;
+        handler.sendMessage(message);
+//        addSubCall(invokeMessage);
     }
     public void addSubCall(String message){
         String body = null;
@@ -137,18 +151,14 @@ public class MethodTrackPool {
                 if(runTimeRecord.get(i).contains(invoke)){
                     curEvent.invokePoint++;
                     match = true;
-                    Log.i("LZH","match method");
+//                    Log.i("LZH","match method");
                     break;
                 }
             }
             if(!match&&curEvent.invokePoint<invokeStrs.size()){
-                Log.i("LZH", "curMethod" + last + " \n record: " + curEvent.invokePoint + " " + invoke);
+//                Log.i("LZH", "curMethod" + last + " \n record: " + curEvent.invokePoint + " " + invoke);
             }
-//            Log.i("LZH", "curMethod" + last + " \n record: " + curEvent.invokePoint + " " + invokeStrs.get(curEvent.invokePoint));
         }
-//        if(!match&&curEvent.invokePoint<invokeStrs.size()){
-//            Log.i("LZH", "curMethod" + last + " \n record: " + curEvent.invokePoint + " " + invokeStrs.get(curEvent.invokePoint));
-//        }
         if(runTimeRecord.size()>LOG_SIZE){
             runTimeRecord.remove(0);
         }
@@ -213,6 +223,15 @@ public class MethodTrackPool {
 //        context.sendBroadcast(intent);
         executeActionState = false;
         Log.i("LZH","sendActionIntent");
+    }
+
+    /**
+     * 尝试重新发送curEvent
+     */
+    public void retrySendNotification(){
+        if(curEvent!=null&&!executeActionState){
+            sendNotification(curEvent);
+        }
     }
     private UserAction getUserActionByEvent(Event event){
         UserAction userAction = new UserAction(event.getMethodName(),
@@ -284,6 +303,20 @@ public class MethodTrackPool {
                 name+=":"+childs.get(i);
             }
             return "("+name+")";
+        }
+    }
+    private static class InvokeHandler extends Handler {
+        private MethodTrackPool methodTrackPool;
+        public InvokeHandler(Looper looper,MethodTrackPool methodTrackPool) {
+            super(looper);
+            this.methodTrackPool = methodTrackPool;
+        }
+
+        @Override
+        public void handleMessage(Message msg) {
+            String message = (String) msg.obj;
+//            Log.i("LZH","handler: "+message);
+            methodTrackPool.addSubCall(message);
         }
     }
 }

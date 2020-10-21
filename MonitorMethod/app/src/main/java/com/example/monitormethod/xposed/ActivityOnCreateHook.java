@@ -125,6 +125,47 @@ public class ActivityOnCreateHook extends XC_MethodHook {
 //        if(activity.getPackageName().contains("com.dragon.read")){
 //            writeAnkiClassName(activity.getPackageName(),activity,fileName);
 //        }
+//        fileName = Environment.getExternalStorageDirectory().getAbsolutePath()+"/tingshu.txt";
+//        if(activity.getPackageName().contains("bubei.tingshu")){
+//            writeAnkiClassName(activity.getPackageName(),activity,fileName);
+//        }
+//        fileName = Environment.getExternalStorageDirectory().getAbsolutePath()+"/article.txt";
+//        if(activity.getPackageName().contains("com.ss.android.article.lite")){
+//            writeAnkiClassName(activity.getPackageName(),activity,fileName);
+//        }
+//        fileName = Environment.getExternalStorageDirectory().getAbsolutePath()+"/news.txt";
+//        if(activity.getPackageName().contains("com.tencent.news")){
+//            writeAnkiClassName(activity.getPackageName(),activity,fileName);
+//        }
+//        fileName = Environment.getExternalStorageDirectory().getAbsolutePath()+"/sogou.txt";
+//        if(activity.getPackageName().contains("com.sogou.map.android.maps")){
+//            writeAnkiClassName(activity.getPackageName(),activity,fileName);
+//        }
+//        fileName = Environment.getExternalStorageDirectory().getAbsolutePath()+"/pris.txt";
+//        if(activity.getPackageName().contains("com.netease.pris")){
+//            writeAnkiClassName(activity.getPackageName(),activity,fileName);
+//        }
+//        fileName = Environment.getExternalStorageDirectory().getAbsolutePath()+"/xiachufang.txt";
+//        if(activity.getPackageName().contains("com.xiachufang.lazycook")){
+//            writeAnkiClassName(activity.getPackageName(),activity,fileName);
+//        }
+//        fileName = Environment.getExternalStorageDirectory().getAbsolutePath()+"/qqmusic.txt";
+//        if(activity.getPackageName().contains("com.tencent.qqmusic")){
+//            writeAnkiClassName(activity.getPackageName(),activity,fileName);
+//        }
+//        fileName = Environment.getExternalStorageDirectory().getAbsolutePath()+"/cloudmusic.txt";
+//        if(activity.getPackageName().contains("com.netease.cloudmusic")){
+//            writeAnkiClassName(activity.getPackageName(),activity,fileName);
+//        }
+//        fileName = Environment.getExternalStorageDirectory().getAbsolutePath()+"/dailyyoga.txt";
+//        if(activity.getPackageName().contains("com.dailyyoga.cn")){
+//            writeAnkiClassName(activity.getPackageName(),activity,fileName);
+//        }
+//        fileName = Environment.getExternalStorageDirectory().getAbsolutePath()+"/xiangha.txt";
+//        if(activity.getPackageName().contains("com.xiangha")){
+//            writeAnkiClassName(activity.getPackageName(),activity,fileName);
+//        }
+
     }
     private void showClassName(String pkName, Context context){
         List<String> names = getClassName(pkName,context);

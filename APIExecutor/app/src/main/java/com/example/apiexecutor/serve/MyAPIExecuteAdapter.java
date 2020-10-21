@@ -67,7 +67,7 @@ public class MyAPIExecuteAdapter extends BroadcastReceiver {
                     flag&=~START_EXECUTE_API;
                     Intent startAPIIntent = new Intent();
                     startAPIIntent.putExtra(LocalActivityReceiver.START_ACTIVITY_NAME,startActivityName);
-                    startAPIIntent.setAction(LocalActivityReceiver.INPUT_TEXT);
+                    startAPIIntent.setAction(LocalActivityReceiver.START_ACTION);
                     activity.sendBroadcast(startAPIIntent);
                     Log.i("LZH","start API");
                 }
@@ -79,7 +79,7 @@ public class MyAPIExecuteAdapter extends BroadcastReceiver {
                     ArrayList<String> pageContents = intent.getStringArrayListExtra(MyAPIExecuteAdapter.PAGE_CONTENT);
 
                     for(String item:pageContents){
-                        Log.i("LZH","item: "+item);
+//                        Log.i("LZH","item: "+item);
                         int lastIndex = item.lastIndexOf(":");
                         String path = item.substring(0,lastIndex);
                         String text = item.substring(lastIndex+1,item.length());

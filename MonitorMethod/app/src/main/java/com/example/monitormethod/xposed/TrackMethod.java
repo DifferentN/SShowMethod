@@ -31,7 +31,7 @@ public class TrackMethod extends XC_MethodHook {
     private LogWriter logWriter;
     private DataRecorder dataRecorder;
     private String fileName = "APIFile/methodLog.txt";
-    private JSONObject jsonObject = new JSONObject();
+    private JSONObject jsonObject;
     public TrackMethod(Class pclazz[],String packageName){
         fileName = Environment.getExternalStorageDirectory().getAbsolutePath()+"/"+fileName;
         logWriter = LogWriter.getInstance(fileName,packageName);
@@ -40,9 +40,9 @@ public class TrackMethod extends XC_MethodHook {
     }
     @Override
     protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
-        if(true){
-            return;
-        }
+//        if(true){
+//            return;
+//        }
         if(Thread.currentThread().getId()!=1){
             return;
         }
@@ -56,13 +56,17 @@ public class TrackMethod extends XC_MethodHook {
                 Log.i("LZH","com.douban.frodo.baseproject.activity.BaseActivity/onStop");
             }
         }
-        writeCallerInfo(jsonObject,param);
-        writeMethodName(jsonObject,param);
-        writeMethodParameter(jsonObject,param);
-        writeThreadId(jsonObject);
-        writeViewFlag(jsonObject,param);
-        writeViewInfo(jsonObject,param);
-        writeActivityID(jsonObject,param);
+        if(jsonObject==null){
+            jsonObject = new JSONObject();
+            writeCallerInfo(jsonObject,param);
+            writeMethodName(jsonObject,param);
+            writeMethodParameter(jsonObject,param);
+            writeThreadId(jsonObject);
+            writeViewFlag(jsonObject,param);
+            writeViewInfo(jsonObject,param);
+            writeActivityID(jsonObject,param);
+        }
+
         if(logWriter!=null){
             logWriter.writeLog("before: "+jsonObject.toJSONString());
 //            Log.i("LZH-Method","before: "+jsonObject.toJSONString());
@@ -82,7 +86,7 @@ public class TrackMethod extends XC_MethodHook {
         if(Thread.currentThread().getId()!=1){
             return;
         }else{
-            Log.i("DIF","DIF_Thread");
+//            Log.i("DIF","DIF_Thread");
         }
 //        JSONObject jsonObject = new JSONObject();
 //        writeCallerInfo(jsonObject,param);
@@ -120,16 +124,17 @@ public class TrackMethod extends XC_MethodHook {
         String callerName = param.method.getDeclaringClass().getName();
         //调用者的类名
         json.put("callerClassName",callerName);
-        if(caller!=null){
-            int hash = dataRecorder.getRefKey(caller);
-            if(hash<=0){
-                hash = dataRecorder.addRef(caller);
-            }
-            //调用者的hash值
-            json.put("callerHashCode",hash);
-        }else {
-            json.put("callerHashCode",null);
-        }
+        json.put("callerHashCode",-1);
+//        if(caller!=null){
+//            int hash = dataRecorder.getRefKey(caller);
+//            if(hash<=0){
+//                hash = dataRecorder.addRef(caller);
+//            }
+//            //调用者的hash值
+//            json.put("callerHashCode",hash);
+//        }else {
+//            json.put("callerHashCode",null);
+//        }
     }
 
     /**
@@ -154,42 +159,39 @@ public class TrackMethod extends XC_MethodHook {
         for(int i=0;i<pclazz.length;i++){
             itemJson = new JSONObject();
             //某个参数的类名
-            if(param.args[i]!=null){
-                itemJson.put("parameterClassName",param.args[i].getClass().getName());
-            }else{
-                itemJson.put("parameterClassName",pclazz[i].getName());
-            }
+//            if(param.args[i]!=null){
+//                itemJson.put("parameterClassName",param.args[i].getClass().getName());
+//            }else{
+//                itemJson.put("parameterClassName",pclazz[i].getName());
+//            }
+            itemJson.put("parameterClassName",pclazz[i].getName());
+            itemJson.put("parameterHashCode",null);
+            itemJson.put("parameterValue",null);
 
-            p = param.args[i];
-            if(p!=null){
-                int hash = dataRecorder.getRefKey(p);
-//                try{
-//                    hash = p.hashCode();
-//                }catch (Exception e){
-//                    hash = dataRecorder.getRefKey(p);
+//            p = param.args[i];
+//            if(p!=null){
+//                int hash = dataRecorder.getRefKey(p);
+//                if(hash<=0){
+//                    hash = dataRecorder.addRef(p);
 //                }
-                if(hash<=0){
-                    hash = dataRecorder.addRef(p);
-                }
-                //参数的hashcode
-                itemJson.put("parameterHashCode",hash);
-                //如果参数是View或MenuItem，获取他们的ID
-                if(p instanceof View){
-                    itemJson.put("parameterId",((View)p).getId());
-                }else if(p instanceof MenuItem){
-                    itemJson.put("parameterId",((MenuItem)p).getItemId());
-                }
-                //如果参数是基本类型，则写入他们的值，是其他类型写入他们的HashCode
-                if(ParserConfig.getGlobalInstance().isPrimitive(p.getClass())){
-                    itemJson.put("parameterValue",p.toString());
-                }else{
-                    itemJson.put("parameterValue",hash);
-                }
-
-            }else{
-                itemJson.put("parameterHashCode",null);
-                itemJson.put("parameterValue",null);
-            }
+//                //参数的hashcode
+//                itemJson.put("parameterHashCode",hash);
+//                //如果参数是View或MenuItem，获取他们的ID
+//                if(p instanceof View){
+//                    itemJson.put("parameterId",((View)p).getId());
+//                }else if(p instanceof MenuItem){
+//                    itemJson.put("parameterId",((MenuItem)p).getItemId());
+//                }
+//                //如果参数是基本类型，则写入他们的值，是其他类型写入他们的HashCode
+//                if(ParserConfig.getGlobalInstance().isPrimitive(p.getClass())){
+//                    itemJson.put("parameterValue",p.toString());
+//                }else{
+//                    itemJson.put("parameterValue",hash);
+//                }
+//            }else{
+//                itemJson.put("parameterHashCode",null);
+//                itemJson.put("parameterValue",null);
+//            }
             //添加一个参数的JSON
             jsonArray.add(itemJson);
         }
@@ -203,36 +205,40 @@ public class TrackMethod extends XC_MethodHook {
      */
     private void writeResultInfo(JSONObject json,MethodHookParam param){
         JSONObject resultJSON = new JSONObject();
-        if(param==null){
-            return;
-        }
-        Object result = null;
-        try {
-            result = param.getResultOrThrowable();
-        }catch (Throwable throwable) {
-            Log.i("LZH","error ResultOrThrowable:"+throwable.getMessage()+"-"+param.method.getName());
-            throwable.printStackTrace();
-        }
-        int hash = -1;
-        if(result!=null){
-            hash = dataRecorder.getRefKey(result);
-            if(hash<=0){
-                hash = dataRecorder.addRef(result);
-            }
-            resultJSON.put("resultClassName",result.getClass().getName());
-//            Log.i("LZH",result.getClass().getName()+" "+param.method.getName());
+        resultJSON.put("resultClassName",null);
+        resultJSON.put("resultValue",null);
+        resultJSON.put("resultHashCode",null);
 
-            resultJSON.put("resultHashCode",hash);
-            if(ParserConfig.getGlobalInstance().isPrimitive(result.getClass())){
-                resultJSON.put("resultValue",result.toString());
-            }else{
-                resultJSON.put("resultValue",hash);
-            }
-        }else{
-            resultJSON.put("resultClassName",null);
-            resultJSON.put("resultValue",null);
-            resultJSON.put("resultHashCode",null);
-        }
+//        if(param==null){
+//            return;
+//        }
+//        Object result = null;
+//        try {
+//            result = param.getResultOrThrowable();
+//        }catch (Throwable throwable) {
+//            Log.i("LZH","error ResultOrThrowable:"+throwable.getMessage()+"-"+param.method.getName());
+//            throwable.printStackTrace();
+//        }
+//        int hash = -1;
+//        if(result!=null){
+//            hash = dataRecorder.getRefKey(result);
+//            if(hash<=0){
+//                hash = dataRecorder.addRef(result);
+//            }
+//            resultJSON.put("resultClassName",result.getClass().getName());
+////            Log.i("LZH",result.getClass().getName()+" "+param.method.getName());
+//
+//            resultJSON.put("resultHashCode",hash);
+//            if(ParserConfig.getGlobalInstance().isPrimitive(result.getClass())){
+//                resultJSON.put("resultValue",result.toString());
+//            }else{
+//                resultJSON.put("resultValue",hash);
+//            }
+//        }else{
+//            resultJSON.put("resultClassName",null);
+//            resultJSON.put("resultValue",null);
+//            resultJSON.put("resultHashCode",null);
+//        }
 
         json.put("methodResult",resultJSON);
     }

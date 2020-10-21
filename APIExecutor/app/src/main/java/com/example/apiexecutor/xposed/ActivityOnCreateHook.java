@@ -84,7 +84,7 @@ public class ActivityOnCreateHook extends XC_MethodHook {
         filter.addAction(LocalActivityReceiver.currentActivity);
         filter.addAction(LocalActivityReceiver.openTargetActivityByIntent);
 
-        filter.addAction(LocalActivityReceiver.INPUT_TEXT);
+        filter.addAction(LocalActivityReceiver.START_ACTION);
         filter.addAction(LocalActivityReceiver.INPUT_EVENT);
         filter.addAction(LocalActivityReceiver.GenerateIntentData);
         filter.addAction(LocalActivityReceiver.GenerateDeepLink);

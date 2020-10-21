@@ -367,6 +367,102 @@ public class IASXposedModule implements IXposedHookLoadPackage{
             filter.add("dragon");
             hookAPPMethod(classNames,classLoader,packageName,filter);
         }
+        classNames = "tingshu.txt";
+        packageName = "bubei.tingshu";
+        if(lpparam.packageName.contains(packageName)){
+            XposedHelpers.findAndHookMethod("android.app.Activity",lpparam.classLoader,"dispatchTouchEvent",MotionEvent.class,new TrackMethod(new Class[]{MotionEvent.class},packageName));
+            XposedHelpers.findAndHookMethod("android.view.View",lpparam.classLoader,"dispatchTouchEvent",MotionEvent.class,new DispatchTouchEventHook(packageName));
+            XposedHelpers.findAndHookMethod("android.view.View", lpparam.classLoader, "onDraw",Canvas.class, new HookOnDraw(packageName));
+            XposedHelpers.findAndHookMethod("android.view.inputmethod.BaseInputConnection", lpparam.classLoader, "commitText",CharSequence.class, int.class,
+                    new TrackMethod(new Class[]{CharSequence.class, int.class},packageName));
+            List<String> filter = new ArrayList<>();
+            filter.add("tingshu");
+            hookAPPMethod(classNames,classLoader,packageName,filter);
+        }
+        classNames = "article.txt";
+        packageName = "com.ss.android.article.lite";
+        if(lpparam.packageName.contains(packageName)){
+            XposedHelpers.findAndHookMethod("android.app.Activity",lpparam.classLoader,"dispatchTouchEvent",MotionEvent.class,new TrackMethod(new Class[]{MotionEvent.class},packageName));
+            XposedHelpers.findAndHookMethod("android.view.View",lpparam.classLoader,"dispatchTouchEvent",MotionEvent.class,new DispatchTouchEventHook(packageName));
+            XposedHelpers.findAndHookMethod("android.view.View", lpparam.classLoader, "onDraw",Canvas.class, new HookOnDraw(packageName));
+            XposedHelpers.findAndHookMethod("android.view.inputmethod.BaseInputConnection", lpparam.classLoader, "commitText",CharSequence.class, int.class,
+                    new TrackMethod(new Class[]{CharSequence.class, int.class},packageName));
+            List<String> filter = new ArrayList<>();
+            filter.add("article");
+            hookAPPMethod(classNames,classLoader,packageName,filter);
+        }
+        classNames = "news.txt";
+        packageName = "com.tencent.news";
+        if(lpparam.packageName.contains(packageName)){
+            XposedHelpers.findAndHookMethod("android.app.Activity",lpparam.classLoader,"dispatchTouchEvent",MotionEvent.class,new TrackMethod(new Class[]{MotionEvent.class},packageName));
+            XposedHelpers.findAndHookMethod("android.view.View",lpparam.classLoader,"dispatchTouchEvent",MotionEvent.class,new DispatchTouchEventHook(packageName));
+            XposedHelpers.findAndHookMethod("android.view.View", lpparam.classLoader, "onDraw",Canvas.class, new HookOnDraw(packageName));
+            XposedHelpers.findAndHookMethod("android.view.inputmethod.BaseInputConnection", lpparam.classLoader, "commitText",CharSequence.class, int.class,
+                    new TrackMethod(new Class[]{CharSequence.class, int.class},packageName));
+            List<String> filter = new ArrayList<>();
+            filter.add("news");
+            hookAPPMethod(classNames,classLoader,packageName,filter);
+        }
+        classNames = "sogou.txt";
+        packageName = "com.sogou.map.android.maps";
+        if(lpparam.packageName.contains(packageName)){
+            XposedHelpers.findAndHookMethod("android.app.Activity",lpparam.classLoader,"dispatchTouchEvent",MotionEvent.class,new TrackMethod(new Class[]{MotionEvent.class},packageName));
+            XposedHelpers.findAndHookMethod("android.view.View",lpparam.classLoader,"dispatchTouchEvent",MotionEvent.class,new DispatchTouchEventHook(packageName));
+            XposedHelpers.findAndHookMethod("android.view.View", lpparam.classLoader, "onDraw",Canvas.class, new HookOnDraw(packageName));
+            XposedHelpers.findAndHookMethod("android.view.inputmethod.BaseInputConnection", lpparam.classLoader, "commitText",CharSequence.class, int.class,
+                    new TrackMethod(new Class[]{CharSequence.class, int.class},packageName));
+            List<String> filter = new ArrayList<>();
+            filter.add("sogou");
+            hookAPPMethod(classNames,classLoader,packageName,filter);
+        }
+        classNames = "xiachufang.txt";
+        packageName = "com.xiachufang.lazycook";
+        if(lpparam.packageName.contains(packageName)){
+            XposedHelpers.findAndHookMethod("android.app.Activity",lpparam.classLoader,"dispatchTouchEvent",MotionEvent.class,new TrackMethod(new Class[]{MotionEvent.class},packageName));
+            XposedHelpers.findAndHookMethod("android.view.View",lpparam.classLoader,"dispatchTouchEvent",MotionEvent.class,new DispatchTouchEventHook(packageName));
+            XposedHelpers.findAndHookMethod("android.view.View", lpparam.classLoader, "onDraw",Canvas.class, new HookOnDraw(packageName));
+            XposedHelpers.findAndHookMethod("android.view.inputmethod.BaseInputConnection", lpparam.classLoader, "commitText",CharSequence.class, int.class,
+                    new TrackMethod(new Class[]{CharSequence.class, int.class},packageName));
+            List<String> filter = new ArrayList<>();
+            filter.add("xiachufang");
+            hookAPPMethod(classNames,classLoader,packageName,filter);
+        }
+        classNames = "qqmusic.txt";
+        packageName = "com.tencent.qqmusic";
+        if(lpparam.packageName.contains(packageName)){
+            XposedHelpers.findAndHookMethod("android.app.Activity",lpparam.classLoader,"dispatchTouchEvent",MotionEvent.class,new TrackMethod(new Class[]{MotionEvent.class},packageName));
+            XposedHelpers.findAndHookMethod("android.view.View",lpparam.classLoader,"dispatchTouchEvent",MotionEvent.class,new DispatchTouchEventHook(packageName));
+            XposedHelpers.findAndHookMethod("android.view.View", lpparam.classLoader, "onDraw",Canvas.class, new HookOnDraw(packageName));
+            XposedHelpers.findAndHookMethod("android.view.inputmethod.BaseInputConnection", lpparam.classLoader, "commitText",CharSequence.class, int.class,
+                    new TrackMethod(new Class[]{CharSequence.class, int.class},packageName));
+            List<String> filter = new ArrayList<>();
+            filter.add("qqmusic");
+            hookAPPMethod(classNames,classLoader,packageName,filter);
+        }
+        classNames = "cloudmusic.txt";
+        packageName = "com.netease.cloudmusic";
+        if(lpparam.packageName.contains(packageName)){
+            XposedHelpers.findAndHookMethod("android.app.Activity",lpparam.classLoader,"dispatchTouchEvent",MotionEvent.class,new TrackMethod(new Class[]{MotionEvent.class},packageName));
+            XposedHelpers.findAndHookMethod("android.view.View",lpparam.classLoader,"dispatchTouchEvent",MotionEvent.class,new DispatchTouchEventHook(packageName));
+            XposedHelpers.findAndHookMethod("android.view.View", lpparam.classLoader, "onDraw",Canvas.class, new HookOnDraw(packageName));
+            XposedHelpers.findAndHookMethod("android.view.inputmethod.BaseInputConnection", lpparam.classLoader, "commitText",CharSequence.class, int.class,
+                    new TrackMethod(new Class[]{CharSequence.class, int.class},packageName));
+            List<String> filter = new ArrayList<>();
+            filter.add("cloudmusic");
+            hookAPPMethod(classNames,classLoader,packageName,filter);
+        }
+        classNames = "xiangha.txt";
+        packageName = "com.xiangha";
+        if(lpparam.packageName.contains(packageName)){
+            XposedHelpers.findAndHookMethod("android.app.Activity",lpparam.classLoader,"dispatchTouchEvent",MotionEvent.class,new TrackMethod(new Class[]{MotionEvent.class},packageName));
+            XposedHelpers.findAndHookMethod("android.view.View",lpparam.classLoader,"dispatchTouchEvent",MotionEvent.class,new DispatchTouchEventHook(packageName));
+            XposedHelpers.findAndHookMethod("android.view.View", lpparam.classLoader, "onDraw",Canvas.class, new HookOnDraw(packageName));
+            XposedHelpers.findAndHookMethod("android.view.inputmethod.BaseInputConnection", lpparam.classLoader, "commitText",CharSequence.class, int.class,
+                    new TrackMethod(new Class[]{CharSequence.class, int.class},packageName));
+            List<String> filter = new ArrayList<>();
+            filter.add("xiangha");
+            hookAPPMethod(classNames,classLoader,packageName,filter);
+        }
     }
     private void hook_methods(String className,ClassLoader loader,String packageName) {
         try {

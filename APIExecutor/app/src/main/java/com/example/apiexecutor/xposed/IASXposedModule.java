@@ -44,7 +44,7 @@ public class IASXposedModule implements IXposedHookLoadPackage{
                 Log.i("LZH","finish: "+param.thisObject.getClass().getName());
             }
         });
-
+        XposedHelpers.findAndHookMethod("android.view.View",lpparam.classLoader,"dispatchTouchEvent", MotionEvent.class,new DispatchTouchEventActivityHook());
         String className = null;
         ClassLoader classLoader = lpparam.classLoader;
         //查看某个页面的方法调用
@@ -89,7 +89,7 @@ public class IASXposedModule implements IXposedHookLoadPackage{
         }
         classNames = "qqmusic.txt";
         if(lpparam.packageName.contains("com.tencent.qqmusic")){
-            XposedHelpers.findAndHookMethod("android.view.View",lpparam.classLoader,"dispatchTouchEvent", MotionEvent.class,new DispatchTouchEventActivityHook());
+
             List<String> filter = new ArrayList<>();
             filter.add("qqmusic");
 //            filter.add("android");
@@ -235,6 +235,49 @@ public class IASXposedModule implements IXposedHookLoadPackage{
             List<String> filter = new ArrayList<>();
             filter.add("smartisan");
             hookAPPMethod(classNames,classLoader,"com.smartisan.notes",filter); }
+
+        classNames = "dragon.txt";
+        if(lpparam.packageName.contains("com.dragon.read")){
+            List<String> filter = new ArrayList<>();
+            filter.add("dragon");
+            hookAPPMethod(classNames,classLoader,"com.dragon.read",filter);
+        }
+        classNames = "tingshu.txt";
+        if(lpparam.packageName.contains("bubei.tingshu")){
+            List<String> filter = new ArrayList<>();
+            filter.add("tingshu");
+            hookAPPMethod(classNames,classLoader,"bubei.tingshu",filter);
+        }
+        classNames = "article.txt";
+        if(lpparam.packageName.contains("com.ss.android.article.lite")){
+            List<String> filter = new ArrayList<>();
+            filter.add("article");
+            hookAPPMethod(classNames,classLoader,"com.ss.android.article.lite",filter);
+        }
+        classNames = "news.txt";
+        if(lpparam.packageName.contains("com.tencent.news")){
+            List<String> filter = new ArrayList<>();
+            filter.add("news");
+            hookAPPMethod(classNames,classLoader,"com.tencent.news",filter);
+        }
+        classNames = "sogou.txt";
+        if(lpparam.packageName.contains("com.sogou.map.android.maps")){
+            List<String> filter = new ArrayList<>();
+            filter.add("sogou");
+            hookAPPMethod(classNames,classLoader,"com.sogou.map.android.maps",filter);
+        }
+        classNames = "xiachufang.txt";
+        if(lpparam.packageName.contains("com.xiachufang.lazycook")){
+            List<String> filter = new ArrayList<>();
+            filter.add("xiachufang");
+            hookAPPMethod(classNames,classLoader,"com.xiachufang.lazycook",filter);
+        }
+        classNames = "xiangha.txt";
+        if(lpparam.packageName.contains("com.xiangha")){
+            List<String> filter = new ArrayList<>();
+            filter.add("xiangha");
+            hookAPPMethod(classNames,classLoader,"com.xiangha",filter);
+        }
     }
     private void hook_methods(String className,ClassLoader loader,String packageName) {
 
@@ -272,9 +315,9 @@ public class IASXposedModule implements IXposedHookLoadPackage{
         int num = 0;
         String last = "";
         for(String line :names){
-            if(line.contains("android.widget")){
-                Log.i("LZH","contain: "+line);
-            }
+//            if(line.contains("android.widget")){
+//                Log.i("LZH","contain: "+line);
+//            }
             if(line.startsWith("android.support")||line.startsWith("dalvik")||line.startsWith("java")
                     ||line.startsWith("timber")||line.startsWith("androidx")
                     ||line.startsWith("com.brsanthu")){

@@ -22,7 +22,7 @@ public class LogWriter {
     private static String fName;
     private static boolean token = false;//是否可以写入日志的标志
     private static long preTime;
-    private static String targetPKName = "com.dragon.read";
+    private static String targetPKName = "com.xiangha";
     public boolean TempIsSetText = false;
     public int num = 0;
     public static int fileNumber = 1;

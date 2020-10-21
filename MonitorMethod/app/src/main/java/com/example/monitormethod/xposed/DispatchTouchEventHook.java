@@ -36,6 +36,7 @@ public class DispatchTouchEventHook extends XC_MethodHook {
         MotionEvent motionEvent = (MotionEvent) param.args[0];
         JSONObject jsonObject = null;
         View view = (View) param.thisObject;
+//        Log.i("LZH","dispatchTouchEvent: "+System.currentTimeMillis());
         if(motionEvent!=null){
             jsonObject = writeInfo(view,motionEvent);
             writeThreadId(jsonObject);
