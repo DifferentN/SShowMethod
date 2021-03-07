@@ -22,7 +22,7 @@ public class LogWriter {
     private static String fName;
     private static boolean token = false;//是否可以写入日志的标志
     private static long preTime;
-    private static String targetPKName = "com.xiangha";
+    private static String targetPKName = "com.example.musicplayer";
     public boolean TempIsSetText = false;
     public int num = 0;
     public static int fileNumber = 1;
@@ -33,7 +33,7 @@ public class LogWriter {
     //com.yr.qmzs com.jrtd.mfxszq com.netease.pris com.wondertek.paper
     //com.infzm.ireader com.ifeng.news2 com.duxiaoman.umoney
     //com.boohee.food com.boohee.one com.boohee.food com.smartisan.notes
-    //com.dragon.read
+    //com.dragon.read com.xiangha
     public LogWriter(String fileName){
         fName = fileName;
 //        file = new File(fName);
@@ -65,6 +65,7 @@ public class LogWriter {
      * @param log
      */
     public synchronized void writeLog(String log){
+//        Log.i("LZH","token: "+token);
         if(!token){
             return;
         }

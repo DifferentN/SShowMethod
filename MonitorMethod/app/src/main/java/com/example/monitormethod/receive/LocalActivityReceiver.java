@@ -70,13 +70,13 @@ public class LocalActivityReceiver extends BroadcastReceiver{
                 break;
             case LocalActivityReceiver.WRITE_LOG:
                 //com.douban.movie com.tencent.qqmusic com.ichi2.anki
-                //com.jnzc.shipudaquan com.yongche.android
+                //com.jnzc.shipudaquan com.yongche.android com.xiangha
                 //com.dangdang.buy2 cn.cuco com.zhangshangjianzhi.newapp
                 //com.ss.android.ugc.aweme  yst.apk com.cqrenyi.huanyubrowser
                 //com.yr.qmzs com.jrtd.mfxszq com.netease.pris com.wondertek.paper
                 //com.infzm.ireader com.ifeng.news2 com.duxiaoman.umoney
                 //com.boohee.food com.boohee.one com.boohee.food com.smartisan.notes
-                if(selfPackageName.contains("com.xiangha")){
+                if(selfPackageName.contains("com.example.musicplayer")){
                     //设置LogWriter可以写入日志
                     LogWriter.turnWriteAble();
 //                    Log.i("LZH","send");

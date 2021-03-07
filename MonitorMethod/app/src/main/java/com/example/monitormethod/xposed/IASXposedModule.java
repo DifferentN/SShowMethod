@@ -9,6 +9,8 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.TextView;
 
+import androidx.appcompat.widget.SearchView;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -59,6 +61,35 @@ public class IASXposedModule implements IXposedHookLoadPackage{
 
 //            XposedHelpers.findAndHookMethod("android.view.View", lpparam.classLoader,"findViewById",int.class,new FindViewByIdHook());
         }
+
+        classNames = "musicplayer.txt";
+        if(lpparam.packageName.contains("com.example.musicplayer")){
+            XposedHelpers.findAndHookMethod("android.app.Activity",lpparam.classLoader,"dispatchTouchEvent",MotionEvent.class,new TrackMethod(new Class[]{MotionEvent.class},"com.example.musicplayer"));
+            XposedHelpers.findAndHookMethod("android.view.View",lpparam.classLoader,"dispatchTouchEvent",MotionEvent.class,new DispatchTouchEventHook("com.example.musicplayer"));
+            XposedHelpers.findAndHookMethod("android.view.View", lpparam.classLoader, "onDraw",Canvas.class, new HookOnDraw("com.example.musicplayer"));
+//            XposedHelpers.findAndHookMethod("androidx.appcompat.widget.SearchView", lpparam.classLoader, "setOnQueryTextListener", SearchView.OnQueryTextListener.class, new QueryTextSubmitHook());
+            List<String> filter = new ArrayList<>();
+            filter.add("musicplayer");
+//            hook_methods("android.view.View",lpparam.classLoader,"com.ichi2.anki");
+            hookAPPMethod(classNames,classLoader,"com.example.musicplayer",filter);
+
+//            XposedHelpers.findAndHookMethod("android.view.View", lpparam.classLoader,"findViewById",int.class,new FindViewByIdHook());
+        }
+
+        classNames = "antennapod.txt";
+        if(lpparam.packageName.contains("de.danoeh.antennapod")){
+            XposedHelpers.findAndHookMethod("android.app.Activity",lpparam.classLoader,"dispatchTouchEvent",MotionEvent.class,new TrackMethod(new Class[]{MotionEvent.class},"de.danoeh.antennapod"));
+            XposedHelpers.findAndHookMethod("android.view.View",lpparam.classLoader,"dispatchTouchEvent",MotionEvent.class,new DispatchTouchEventHook("de.danoeh.antennapod"));
+            XposedHelpers.findAndHookMethod("android.view.View", lpparam.classLoader, "onDraw",Canvas.class, new HookOnDraw("de.danoeh.antennapod"));
+//            XposedHelpers.findAndHookMethod("androidx.appcompat.widget.SearchView", lpparam.classLoader, "setOnQueryTextListener", SearchView.OnQueryTextListener.class, new QueryTextSubmitHook());
+            List<String> filter = new ArrayList<>();
+            filter.add("antennapod");
+//            hook_methods("android.view.View",lpparam.classLoader,"com.ichi2.anki");
+            hookAPPMethod(classNames,classLoader,"de.danoeh.antennapod",filter);
+
+//            XposedHelpers.findAndHookMethod("android.view.View", lpparam.classLoader,"findViewById",int.class,new FindViewByIdHook());
+        }
+
         //监听豆瓣电影的方法调用
         classNames = "douban.txt";
         if(lpparam.packageName.contains("com.douban.movie")){
@@ -463,6 +494,7 @@ public class IASXposedModule implements IXposedHookLoadPackage{
             filter.add("xiangha");
             hookAPPMethod(classNames,classLoader,packageName,filter);
         }
+
     }
     private void hook_methods(String className,ClassLoader loader,String packageName) {
         try {
@@ -483,6 +515,9 @@ public class IASXposedModule implements IXposedHookLoadPackage{
             //Modifier.isPublic(method.getModifiers())
 
                 if (true) {
+//                    if(method.getName().contains("search")){
+//                        Log.i("LZH","hook method search: "+method.getDeclaringClass().getSimpleName()+"/"+method.getName());
+//                    }
                     XposedBridge.hookMethod(method, new TrackMethod(method.getParameterTypes(),packageName));
                 }
             }
@@ -518,17 +553,18 @@ public class IASXposedModule implements IXposedHookLoadPackage{
         }
     }
     private void hookAPPMethod(String filename,ClassLoader classLoader,String packageName,List<String> filters){
-        List<String> names = getClassName(filename);
+        List<String> names = getClassName(filename,filters,classLoader,packageName);
         int sum = names.size();
         int num = 0,skipTime = 0;
         String last = "";
         for(String line :names){
+//            Log.i("LZH",line);
             if(line.contains("android.widget")){
                 Log.i("LZH","contain: "+line);
             }
             if(line.startsWith("android.support")||line.startsWith("dalvik")||line.startsWith("java")
                     ||line.startsWith("timber")||line.startsWith("androidx")
-                    ||line.startsWith("com.brsanthu")){
+                    ||line.startsWith("com.brsanthu")||line.startsWith("kotlin")){
                 continue;
             }
             //根据filter进行过滤,line中有filter中字符串的通过
@@ -541,6 +577,7 @@ public class IASXposedModule implements IXposedHookLoadPackage{
                     break;
                 }
             }
+//            Log.i("LZH","isSkip: "+isSkip+"name:"+line);
             if(isSkip){
                 continue;
             }
@@ -559,6 +596,9 @@ public class IASXposedModule implements IXposedHookLoadPackage{
                 //针对锤子便签纠错
                 continue;
             }
+            if(line.contains("antennapod.core.util.gui.NotificationUtils")){
+                continue;
+            }
 //            Log.i("LZH",line);
             hook_methods(line,classLoader,packageName);
             num++;
@@ -570,7 +610,7 @@ public class IASXposedModule implements IXposedHookLoadPackage{
         }
         Log.i("LZH","last: "+last);
     }
-    private List<String> getClassName(String name){
+    private List<String> getClassName(String name,List<String> filters,ClassLoader classLoader,String packageName){
         String fileName = Environment.getExternalStorageDirectory().getAbsolutePath()+"/"+name;
         File file = new File(fileName);
         List<String> list = new ArrayList<>();
@@ -578,12 +618,26 @@ public class IASXposedModule implements IXposedHookLoadPackage{
         if(!file.exists()){
             Log.i("LZH","类名文件不存在");
         }
+        int num = 0;
         try {
             FileReader fileReader = new FileReader(file);
             BufferedReader reader = new BufferedReader(fileReader);
             while ((line=reader.readLine())!=null){
+                if(line.startsWith("android.support")||line.startsWith("dalvik")||line.startsWith("java")
+                        ||line.startsWith("timber")||line.startsWith("androidx")
+                        ||line.startsWith("com.brsanthu")||line.startsWith("kotlin")
+                        ||line.startsWith("io.reactivex")){
+                    continue;
+                }
+//                if(!checkName(line,filters)){
+//                    continue;
+//                }
+//                Log.i("LZH",line);
+                num++;
+//                hook_methods(line,classLoader,packageName);
                 list.add(line);
             }
+//            Log.i("LZH","num: "+num);
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         } catch (IOException e) {
@@ -591,5 +645,12 @@ public class IASXposedModule implements IXposedHookLoadPackage{
         }
         return list;
     }
-
+    private boolean checkName(String name,List<String> filters){
+        for(String filter:filters){
+            if(name.contains(filter)){
+                return true;
+            }
+        }
+        return false;
+    }
 }

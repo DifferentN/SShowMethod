@@ -7,16 +7,21 @@ import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 
+import androidx.appcompat.widget.SearchView;
+
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.example.monitormethod.receive.RecordMethodLogReceiver;
 import com.example.monitormethod.trackData.DataCollectioner;
 import com.example.monitormethod.trackData.DataRecorder;
+import com.example.monitormethod.trackData.QueryTextListenerWrapper;
 import com.example.monitormethod.trackData.TouchedView;
 import com.example.monitormethod.util.ContextUtil;
 import com.example.monitormethod.util.LogWriter;
 import com.example.monitormethod.util.ViewUtil;
+
+import java.lang.reflect.Field;
 
 import de.robv.android.xposed.XC_MethodHook;
 
@@ -36,6 +41,7 @@ public class DispatchTouchEventHook extends XC_MethodHook {
         MotionEvent motionEvent = (MotionEvent) param.args[0];
         JSONObject jsonObject = null;
         View view = (View) param.thisObject;
+//        Log.i("LZH","motionEvent: "+motionEvent.getAction()+"\n"+"path: "+ViewUtil.getViewPath(view));
 //        Log.i("LZH","dispatchTouchEvent: "+System.currentTimeMillis());
         if(motionEvent!=null){
             jsonObject = writeInfo(view,motionEvent);
@@ -56,6 +62,11 @@ public class DispatchTouchEventHook extends XC_MethodHook {
         View view = (View) param.thisObject;
         //记录刚刚点击的view
         sendDispatchView(view);
+//        Log.i("LZH","click view: "+view.getClass().getName());
+//        if(view instanceof SearchView.SearchAutoComplete){
+//            Log.i("LZH","find search View");
+//            setQueryTextSubmit((SearchView) view);
+//        }
         if(motionEvent!=null){
             json = writeInfo(view,motionEvent);
             resultJSON = writeResult(param);
@@ -85,6 +96,27 @@ public class DispatchTouchEventHook extends XC_MethodHook {
      */
     private void sendDispatchView(View view){
         TouchedView.setView(view);
+    }
+
+    private void setQueryTextSubmit(SearchView searchView){
+        Class clazz = searchView.getClass();
+        Field field = null;
+        try {
+            field = clazz.getDeclaredField("mOnQueryChangeListener");
+        } catch (NoSuchFieldException e) {
+            e.printStackTrace();
+        }
+        field.setAccessible(true);
+        SearchView.OnQueryTextListener queryTextListener = null;
+        try {
+            queryTextListener = (SearchView.OnQueryTextListener) field.get(searchView);
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        }
+        if(queryTextListener!=null){
+            QueryTextListenerWrapper wrapper = new QueryTextListenerWrapper(searchView,queryTextListener);
+            searchView.setOnQueryTextListener(wrapper);
+        }
     }
     /**
      * 将点击信息转化为一个JSON

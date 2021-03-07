@@ -1,45 +1,56 @@
 package com.example.monitormethod.trackData;
 
-import android.content.Context;
-import android.content.Intent;
+
 import android.os.Environment;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
-import android.widget.TextView;
+
+import androidx.appcompat.widget.SearchView;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import com.example.monitormethod.receive.RecordMethodLogReceiver;
-import com.example.monitormethod.util.ContextUtil;
 import com.example.monitormethod.util.LogWriter;
 import com.example.monitormethod.util.ViewUtil;
 
-import java.lang.reflect.Field;
-
-import de.robv.android.xposed.XC_MethodHook;
-
-public class MyTextWatcher implements TextWatcher {
+public class QueryTextListenerWrapper implements SearchView.OnQueryTextListener {
     private DataRecorder dataRecorder;
     private String fileName = "APIFile/methodLog.txt";
     private LogWriter logWriter;
     private View view;
-    public MyTextWatcher(View view){
+    private SearchView.OnQueryTextListener onQueryTextListener;
+    public QueryTextListenerWrapper(View view, SearchView.OnQueryTextListener onQueryTextListener){
         fileName = Environment.getExternalStorageDirectory().getAbsolutePath()+"/"+fileName;
-//        logWriter = LogWriter.getInstance(fileName,view.getContext().getPackageName());
-        logWriter = LogWriter.getInstance(fileName,"com.example.musicplayer");
+        logWriter = LogWriter.getInstance(fileName,view.getContext().getPackageName());
         this.view = view;
+        this.onQueryTextListener = onQueryTextListener;
         dataRecorder = DataRecorder.getInstance();
     }
+    @Override
+    public boolean onQueryTextSubmit(String query) {
+        String info = writeInfo(view,query).toJSONString();
+        if(logWriter!=null){
+            logWriter.writeLog("before: "+info);
+        }
+//        sendMethodLog("before: "+info);
+        Log.i("LZH","Text: "+info);
 
+        if(logWriter!=null){
+            logWriter.writeLog("after: "+info);
+        }
+        return onQueryTextListener.onQueryTextSubmit(query);
+    }
+
+    @Override
+    public boolean onQueryTextChange(String newText) {
+        return onQueryTextListener.onQueryTextChange(newText);
+    }
     /**
      * 将方法调用的调用者，方法名称，参数，线程ID，viewId/path，和ViewFlag写入JSON
      * @param view
      * @param text
      * @return
      */
-    private JSONObject writeInfo(View view,String text){
+    private JSONObject writeInfo(View view, String text){
         JSONObject json = new JSONObject();
         json.put("packageName",view.getContext().getPackageName());
         json.put("callerClassName",this.getClass().getName());
@@ -85,44 +96,6 @@ public class MyTextWatcher implements TextWatcher {
         return json;
 
     }
-
-    @Override
-    public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-    }
-
-    @Override
-    public void onTextChanged(CharSequence s, int start, int before, int count) {
-
-    }
-
-    @Override
-    public void afterTextChanged(Editable s) {
-        //如果不是用户点击的View产生的文本变化，则忽略
-        if(view!=TouchedView.getView()){
-            return;
-        }
-        String info = writeInfo(view,s.toString()).toJSONString();
-        if(logWriter!=null){
-            logWriter.writeLog("before: "+info);
-        }
-//        sendMethodLog("before: "+info);
-//        Log.i("LZH","Text: "+info);
-
-        if(logWriter!=null){
-            logWriter.writeLog("after: "+info);
-        }
-//        sendMethodLog("after: "+info);
-    }
-    private void sendMethodLog(String log){
-        Context context = ContextUtil.getContext();
-        if(context!=null){
-            Intent intent = new Intent();
-            intent.setAction(RecordMethodLogReceiver.WRITE_LOG);
-            intent.putExtra(RecordMethodLogReceiver.METHOD_LOG,log);
-            context.sendBroadcast(intent);
-        }
-    }
     private JSONObject getViewInfoJSON(View view){
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("viewId",view.getId());
@@ -139,5 +112,4 @@ public class MyTextWatcher implements TextWatcher {
     private void writeActivityID(JSONObject json, View view){
         json.put("ActivityID",ViewUtil.getActivityNameByView(view));
     }
-
 }

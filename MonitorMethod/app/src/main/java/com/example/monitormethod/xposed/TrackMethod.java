@@ -56,6 +56,9 @@ public class TrackMethod extends XC_MethodHook {
                 Log.i("LZH","com.douban.frodo.baseproject.activity.BaseActivity/onStop");
             }
         }
+        if(param.method.getName().contains("search")){
+            Log.i("LZH","find search method");
+        }
         if(jsonObject==null){
             jsonObject = new JSONObject();
             writeCallerInfo(jsonObject,param);

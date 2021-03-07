@@ -142,8 +142,8 @@ public class MethodTrackPool {
         runTimeRecord.add(last);
         if(curEvent.invokePoint<invokeStrs.size()){
             invoke = invokeStrs.get(curEvent.invokePoint);
-            if(invoke.length()>=600){
-                invoke = invoke.substring(0,600);
+            if(invoke.length()>=500){
+                invoke = invoke.substring(0,500);
             }
             invoke = invoke.substring(0,invoke.length()-1);//不能用equals
             for(int i=0;i<runTimeRecord.size();i++){
@@ -156,7 +156,7 @@ public class MethodTrackPool {
                 }
             }
             if(!match&&curEvent.invokePoint<invokeStrs.size()){
-//                Log.i("LZH", "curMethod" + last + " \n record: " + curEvent.invokePoint + " " + invoke);
+                Log.i("LZH", "curMethod" + last + " \n record: " + curEvent.invokePoint + " " + invoke);
             }
         }
         if(runTimeRecord.size()>LOG_SIZE){
@@ -219,7 +219,7 @@ public class MethodTrackPool {
             public void run() {
                 context.sendBroadcast(intent);
             }
-        },600);
+        },1000);
 //        context.sendBroadcast(intent);
         executeActionState = false;
         Log.i("LZH","sendActionIntent");
