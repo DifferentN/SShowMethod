@@ -136,9 +136,9 @@ public class MethodTrackPool {
 //        Log.i("LZH","curMethod: "+last);
         String invoke = null;
         boolean match = false;
-        if(last.length()>=600){
-            last = last.substring(0,600);
-        }
+//        if(last.length()>=600){
+//            last = last.substring(0,600);
+//        }
         runTimeRecord.add(last);
         if(curEvent.invokePoint<invokeStrs.size()){
             invoke = invokeStrs.get(curEvent.invokePoint);
@@ -255,10 +255,13 @@ public class MethodTrackPool {
         if(!isAvailable()){
             return;
         }
+        Log.i("LZH","start send new event 0  111");
         if(curEvent==null||curEvent.invokePoint>=curEvent.getInvokeList().size()){
+            Log.i("LZH","start send new event 1");
             if(!events.isEmpty()){
                 curEvent = events.remove(0);
                 sendNotification(curEvent);
+                Log.i("LZH","start send new event");
             }else{
                 Log.i("LZH","event has done");
             }

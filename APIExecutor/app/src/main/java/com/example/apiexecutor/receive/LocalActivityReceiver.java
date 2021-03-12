@@ -108,7 +108,7 @@ public class LocalActivityReceiver extends BroadcastReceiver implements CallBack
                 showActivityName = intent.getStringExtra(CoordinatorReceiver.RESUME_ACTIVITY);
                 Log.i("LZH","show Activity: "+showActivityName+" time: "+System.currentTimeMillis());
                 if(showActivityName.equals(selfActivityName)&&isStartAction){
-                    checkExecuteAction();
+//                    checkExecuteAction();
                 }
                 break;
             case LocalActivityReceiver.openTargetActivityByIntent:
