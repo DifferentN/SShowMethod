@@ -510,6 +510,9 @@ public class IASXposedModule implements IXposedHookLoadPackage{
                 if(Modifier.isAbstract(methodId)||Modifier.isInterface(methodId)||Modifier.isNative(methodId)){
                     continue;
                 }
+                if(method.getName().contains("access$")){
+                    continue;
+                }
             //如果 （通过反射找到的方法名和准备hook的方法名相同 && 方法判定如果整数参数包含abstract修饰符，则返回true，否则返回false &&
             // 方法判断如果给定参数包含public修饰符，则返回true，否则返回false )
             //Modifier.isPublic(method.getModifiers())

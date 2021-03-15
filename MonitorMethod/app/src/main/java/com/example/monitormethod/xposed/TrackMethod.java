@@ -72,7 +72,7 @@ public class TrackMethod extends XC_MethodHook {
 
         if(logWriter!=null){
             logWriter.writeLog("before: "+jsonObject.toJSONString());
-//            Log.i("LZH-Method","before: "+jsonObject.toJSONString());
+            Log.i("LZH-Method","before: "+jsonObject.toJSONString());
 //            sendMethodLog("before: "+jsonObject.toJSONString());
         }
 
