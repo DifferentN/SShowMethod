@@ -76,7 +76,7 @@ public class LocalActivityReceiver extends BroadcastReceiver{
                 //com.yr.qmzs com.jrtd.mfxszq com.netease.pris com.wondertek.paper
                 //com.infzm.ireader com.ifeng.news2 com.duxiaoman.umoney
                 //com.boohee.food com.boohee.one com.boohee.food com.smartisan.notes
-                if(selfPackageName.contains("com.ichi2.anki")){
+                if(selfPackageName.contains("com.example.musicplayer")){
                     //设置LogWriter可以写入日志
                     LogWriter.turnWriteAble();
 //                    Log.i("LZH","send");

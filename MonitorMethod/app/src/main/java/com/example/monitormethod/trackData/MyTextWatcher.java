@@ -28,7 +28,7 @@ public class MyTextWatcher implements TextWatcher {
     public MyTextWatcher(View view){
         fileName = Environment.getExternalStorageDirectory().getAbsolutePath()+"/"+fileName;
 //        logWriter = LogWriter.getInstance(fileName,view.getContext().getPackageName());
-        logWriter = LogWriter.getInstance(fileName,"com.ichi2.anki");
+        logWriter = LogWriter.getInstance(fileName,"com.example.musicplayer");
         this.view = view;
         dataRecorder = DataRecorder.getInstance();
     }

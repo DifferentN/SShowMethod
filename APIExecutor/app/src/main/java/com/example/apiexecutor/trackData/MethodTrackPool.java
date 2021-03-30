@@ -11,7 +11,6 @@ import android.os.Message;
 import android.util.Log;
 
 import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONObject;
 import com.example.apiexecutor.core.Event;
 import com.example.apiexecutor.core.UserAction;
 import com.example.apiexecutor.receive.LocalActivityReceiver;
@@ -23,11 +22,7 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Hashtable;
 import java.util.List;
-import java.util.Vector;
 
 public class MethodTrackPool {
     private Context context;
@@ -136,27 +131,30 @@ public class MethodTrackPool {
 //        Log.i("LZH","curMethod: "+last);
         String invoke = null;
         boolean match = false;
-//        if(last.length()>=600){
-//            last = last.substring(0,600);
+//        if(last.length()>=1200){
+//            last = last.substring(0,1200);
 //        }
         runTimeRecord.add(last);
         if(curEvent.invokePoint<invokeStrs.size()){
             invoke = invokeStrs.get(curEvent.invokePoint);
             if(invoke.length()>=500){
-                invoke = invoke.substring(0,500);
+                //截取一个相对完整的方法调用
+                int point = invoke.indexOf(")",500)+1;
+                invoke = invoke.substring(0,point);
             }
             invoke = invoke.substring(0,invoke.length()-1);//不能用equals
             for(int i=0;i<runTimeRecord.size();i++){
-                // checkEqual(runTimeRecord.get(i),invoke)
-                if(runTimeRecord.get(i).contains(invoke)){
+                //runTimeRecord.get(i).contains(invoke)
+                if(MatchInvokeMethodUtil.checkContains(runTimeRecord.get(i),invoke)){
                     curEvent.invokePoint++;
                     match = true;
 //                    Log.i("LZH","match method");
                     break;
                 }
             }
+
             if(!match&&curEvent.invokePoint<invokeStrs.size()){
-                Log.i("LZH", "curMethod" + last + " \n record: " + curEvent.invokePoint + " " + invoke);
+                Log.i("LZH", "curLength: "+last.length()+last.contains(invoke)+"curMethod" + last + " \n record: " + curEvent.invokePoint + " " + invoke);
             }
         }
         if(runTimeRecord.size()>LOG_SIZE){
@@ -256,6 +254,9 @@ public class MethodTrackPool {
             return;
         }
         Log.i("LZH","start send new event 0  111");
+        if(curEvent!=null){
+            Log.i("LZH","invokePoint: "+curEvent.invokePoint+" invokeList size: "+curEvent.getInvokeList().size());
+        }
         if(curEvent==null||curEvent.invokePoint>=curEvent.getInvokeList().size()){
             Log.i("LZH","start send new event 1");
             if(!events.isEmpty()){

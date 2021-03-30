@@ -169,6 +169,10 @@ public class ActivityOnCreateHook extends XC_MethodHook {
 //        if(activity.getPackageName().contains("de.danoeh.antennapod.debug")){
 //            writeAnkiClassName(activity.getPackageName(),activity,fileName);
 //        }
+//        fileName = Environment.getExternalStorageDirectory().getAbsolutePath()+"/antennapod.txt";
+//        if(activity.getPackageName().contains("de.danoeh.antennapod.debug")){
+//            writeAnkiClassName(activity.getPackageName(),activity,fileName);
+//        }
 
     }
     private void showClassName(String pkName, Context context){

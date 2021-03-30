@@ -213,6 +213,28 @@ public class IASXposedModule implements IXposedHookLoadPackage{
                         }
                     });
         }
+        if (lpparam.packageName.equals("com.wisedu.cpdaily")) {
+            XposedHelpers.findAndHookMethod("com.stub.StubApp", lpparam.classLoader,
+                    "attachBaseContext", Context.class, new XC_MethodHook() {
+                        @Override
+                        protected void afterHookedMethod(MethodHookParam param) throws Throwable {
+                            super.afterHookedMethod(param);
+                            Log.i("LZH","hook classLoader");
+                            Context context = (Context) param.args[0];
+                            ClassLoader classLoader =context.getClassLoader();
+                            XposedHelpers.findAndHookMethod("android.app.Activity",classLoader,"dispatchTouchEvent",MotionEvent.class,new TrackMethod(new Class[]{MotionEvent.class},"com.eusoft.eudic"));
+                            XposedHelpers.findAndHookMethod("android.view.View",classLoader,"dispatchTouchEvent",MotionEvent.class,new DispatchTouchEventHook("com.eusoft.eudic"));
+                            XposedHelpers.findAndHookMethod("android.view.View", classLoader, "onDraw",Canvas.class, new HookOnDraw("com.eusoft.eudic"));
+                            XposedHelpers.findAndHookMethod("android.view.inputmethod.BaseInputConnection", classLoader, "commitText",CharSequence.class, int.class,
+                                    new TrackMethod(new Class[]{CharSequence.class, int.class},"com.eusoft.eudic"));
+                            List<String> filter = new ArrayList<>();
+                            filter.add("eusoft");
+                            //设置监听的应用方法
+                            hookAPPMethod("eudic.txt",classLoader,"com.eusoft.eudic",filter);
+
+                        }
+                    });
+        }
         classNames = "yst.txt";
         if(lpparam.packageName.contains("yst.apk")){
             XposedHelpers.findAndHookMethod("android.app.Activity",lpparam.classLoader,"dispatchTouchEvent",MotionEvent.class,new TrackMethod(new Class[]{MotionEvent.class},"yst.apk"));

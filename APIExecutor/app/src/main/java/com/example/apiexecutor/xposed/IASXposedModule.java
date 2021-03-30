@@ -62,6 +62,17 @@ public class IASXposedModule implements IXposedHookLoadPackage{
             Log.i("LZH","hook anki");
 //            XposedHelpers.findAndHookMethod("android.view.View", lpparam.classLoader,"findViewById",int.class,new FindViewByIdHook());
         }
+
+        classNames = "musicplayer.txt";
+        if(lpparam.packageName.contains("com.example.musicplayer")){
+//            XposedHelpers.findAndHookMethod("android.view.View", lpparam.classLoader, "onDraw",Canvas.class, new ActivityOnDraw());
+//            hook_methods("android.view.View",lpparam.classLoader,"com.ichi2.anki");
+            ArrayList<String> filter = new ArrayList<>();
+            filter.add("musicplayer");
+            hookAPPMethod(classNames,classLoader,"com.example.musicplayer",filter);
+//            XposedHelpers.findAndHookMethod("android.view.View", lpparam.classLoader,"findViewById",int.class,new FindViewByIdHook());
+        }
+
         classNames = "douban.txt";
         if(lpparam.packageName.contains("com.douban.movie")){
 //            XposedHelpers.findAndHookMethod("android.view.View",lpparam.classLoader,"dispatchTouchEvent", MotionEvent.class,new DispatchTouchEventHook("com.douban.movie"));
