@@ -59,6 +59,7 @@ public class MyAPIExecuteAdapter extends BroadcastReceiver {
         switch (action){
             case CoordinatorReceiver.ON_RESUME:
                 String showActivityName = intent.getStringExtra(CoordinatorReceiver.RESUME_ACTIVITY);
+//                Log.i("LZH",showActivityName+"\n"+startActivityName);
                 if(!startActivityName.equals(showActivityName)){
                     break;
                 }

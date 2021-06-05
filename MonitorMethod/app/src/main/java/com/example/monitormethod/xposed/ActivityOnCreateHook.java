@@ -165,12 +165,19 @@ public class ActivityOnCreateHook extends XC_MethodHook {
 //        if(activity.getPackageName().contains("com.example.musicplayer")){
 //            writeAnkiClassName(activity.getPackageName(),activity,fileName);
 //        }
+
 //        fileName = Environment.getExternalStorageDirectory().getAbsolutePath()+"/antennapod.txt";
-//        if(activity.getPackageName().contains("de.danoeh.antennapod.debug")){
+//        if(activity.getPackageName().contains("de.danoeh.antennapod")){
 //            writeAnkiClassName(activity.getPackageName(),activity,fileName);
 //        }
-//        fileName = Environment.getExternalStorageDirectory().getAbsolutePath()+"/antennapod.txt";
-//        if(activity.getPackageName().contains("de.danoeh.antennapod.debug")){
+
+//        fileName = Environment.getExternalStorageDirectory().getAbsolutePath()+"/baronzhang.txt";
+//        if(activity.getPackageName().contains("com.baronzhang.android.weather")){
+//            writeAnkiClassName(activity.getPackageName(),activity,fileName);
+//        }
+
+//        fileName = Environment.getExternalStorageDirectory().getAbsolutePath()+"/omgodse.txt";
+//        if(activity.getPackageName().contains("com.omgodse.notally")){
 //            writeAnkiClassName(activity.getPackageName(),activity,fileName);
 //        }
 

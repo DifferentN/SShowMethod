@@ -517,6 +517,31 @@ public class IASXposedModule implements IXposedHookLoadPackage{
             hookAPPMethod(classNames,classLoader,packageName,filter);
         }
 
+        classNames = "baronzhang.txt";
+        packageName = "com.baronzhang.android.weather";
+        if(lpparam.packageName.contains(packageName)){
+            XposedHelpers.findAndHookMethod("android.app.Activity",lpparam.classLoader,"dispatchTouchEvent",MotionEvent.class,new TrackMethod(new Class[]{MotionEvent.class},packageName));
+            XposedHelpers.findAndHookMethod("android.view.View",lpparam.classLoader,"dispatchTouchEvent",MotionEvent.class,new DispatchTouchEventHook(packageName));
+            XposedHelpers.findAndHookMethod("android.view.View", lpparam.classLoader, "onDraw",Canvas.class, new HookOnDraw(packageName));
+            XposedHelpers.findAndHookMethod("android.view.inputmethod.BaseInputConnection", lpparam.classLoader, "commitText",CharSequence.class, int.class,
+                    new TrackMethod(new Class[]{CharSequence.class, int.class},packageName));
+            List<String> filter = new ArrayList<>();
+            filter.add("baronzhang");
+            hookAPPMethod(classNames,classLoader,packageName,filter);
+        }
+
+        classNames = "omgodse.txt";
+        packageName = "com.omgodse.notally";
+        if(lpparam.packageName.contains(packageName)){
+            XposedHelpers.findAndHookMethod("android.app.Activity",lpparam.classLoader,"dispatchTouchEvent",MotionEvent.class,new TrackMethod(new Class[]{MotionEvent.class},packageName));
+            XposedHelpers.findAndHookMethod("android.view.View",lpparam.classLoader,"dispatchTouchEvent",MotionEvent.class,new DispatchTouchEventHook(packageName));
+            XposedHelpers.findAndHookMethod("android.view.View", lpparam.classLoader, "onDraw",Canvas.class, new HookOnDraw(packageName));
+            XposedHelpers.findAndHookMethod("android.view.inputmethod.BaseInputConnection", lpparam.classLoader, "commitText",CharSequence.class, int.class,
+                    new TrackMethod(new Class[]{CharSequence.class, int.class},packageName));
+            List<String> filter = new ArrayList<>();
+            filter.add("omgodse");
+            hookAPPMethod(classNames,classLoader,packageName,filter);
+        }
     }
     private void hook_methods(String className,ClassLoader loader,String packageName) {
         try {
@@ -586,6 +611,10 @@ public class IASXposedModule implements IXposedHookLoadPackage{
 //            Log.i("LZH",line);
             if(line.contains("android.widget")){
                 Log.i("LZH","contain: "+line);
+            }
+            if(line.contains("$")){
+                //不监听内部类，因为内部类的类名在不同APK内不一定相同
+                continue;
             }
             if(line.startsWith("android.support")||line.startsWith("dalvik")||line.startsWith("java")
                     ||line.startsWith("timber")||line.startsWith("androidx")

@@ -216,11 +216,12 @@ public class MethodTrackPool {
             @Override
             public void run() {
                 context.sendBroadcast(intent);
+                Log.i("LZH","sendActionIntent");
             }
         },1000);
 //        context.sendBroadcast(intent);
         executeActionState = false;
-        Log.i("LZH","sendActionIntent");
+
     }
 
     /**
@@ -253,12 +254,12 @@ public class MethodTrackPool {
         if(!isAvailable()){
             return;
         }
-        Log.i("LZH","start send new event 0  111");
+//        Log.i("LZH","start send new event 0  111");
         if(curEvent!=null){
             Log.i("LZH","invokePoint: "+curEvent.invokePoint+" invokeList size: "+curEvent.getInvokeList().size());
         }
         if(curEvent==null||curEvent.invokePoint>=curEvent.getInvokeList().size()){
-            Log.i("LZH","start send new event 1");
+//            Log.i("LZH","start send new event 1");
             if(!events.isEmpty()){
                 curEvent = events.remove(0);
                 sendNotification(curEvent);

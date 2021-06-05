@@ -33,7 +33,7 @@ public class LogWriter {
     //com.yr.qmzs com.jrtd.mfxszq com.netease.pris com.wondertek.paper
     //com.infzm.ireader com.ifeng.news2 com.duxiaoman.umoney
     //com.boohee.food com.boohee.one com.boohee.food com.smartisan.notes
-    //com.dragon.read com.xiangha
+    //com.dragon.read com.xiangha com.baronzhang.android.weather
     public LogWriter(String fileName){
         fName = fileName;
 //        file = new File(fName);

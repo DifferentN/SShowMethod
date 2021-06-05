@@ -218,6 +218,9 @@ public class LocalActivityReceiver extends BroadcastReceiver implements CallBack
         if(userAction.getActionName().equals(Event.SETTEXT)){
             TextView textView = null;
             textView = (TextView) getViewByPath(userAction.getViewPath());
+            if(textView == null){
+                textView = (TextView) getViewByPath2(userAction.getViewPath());
+            }
             if(textView==null){
                 textView = selfActivity.findViewById(userAction.getViewId());
             }
@@ -225,7 +228,7 @@ public class LocalActivityReceiver extends BroadcastReceiver implements CallBack
                 Log.i("LZH","textView is null:setText");
                 return executionOver;
             }
-            Log.i("LZH","setText");
+            Log.i("LZH","setText value: "+userAction.getText());
             textView.setText(userAction.getText());
             executionOver = true;
         }else if(userAction.getActionName().equals(Event.DISPATCH)){
@@ -237,6 +240,9 @@ public class LocalActivityReceiver extends BroadcastReceiver implements CallBack
             }
             if(view!=null){
                 Log.i("LZH","view Width: "+view.getWidth()+" height: "+view.getHeight());
+            }
+            if(view==null){
+                view = selfActivity.findViewById(userAction.getViewId());
             }
             if(view==null&&userAction.getViewId()>0){
                 Log.i("LZH","can't get view by viewPath; "+userAction.getViewPath());
